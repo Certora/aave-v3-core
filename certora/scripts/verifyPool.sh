@@ -4,8 +4,8 @@ certoraRun contracts/protocol/pool/Pool.sol \
               certora/harness/SimpleERC20.sol \
               contracts/protocol/tokenization/VariableDebtToken.sol \
               certora/harness/SymbolicPriceOracle.sol \
-  --solc solc8.10 --optimistic_loop \
   --verify Pool:certora/specs/pool.spec \
+  --solc solc8.10 --optimistic_loop \
   --staging \
   --rule $1 \
   --settings -t=600 --settings -superOptimisticReturnsize=true \

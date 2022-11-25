@@ -5,7 +5,7 @@ echo $contractPath
 echo $contract
 set -x
 certoraRun ${contractPath} \
-  --solc solc8.10 \
   --verify ${contract}:certora/specs/sanity.spec \
+  --solc solc8.10 \
   --settings -t=300 \
   --staging --msg "${project} ${contract} Sanity" --rule sanity
