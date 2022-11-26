@@ -1,24 +1,24 @@
 // SPDX-License-Identifier: agpl-3.0
 pragma solidity 0.8.10;
 
-import {IERC20Detailed} from '../../contracts/dependencies/openzeppelin/contracts/IERC20Detailed.sol';
-import {VersionedInitializable} from '../../contracts/protocol/libraries/aave-upgradeability/VersionedInitializable.sol';
-import {InitializableImmutableAdminUpgradeabilityProxy} from '../../contracts/protocol/libraries/aave-upgradeability/InitializableImmutableAdminUpgradeabilityProxy.sol';
-import {ReserveConfiguration} from '../../contracts/protocol/libraries/configuration/ReserveConfiguration.sol';
-import {IPoolAddressesProvider} from '../../contracts/interfaces/IPoolAddressesProvider.sol';
-import {Errors} from '../../contracts/protocol/libraries/helpers/Errors.sol';
-import {PercentageMath} from '../../contracts/protocol/libraries/math/PercentageMath.sol';
-import {DataTypes} from '../../contracts/protocol/libraries/types/DataTypes.sol';
-import {ConfiguratorLogic} from '../../contracts/protocol/libraries/logic/ConfiguratorLogic.sol';
-import {ConfiguratorInputTypes} from '../../contracts/protocol/libraries/types/ConfiguratorInputTypes.sol';
-import {IInitializableDebtToken} from '../../contracts/interfaces/IInitializableDebtToken.sol';
-import {IInitializableAToken} from '../../contracts/interfaces/IInitializableAToken.sol';
-import {IAaveIncentivesController} from '../../contracts/interfaces/IAaveIncentivesController.sol';
-import {IPoolConfigurator} from '../../contracts/interfaces/IPoolConfigurator.sol';
-// import {IPool} from '../../contracts/interfaces/IPool.sol';
+import {IERC20Detailed} from '../munged/dependencies/openzeppelin/contracts/IERC20Detailed.sol';
+import {VersionedInitializable} from '../munged/protocol/libraries/aave-upgradeability/VersionedInitializable.sol';
+import {InitializableImmutableAdminUpgradeabilityProxy} from '../munged/protocol/libraries/aave-upgradeability/InitializableImmutableAdminUpgradeabilityProxy.sol';
+import {ReserveConfiguration} from '../munged/protocol/libraries/configuration/ReserveConfiguration.sol';
+import {IPoolAddressesProvider} from '../munged/interfaces/IPoolAddressesProvider.sol';
+import {Errors} from '../munged/protocol/libraries/helpers/Errors.sol';
+import {PercentageMath} from '../munged/protocol/libraries/math/PercentageMath.sol';
+import {DataTypes} from '../munged/protocol/libraries/types/DataTypes.sol';
+import {ConfiguratorLogic} from '../munged/protocol/libraries/logic/ConfiguratorLogic.sol';
+import {ConfiguratorInputTypes} from '../munged/protocol/libraries/types/ConfiguratorInputTypes.sol';
+import {IInitializableDebtToken} from '../munged/interfaces/IInitializableDebtToken.sol';
+import {IInitializableAToken} from '../munged/interfaces/IInitializableAToken.sol';
+import {IAaveIncentivesController} from '../munged/interfaces/IAaveIncentivesController.sol';
+import {IPoolConfigurator} from '../munged/interfaces/IPoolConfigurator.sol';
+// import {IPool} from '../munged/interfaces/IPool.sol';
 import {PoolHarnessForConfigurator} from './PoolHarnessForConfigurator.sol';
-import {IACLManager} from '../../contracts/interfaces/IACLManager.sol';
-import {IPoolDataProvider} from '../../contracts/interfaces/IPoolDataProvider.sol';
+import {IACLManager} from '../munged/interfaces/IACLManager.sol';
+import {IPoolDataProvider} from '../munged/interfaces/IPoolDataProvider.sol';
 
 /**
  * @title PoolConfigurator

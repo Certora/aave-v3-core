@@ -1,8 +1,8 @@
 pragma solidity 0.8.10;
 pragma experimental ABIEncoderV2;
 
-import {ReserveConfiguration} from '../../contracts/protocol/libraries/configuration/ReserveConfiguration.sol';
-import {DataTypes} from '../../contracts/protocol/libraries/types/DataTypes.sol';
+import {ReserveConfiguration} from '../munged/protocol/libraries/configuration/ReserveConfiguration.sol';
+import {DataTypes} from '../munged/protocol/libraries/types/DataTypes.sol';
 
 contract ReserveConfigurationHarness {
   DataTypes.ReserveConfigurationMap public reservesConfig;

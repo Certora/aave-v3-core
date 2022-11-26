@@ -1,12 +1,12 @@
 pragma solidity 0.6.12;
 pragma experimental ABIEncoderV2;
 
-import {IPool} from '../../contracts/interfaces/IPool.sol';
-import {Pool} from '../../contracts/protocol/pool/Pool.sol';
+import {IPool} from '../munged/interfaces/IPool.sol';
+import {Pool} from '../munged/protocol/pool/Pool.sol';
 import {
   IPoolAddressesProvider
-} from '../../contracts/interfaces/IPoolAddressesProvider.sol';
-import {DataTypes} from '../../contracts/protocol/libraries/types/DataTypes.sol';
+} from '../munged/interfaces/IPoolAddressesProvider.sol';
+import {DataTypes} from '../munged/protocol/libraries/types/DataTypes.sol';
 
 /*
 Certora: Harness that delegates calls to the original Pool.

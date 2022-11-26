@@ -1,13 +1,13 @@
-certoraRun contracts/protocol/pool/Pool.sol \
+certoraRun certora/munged/protocol/pool/Pool.sol \
               certora/harness/ATokenHarness.sol \
               certora/harness/StableDebtTokenHarness.sol \
               certora/harness/SimpleERC20.sol \
-              contracts/protocol/tokenization/VariableDebtToken.sol \
+              certora/munged/protocol/tokenization/VariableDebtToken.sol \
               certora/harness/SymbolicPriceOracle.sol \
   --verify Pool:certora/specs/pool.spec \
   --solc solc8.10 --optimistic_loop \
   --staging \
-  --rule $1 \
   --settings -t=600 --settings -superOptimisticReturnsize=true \
   --link ATokenHarness:POOL=Pool \
-  --msg "Pool $1"
+  --rule_sanity \
+  --msg "Pool"

@@ -1,5 +1,5 @@
-import {EModeLogic} from '../../contracts/protocol/libraries/logic/EModeLogic.sol';
-import {DataTypes} from '../../contracts/protocol/libraries/types/DataTypes.sol';
+import {EModeLogic} from '../munged/protocol/libraries/logic/EModeLogic.sol';
+import {DataTypes} from '../munged/protocol/libraries/types/DataTypes.sol';
 
 contract EModeLogicHarness {
 mapping(address => DataTypes.ReserveData)  reserves;

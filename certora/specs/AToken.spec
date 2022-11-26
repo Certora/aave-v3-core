@@ -7,8 +7,8 @@
 using SimpleERC20 as _underlyingAsset
 
 methods {
-  nonces(address) returns (uint256) envfree
-  allowance(address, address) returns (uint256) envfree
+    nonces(address) returns (uint256) envfree
+    allowance(address, address) returns (uint256) envfree
 	handleAction(address, uint256, uint256) => CONSTANT 
 	getReserveNormalizedIncome(address u) returns (uint256) => gRNI()
 	balanceOf(address) returns (uint256) envfree
@@ -30,7 +30,7 @@ ghost gRNI() returns uint256 {
 }
 
 hook Sstore _userState[KEY address a].balance uint128 balance (uint128 old_balance) STORAGE {
-  havoc sumAllBalance assuming sumAllBalance@new() == sumAllBalance@old() + balance - old_balance;
+    havoc sumAllBalance assuming sumAllBalance@new() == sumAllBalance@old() + balance - old_balance;
 }
 
 invariant totalSupplyEqualsSumAllBalance(env e)

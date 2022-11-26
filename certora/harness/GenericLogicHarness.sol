@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: agpl-3.0
 pragma solidity 0.8.10;
 
-import {IERC20} from '../../contracts/dependencies/openzeppelin/contracts/IERC20.sol';
-import {IScaledBalanceToken} from '../../contracts/interfaces/IScaledBalanceToken.sol';
-import {IPriceOracleGetter} from '../../contracts/interfaces/IPriceOracleGetter.sol';
-import {ReserveConfiguration} from '../../contracts/protocol/libraries/configuration/ReserveConfiguration.sol';
-import {UserConfiguration} from '../../contracts/protocol/libraries/configuration/UserConfiguration.sol';
-import {PercentageMath} from '../../contracts/protocol/libraries/math/PercentageMath.sol';
-import {WadRayMath} from '../../contracts/protocol/libraries/math/WadRayMath.sol';
-import {DataTypes} from '../../contracts/protocol/libraries/types/DataTypes.sol';
-import {ReserveLogic} from '../../contracts/protocol/libraries/logic/ReserveLogic.sol';
+import {IERC20} from '../munged/dependencies/openzeppelin/contracts/IERC20.sol';
+import {IScaledBalanceToken} from '../munged/interfaces/IScaledBalanceToken.sol';
+import {IPriceOracleGetter} from '../munged/interfaces/IPriceOracleGetter.sol';
+import {ReserveConfiguration} from '../munged/protocol/libraries/configuration/ReserveConfiguration.sol';
+import {UserConfiguration} from '../munged/protocol/libraries/configuration/UserConfiguration.sol';
+import {PercentageMath} from '../munged/protocol/libraries/math/PercentageMath.sol';
+import {WadRayMath} from '../munged/protocol/libraries/math/WadRayMath.sol';
+import {DataTypes} from '../munged/protocol/libraries/types/DataTypes.sol';
+import {ReserveLogic} from '../munged/protocol/libraries/logic/ReserveLogic.sol';
 
 /**
  * @title GenericLogic library

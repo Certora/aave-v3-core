@@ -1,7 +1,7 @@
 pragma solidity ^0.6.12;
 pragma experimental ABIEncoderV2;
 
-import "../../contracts/protocol/lendingpool/LendingPool.sol";
+import "../munged/protocol/lendingpool/LendingPool.sol";
 
 contract LendingPoolHarness is LendingPool {
 

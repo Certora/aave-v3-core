@@ -1,7 +1,7 @@
 pragma solidity 0.8.10;
 
-import {DataTypes} from '../../contracts/protocol/libraries/types/DataTypes.sol';
-import {SupplyLogic} from '../../contracts/protocol/libraries/logic/SupplyLogic.sol';
+import {DataTypes} from '../munged/protocol/libraries/types/DataTypes.sol';
+import {SupplyLogic} from '../munged/protocol/libraries/logic/SupplyLogic.sol';
 
 contract SupplyLogicHarness {
     

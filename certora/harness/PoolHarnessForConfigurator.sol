@@ -1,29 +1,29 @@
 // SPDX-License-Identifier: agpl-3.0
 pragma solidity 0.8.10;
 
-import {IERC20} from '../../contracts/dependencies/openzeppelin/contracts/IERC20.sol';
-import {Address} from '../../contracts/dependencies/openzeppelin/contracts/Address.sol';
-import {VersionedInitializable} from '../../contracts/protocol/libraries/aave-upgradeability/VersionedInitializable.sol';
-import {Errors} from '../../contracts/protocol/libraries/helpers/Errors.sol';
-import {WadRayMath} from '../../contracts/protocol/libraries/math/WadRayMath.sol';
-import {ReserveLogic} from '../../contracts/protocol/libraries/logic/ReserveLogic.sol';
-import {GenericLogic} from '../../contracts/protocol/libraries/logic/GenericLogic.sol';
-import {ValidationLogic} from '../../contracts/protocol/libraries/logic/ValidationLogic.sol';
-import {EModeLogic} from '../../contracts/protocol/libraries/logic/EModeLogic.sol';
-// import {SupplyLogic} from '../../contracts/protocol/libraries/logic/SupplyLogic.sol';
-// import {FlashLoanLogic} from '../../contracts/protocol/libraries/logic/FlashLoanLogic.sol';
-// import {BorrowLogic} from '../../contracts/protocol/libraries/logic/BorrowLogic.sol';
-// import {LiquidationLogic} from '../../contracts/protocol/libraries/logic/LiquidationLogic.sol';
-import {ReserveConfiguration} from '../../contracts/protocol/libraries/configuration/ReserveConfiguration.sol';
-import {DataTypes} from '../../contracts/protocol/libraries/types/DataTypes.sol';
-import {BridgeLogic} from '../../contracts/protocol/libraries/logic/BridgeLogic.sol';
-import {IERC20WithPermit} from '../../contracts/interfaces/IERC20WithPermit.sol';
-import {IPoolAddressesProvider} from '../../contracts/interfaces/IPoolAddressesProvider.sol';
-import {IAToken} from '../../contracts/interfaces/IAToken.sol';
-import {IPool} from '../../contracts/interfaces/IPool.sol';
-import {IACLManager} from '../../contracts/interfaces/IACLManager.sol';
-import {PoolStorage} from '../../contracts/protocol/pool/PoolStorage.sol';
-import {Helpers} from '../../contracts/protocol/libraries/helpers/Helpers.sol';
+import {IERC20} from '../munged/dependencies/openzeppelin/contracts/IERC20.sol';
+import {Address} from '../munged/dependencies/openzeppelin/contracts/Address.sol';
+import {VersionedInitializable} from '../munged/protocol/libraries/aave-upgradeability/VersionedInitializable.sol';
+import {Errors} from '../munged/protocol/libraries/helpers/Errors.sol';
+import {WadRayMath} from '../munged/protocol/libraries/math/WadRayMath.sol';
+import {ReserveLogic} from '../munged/protocol/libraries/logic/ReserveLogic.sol';
+import {GenericLogic} from '../munged/protocol/libraries/logic/GenericLogic.sol';
+import {ValidationLogic} from '../munged/protocol/libraries/logic/ValidationLogic.sol';
+import {EModeLogic} from '../munged/protocol/libraries/logic/EModeLogic.sol';
+// import {SupplyLogic} from '../munged/protocol/libraries/logic/SupplyLogic.sol';
+// import {FlashLoanLogic} from '../munged/protocol/libraries/logic/FlashLoanLogic.sol';
+// import {BorrowLogic} from '../munged/protocol/libraries/logic/BorrowLogic.sol';
+// import {LiquidationLogic} from '../munged/protocol/libraries/logic/LiquidationLogic.sol';
+import {ReserveConfiguration} from '../munged/protocol/libraries/configuration/ReserveConfiguration.sol';
+import {DataTypes} from '../munged/protocol/libraries/types/DataTypes.sol';
+import {BridgeLogic} from '../munged/protocol/libraries/logic/BridgeLogic.sol';
+import {IERC20WithPermit} from '../munged/interfaces/IERC20WithPermit.sol';
+import {IPoolAddressesProvider} from '../munged/interfaces/IPoolAddressesProvider.sol';
+import {IAToken} from '../munged/interfaces/IAToken.sol';
+import {IPool} from '../munged/interfaces/IPool.sol';
+import {IACLManager} from '../munged/interfaces/IACLManager.sol';
+import {PoolStorage} from '../munged/protocol/pool/PoolStorage.sol';
+import {Helpers} from '../munged/protocol/libraries/helpers/Helpers.sol';
 
 /**
  * @title Pool contract

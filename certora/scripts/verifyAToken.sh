@@ -5,4 +5,5 @@ certoraRun certora/harness/SimpleERC20.sol certora/harness/ATokenHarness.sol \
     --link ATokenHarness:_underlyingAsset=SimpleERC20 \
     --optimistic_loop \
     --staging \
+    --rule_sanity \
     --settings -enableGhostGrounding=true
