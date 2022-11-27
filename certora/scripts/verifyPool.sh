@@ -4,10 +4,10 @@ certoraRun certora/munged/protocol/pool/Pool.sol \
               certora/harness/SimpleERC20.sol \
               certora/munged/protocol/tokenization/VariableDebtToken.sol \
               certora/harness/SymbolicPriceOracle.sol \
-  --verify Pool:certora/specs/pool.spec \
+  --verify Pool:certora/specs/sanity.spec \
   --solc solc8.10 --optimistic_loop \
   --staging \
   --settings -t=600 --settings -superOptimisticReturnsize=true \
-#   --link ATokenHarness:POOL=Pool \
+  --link ATokenHarness:POOL=Pool \
   --rule_sanity \
   --msg "Pool"
