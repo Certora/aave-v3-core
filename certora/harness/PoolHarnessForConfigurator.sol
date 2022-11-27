@@ -82,6 +82,14 @@ contract PoolHarnessForConfigurator is VersionedInitializable, IPool, PoolStorag
     _addressesProvider = provider;
   }
 
+    function ADDRESSES_PROVIDER() external view returns (IPoolAddressesProvider){}
+    function getReserveAddressById(uint16 id) external view returns (address){}
+    function rescueTokens(address token, address to, uint256 amount) external{}
+    function setConfiguration(address asset, DataTypes.ReserveConfigurationMap calldata configuration)
+    external{}
+    function updateFlashloanPremiums(uint128 flashLoanPremiumTotal, uint128 flashLoanPremiumToProtocol) external{}
+    function resetIsolationModeTotalDebt(address asset) external{}
+
   /**
    * @notice Initializes the Pool.
    * @dev Function is invoked by the proxy contract when the Pool contract is added to the
@@ -120,7 +128,7 @@ contract PoolHarnessForConfigurator is VersionedInitializable, IPool, PoolStorag
     address asset,
     uint256 amount,
     uint256 fee
-  ) external override onlyBridge {
+  ) external override onlyBridge returns (uint256){
     // BridgeLogic.backUnbacked(_reserves[asset], asset, amount, fee, _bridgeProtocolFee);
   }
 
@@ -547,8 +555,7 @@ contract PoolHarnessForConfigurator is VersionedInitializable, IPool, PoolStorag
     return undroppedReserves;
   }
 
-  /// @inheritdoc IPool
-  function getAddressesProvider() external view override returns (IPoolAddressesProvider) {
+  function getAddressesProvider() external view returns (IPoolAddressesProvider) {
     return _addressesProvider;
   }
 
@@ -563,17 +570,17 @@ contract PoolHarnessForConfigurator is VersionedInitializable, IPool, PoolStorag
   }
 
   /// @inheritdoc IPool
-  function FLASHLOAN_PREMIUM_TOTAL() public view override returns (uint256) {
+  function FLASHLOAN_PREMIUM_TOTAL() public view override returns (uint128) {
     return _flashLoanPremiumTotal;
   }
 
   /// @inheritdoc IPool
-  function FLASHLOAN_PREMIUM_TO_PROTOCOL() public view override returns (uint256) {
+  function FLASHLOAN_PREMIUM_TO_PROTOCOL() public view override returns (uint128) {
     return _flashLoanPremiumToProtocol;
   }
 
   /// @inheritdoc IPool
-  function MAX_NUMBER_RESERVES() public view virtual override returns (uint256) {
+  function MAX_NUMBER_RESERVES() public view virtual override returns (uint16) {
     return ReserveConfiguration.MAX_RESERVES_COUNT;
   }
 
@@ -642,10 +649,8 @@ contract PoolHarnessForConfigurator is VersionedInitializable, IPool, PoolStorag
     _reserves[asset].interestRateStrategyAddress = rateStrategyAddress;
   }
 
-  /// @inheritdoc IPool
   function setConfiguration(address asset, uint256 configuration)
     external
-    override
     onlyPoolConfigurator
   {
     _reserves[asset].configuration.data = configuration;
@@ -656,11 +661,10 @@ contract PoolHarnessForConfigurator is VersionedInitializable, IPool, PoolStorag
     _bridgeProtocolFee = protocolFee;
   }
 
-  /// @inheritdoc IPool
   function updateFlashloanPremiums(
     uint256 flashLoanPremiumTotal,
     uint256 flashLoanPremiumToProtocol
-  ) external override onlyPoolConfigurator {
+  ) external onlyPoolConfigurator {
     _flashLoanPremiumTotal = Helpers.castUint128(flashLoanPremiumTotal);
     _flashLoanPremiumToProtocol = Helpers.castUint128(flashLoanPremiumToProtocol);
   }

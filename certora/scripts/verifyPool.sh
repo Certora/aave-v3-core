@@ -8,6 +8,6 @@ certoraRun certora/munged/protocol/pool/Pool.sol \
   --solc solc8.10 --optimistic_loop \
   --staging \
   --settings -t=600 --settings -superOptimisticReturnsize=true \
-  --link ATokenHarness:POOL=Pool \
+#   --link ATokenHarness:POOL=Pool \
   --rule_sanity \
   --msg "Pool"

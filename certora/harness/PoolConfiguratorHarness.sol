@@ -59,6 +59,15 @@ contract PoolConfiguratorHarness is VersionedInitializable, IPoolConfigurator {
 
   uint256 internal constant CONFIGURATOR_REVISION = 0x1;
 
+
+    function setReserveActive(address asset, bool active) external{}
+    function setReserveBorrowing(address asset, bool enabled) external{}
+    function setReserveFlashLoaning(address asset, bool enabled) external{}
+    function setReserveFreeze(address asset, bool freeze) external{}
+    function setReserveStableRateBorrowing(address asset, bool enabled) external{}
+    function setSiloedBorrowing(address asset, bool siloed) external{}
+    function updateFlashloanPremiumToProtocol(uint128 newFlashloanPremiumToProtocol) external{}
+
   /// @inheritdoc VersionedInitializable
   function getRevision() internal pure virtual override returns (uint256) {
     return CONFIGURATOR_REVISION;
@@ -126,7 +135,7 @@ contract PoolConfiguratorHarness is VersionedInitializable, IPoolConfigurator {
     currentConfig.setStableRateBorrowingEnabled(stableBorrowRateEnabled);
     _pool.setConfiguration(asset, currentConfig.data);
 
-    emit BorrowingEnabledOnReserve(asset, stableBorrowRateEnabled);
+    // emit BorrowingEnabledOnReserve(asset, stableBorrowRateEnabled);
   }
 
   /// @inheritdoc IPoolConfigurator
@@ -134,7 +143,7 @@ contract PoolConfiguratorHarness is VersionedInitializable, IPoolConfigurator {
     DataTypes.ReserveConfigurationMap memory currentConfig = _pool.getConfiguration(asset);
     currentConfig.setBorrowingEnabled(false);
     _pool.setConfiguration(asset, currentConfig.data);
-    emit BorrowingDisabledOnReserve(asset);
+    // emit BorrowingDisabledOnReserve(asset);
   }
 
   /// @inheritdoc IPoolConfigurator
@@ -185,7 +194,7 @@ contract PoolConfiguratorHarness is VersionedInitializable, IPoolConfigurator {
     currentConfig.setStableRateBorrowingEnabled(true);
     _pool.setConfiguration(asset, currentConfig.data);
 
-    emit StableRateEnabledOnReserve(asset);
+    // emit StableRateEnabledOnReserve(asset);
   }
 
   /// @inheritdoc IPoolConfigurator
@@ -193,7 +202,7 @@ contract PoolConfiguratorHarness is VersionedInitializable, IPoolConfigurator {
     DataTypes.ReserveConfigurationMap memory currentConfig = _pool.getConfiguration(asset);
     currentConfig.setStableRateBorrowingEnabled(false);
     _pool.setConfiguration(asset, currentConfig.data);
-    emit StableRateDisabledOnReserve(asset);
+    // emit StableRateDisabledOnReserve(asset);
   }
 
   /// @inheritdoc IPoolConfigurator
@@ -201,7 +210,7 @@ contract PoolConfiguratorHarness is VersionedInitializable, IPoolConfigurator {
     DataTypes.ReserveConfigurationMap memory currentConfig = _pool.getConfiguration(asset);
     currentConfig.setActive(true);
     _pool.setConfiguration(asset, currentConfig.data);
-    emit ReserveActivated(asset);
+    // emit ReserveActivated(asset);
   }
 
   /// @inheritdoc IPoolConfigurator
@@ -211,7 +220,7 @@ contract PoolConfiguratorHarness is VersionedInitializable, IPoolConfigurator {
     DataTypes.ReserveConfigurationMap memory currentConfig = _pool.getConfiguration(asset);
     currentConfig.setActive(false);
     _pool.setConfiguration(asset, currentConfig.data);
-    emit ReserveDeactivated(asset);
+    // emit ReserveDeactivated(asset);
   }
 
   /// @inheritdoc IPoolConfigurator
@@ -219,7 +228,7 @@ contract PoolConfiguratorHarness is VersionedInitializable, IPoolConfigurator {
     DataTypes.ReserveConfigurationMap memory currentConfig = _pool.getConfiguration(asset);
     currentConfig.setFrozen(true);
     _pool.setConfiguration(asset, currentConfig.data);
-    emit ReserveFrozen(asset);
+    // emit ReserveFrozen(asset);
   }
 
   /// @inheritdoc IPoolConfigurator
@@ -227,7 +236,7 @@ contract PoolConfiguratorHarness is VersionedInitializable, IPoolConfigurator {
     DataTypes.ReserveConfigurationMap memory currentConfig = _pool.getConfiguration(asset);
     currentConfig.setFrozen(false);
     _pool.setConfiguration(asset, currentConfig.data);
-    emit ReserveUnfrozen(asset);
+    // emit ReserveUnfrozen(asset);
   }
 
   /// @inheritdoc IPoolConfigurator
@@ -252,7 +261,7 @@ contract PoolConfiguratorHarness is VersionedInitializable, IPoolConfigurator {
     if (paused) {
       emit ReservePaused(asset);
     } else {
-      emit ReserveUnpaused(asset);
+    //   emit ReserveUnpaused(asset);
     }
   }
 
