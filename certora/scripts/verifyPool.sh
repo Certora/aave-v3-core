@@ -1,5 +1,4 @@
 certoraRun certora/munged/protocol/pool/Pool.sol \
-
               certora/harness/ATokenHarness.sol \
               certora/harness/StableDebtTokenHarness.sol \
               certora/harness/SimpleERC20.sol \
