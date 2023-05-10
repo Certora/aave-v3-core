@@ -71,6 +71,8 @@ contract AToken is VersionedInitializable, ScaledBalanceTokenBase, EIP712Base, I
 
     _domainSeparator = _calculateDomainSeparator();
 
+    // commented out by certora to resolve error at analysis stage
+    /*
     emit Initialized(
       underlyingAsset,
       address(POOL),
@@ -81,6 +83,7 @@ contract AToken is VersionedInitializable, ScaledBalanceTokenBase, EIP712Base, I
       aTokenSymbol,
       params
     );
+    */
   }
 
   /// @inheritdoc IAToken
