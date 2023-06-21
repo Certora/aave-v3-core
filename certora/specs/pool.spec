@@ -6,7 +6,7 @@
 /*
     Declaration of contracts used in the spec
 */
-using ATokenHarness as _aToken
+using ATokenHarness as _aToken;
 // using StableDebtTokenHarness as _stable
 // using VariableDebtToken as _variable
 // using SimpleERC20 as _asset
@@ -20,87 +20,88 @@ Methods Summerizations and Enviroment-Free (e.g relative to e.msg variables) Dec
 
 methods {
 
-	//Pool
-	getReserveList(uint256 index) returns (address) envfree
-	getReserveDataIndex(address token) returns (uint256) envfree
-	getReservesCount() returns (uint256) envfree
-	handleAction(address, uint256, uint256) => NONDET
-	getConfigurationData(address) returns uint256 envfree
-	getUserEMode(address) returns uint256 envfree
-	getAssetEMode(address) returns uint256 envfree
-	getAssetId(address) returns uint16 envfree
-	reserveAddressById(uint256) returns address envfree
-	isActiveReserve(address asset) returns bool envfree
-	isFrozenReserve(address asset) returns bool envfree
-	isPausedReserve(address asset) returns bool envfree
-	isBorrowableReserve(address) returns bool envfree
-	isStableRateBorrowableReserve(address) returns bool envfree
-	getReserveATokenAddress(address) returns address envfree
-	getReserveStableDebtTokenAddress(address) returns address envfree
-	getReserveVariableDebtTokenAddress(address) returns address envfree
-	getReserveLiquidityIndex(address) returns uint256 envfree
-	getReserveCurrentLiquidityRate(address) returns uint256 envfree
-	getReserveVariableBorrowIndex(address) returns uint256 envfree
-	getReserveCurrentVariableBorrowRate(address) returns uint256 envfree
-	getReserveCurrentStableBorrowRate(address) returns uint256 envfree 
-	getATokenTotalSupply(address) returns uint256 envfree
-	getReserveSupplyCap(address) returns uint256 envfree
-	mockUserAccountData() returns (uint256, uint256, uint256, uint256, uint256, bool) => NONDET
-	mockHealthFactor() returns (uint256, bool) => NONDET
-	getAssetPrice(address) returns uint256 => NONDET
-	getPriceOracle() returns address => ALWAYS(2)
-	getPriceOracleSentinel() returns address => ALWAYS(4)
-	isBorrowAllowed() returns bool => NONDET
-
+    //Pool
+    /*    function getReserveList(uint256 index) external returns (address) envfree;
+    function getReserveDataIndex(address token) external returns (uint256) envfree;
+    function getReservesCount() external returns (uint256) envfree;*/
+    function _.handleAction(address, uint256, uint256) external => NONDET;
+    /*    function getConfigurationData(address) external returns uint256 envfree;
+    function getUserEMode(address) external returns uint256 envfree;
+    function getAssetEMode(address) external returns uint256 envfree;
+    function getAssetId(address) external returns uint16 envfree;
+    function reserveAddressById(uint256) external returns address envfree;
+    function isActiveReserve(address asset) external returns bool envfree;
+    function isFrozenReserve(address asset) external returns bool envfree;
+    function isPausedReserve(address asset) external returns bool envfree;
+    function isBorrowableReserve(address) external returns bool envfree;
+    function isStableRateBorrowableReserve(address) external returns bool envfree;
+    function getReserveATokenAddress(address) external returns address envfree;
+    function getReserveStableDebtTokenAddress(address) external returns address envfree;
+    function getReserveVariableDebtTokenAddress(address) external returns address envfree;
+    function getReserveLiquidityIndex(address) external returns uint256 envfree;
+    function getReserveCurrentLiquidityRate(address) external returns uint256 envfree;
+    function getReserveVariableBorrowIndex(address) external returns uint256 envfree;
+    function getReserveCurrentVariableBorrowRate(address) external returns uint256 envfree;
+    function getReserveCurrentStableBorrowRate(address) external returns uint256 envfree;
+    function getATokenTotalSupply(address) external returns uint256 envfree;
+    function getReserveSupplyCap(address) external returns uint256 envfree;*/
+    //function _.mockUserAccountData() returns (uint256, uint256, uint256, uint256, uint256, bool) => NONDET;
+    //function _.mockHealthFactor() returns (uint256, bool) => NONDET;
+    function _.getAssetPrice(address) external => NONDET;
+    function _.getPriceOracle() external => ALWAYS(2);
+    function _.getPriceOracleSentinel() external => ALWAYS(4);
+    function _.isBorrowAllowed() external => NONDET;
+    
     // PoolHarness
-    getCurrScaledVariableDebt(address) returns (uint256) envfree
+    function getCurrScaledVariableDebt(address) external returns (uint256) envfree;
 
-	// math
-	rayMul(uint256 a, uint256 b) returns uint256 => rayMulSummariztion(a, b)
-	rayDiv(uint256 a, uint256 b) returns uint256 => rayDivSummariztion(a, b)
-	calculateLinearInterest(uint256, uint40) returns uint256 => ALWAYS(1000000000000000000000000000)  // this is not good dont use this
-	calculateCompoundedInterest(uint256 x, uint40 t0, uint256 t1) returns uint256 => calculateCompoundedInterestSummary(x, t0, t1);
+    // math
+    function _.rayMul(uint256 a, uint256 b) internal => rayMulSummariztion(a, b) expect uint256 ALL;
+    function _.rayDiv(uint256 a, uint256 b) internal => rayDivSummariztion(a, b) expect uint256 ALL;
+    function _.calculateLinearInterest(uint256, uint40) internal => ALWAYS(1000000000000000000000000000); // this is not good dont use this
+    function _.calculateCompoundedInterest(uint256 x, uint40 t0, uint256 t1) internal => calculateCompoundedInterestSummary(x, t0, t1) expect uint256 ALL;
 
-	// ERC20
-	transfer(address, uint256) returns bool => DISPATCHER(true)
-	transferFrom(address, address, uint256) returns bool => DISPATCHER(true)
-	approve(address, uint256) returns bool => DISPATCHER(true)
-	mint(address, uint256) returns bool => DISPATCHER(true)
-	burn(uint256) => DISPATCHER(true)
-	balanceOf(address) returns uint256 => DISPATCHER(true)
-
-	// ATOKEN
-	mint(address user, uint256 amount, uint256 index) returns(bool) => DISPATCHER(true)
-	burn(address user, address receiverOfUnderlying, uint256 amount, uint256 index) => DISPATCHER(true)
-	mintToTreasury(uint256 amount, uint256 index) => DISPATCHER(true)
-	transferOnLiquidation(address from, address to, uint256 value) => DISPATCHER(true)
-	transferUnderlyingTo(address user, uint256 amount) => DISPATCHER(true)
-	handleRepayment(address user, uint256 amount) => DISPATCHER(true)
-	permit(address owner, address spender, uint256 value, uint256 deadline, uint8 v, bytes32 r, bytes32 s) => DISPATCHER(true)
-	
-	//Debt Tokens
-	_variable.scaledTotalSupply() => DISPATCHER(true)
-	
-	// StableDebt
-	mint(address user, address onBehalfOf, uint256 amount, uint256 rate) => DISPATCHER(true)
-	burn(address user, uint256 amount) => DISPATCHER(true)
-	getSupplyData() returns (uint256, uint256, uint256, uint40) => DISPATCHER(true)
-	
-	//variableDebt
-	burn(address user, uint256 amount, uint256 index) => DISPATCHER(true)
-
-	// ReserveConfiguration
-	mockGetEModeCategory() returns uint256 => CONSTANT
-	mockGetActive() returns bool => CONSTANT
-    mockGetFrozen() returns bool => CONSTANT
-    mockGetBorrowingEnabled() returns bool => CONSTANT
-    mockGetStableRateBorrowingEnabled() returns bool => CONSTANT
-    mockGetPaused() returns bool => CONSTANT
-	mockGetReserveFactor() returns uint256 => CONSTANT
-	mockGetBorrowCap() returns uint256 => CONSTANT
-	mockGetBorrowableInIsolation() returns bool => CONSTANT
-	mockGetLtv() returns uint256 => CONSTANT
-	mockGetSupplyCap() returns uint256 => ALWAYS(100000000000000000000000000000000000000000000000000)
+    // ERC20
+    function _.transfer(address, uint256) external => DISPATCHER(true);
+    function _.transferFrom(address, address, uint256) external => DISPATCHER(true);
+    function _.approve(address, uint256) external => DISPATCHER(true);
+    function _.mint(address, uint256) external => DISPATCHER(true);
+    function _.burn(uint256) external => DISPATCHER(true);
+    function _.balanceOf(address) external => DISPATCHER(true);
+    
+    // ATOKEN
+    function _.mint(address user, uint256 amount, uint256 index) external => DISPATCHER(true);
+    function _.burn(address user, address receiverOfUnderlying, uint256 amount, uint256 index) external => DISPATCHER(true);
+    function _.mintToTreasury(uint256 amount, uint256 index) external => DISPATCHER(true);
+    function _.transferOnLiquidation(address from, address to, uint256 value) external => DISPATCHER(true);
+    function _.transferUnderlyingTo(address user, uint256 amount) external => DISPATCHER(true);
+    function _.handleRepayment(address user, uint256 amount) external => DISPATCHER(true);
+    function _.permit(address owner, address spender, uint256 value, uint256 deadline, uint8 v, bytes32 r, bytes32 s) external => DISPATCHER(true);
+    
+    //Debt Tokens
+    //    function _variable.scaledTotalSupply() external => DISPATCHER(true);
+    function _.scaledTotalSupply() external => DISPATCHER(true);
+    
+    // StableDebt
+    function _.mint(address user, address onBehalfOf, uint256 amount, uint256 rate) external => DISPATCHER(true);
+    function _.burn(address user, uint256 amount) external => DISPATCHER(true);
+    function _.getSupplyData() external => DISPATCHER(true);
+    
+    //variableDebt
+    function _.burn(address user, uint256 amount, uint256 index) external => DISPATCHER(true);
+    
+    // ReserveConfiguration
+    //function _.mockGetEModeCategory() returns uint256 => CONSTANT;
+    //function _.mockGetActive() returns bool => CONSTANT;
+    //function _.mockGetFrozen() returns bool => CONSTANT;
+    //function _.mockGetBorrowingEnabled() returns bool => CONSTANT;
+    //function _.mockGetStableRateBorrowingEnabled() returns bool => CONSTANT;
+    //function _.mockGetPaused() returns bool => CONSTANT;
+    //function _.mockGetReserveFactor() returns uint256 => CONSTANT;
+    //function _.mockGetBorrowCap() returns uint256 => CONSTANT;
+    //function _.mockGetBorrowableInIsolation() returns bool => CONSTANT;
+    //function _.mockGetLtv() returns uint256 => CONSTANT;
+    //function _.mockGetSupplyCap() returns uint256 => ALWAYS(100000000000000000000000000000000000000000000000000);
 }
 
 /* definitions and functions to be used within the spec file */
@@ -112,23 +113,24 @@ function first_term(uint256 x, uint256 y) returns uint256 { return x; }
 ghost mapping(uint256 => mapping(uint256 => uint256)) calculateCompoundedInterestSummaryValues;
 function calculateCompoundedInterestSummary(uint256 rate, uint40 t0, uint256 t1) returns uint256
 {
-	uint256 deltaT = t1 - t0;
-	if (deltaT == 0)
+    //uint256 deltaT = require_uint256(t1 - t0);
+    uint256 deltaT = assert_uint256( (t1-t0) % 2^256 );
+    if (deltaT == 0)
 	{
-		return RAY();
+            return RAY();
 	}
-	if (rate == RAY())
+    if (rate == RAY())
 	{
-		return RAY();
+            return RAY();
 	}
-	if (rate >= RAY())
+    if (rate >= RAY())
 	{
-		require calculateCompoundedInterestSummaryValues[rate][deltaT] >= rate;
+            require calculateCompoundedInterestSummaryValues[rate][deltaT] >= rate;
 	}
-	else{
-		require calculateCompoundedInterestSummaryValues[rate][deltaT] < rate;
-	}
-	return calculateCompoundedInterestSummaryValues[rate][deltaT];
+    else{
+        require calculateCompoundedInterestSummaryValues[rate][deltaT] < rate;
+    }
+    return calculateCompoundedInterestSummaryValues[rate][deltaT];
 }
 
 ghost mapping(uint256 => mapping(uint256 => uint256)) rayMulSummariztionValues;
@@ -196,49 +198,14 @@ function rayDivSummariztion(uint256 x, uint256 y) returns uint256
 // The borrowing index should monotonically increasing
 rule getReserveNormalizedVariableDebtCheck()
 {
-	env e1;
-	calldataarg args;
-	calldataarg args2;
+    env e1;
+    calldataarg args;
+    calldataarg args2;
     address asset; uint256 amount; address onBehalfOf; uint16 referralCode;
     require asset != _aToken;
-	uint256 oldIndex = getReserveNormalizedVariableDebt(e1, args);
+    uint256 oldIndex = getReserveNormalizedVariableDebt(e1, args);
     uint256 totalDebtBefore = getCurrScaledVariableDebt(asset);
-	supply(e1, asset, amount, onBehalfOf, referralCode);
-	uint256 newIndex = getReserveNormalizedVariableDebt(e1, args);
-	assert totalDebtBefore != 0 => newIndex >= oldIndex;
+    supply(e1, asset, amount, onBehalfOf, referralCode);
+    uint256 newIndex = getReserveNormalizedVariableDebt(e1, args);
+    assert totalDebtBefore != 0 => newIndex >= oldIndex;
 }
-
-// withdrawing a sum (part1 + part2) should not revert if withdrawing the two parts seperately does not revert
-// !!! Times out !!!
-// rule withdrawCheck()
-// {
-// 	env e;
-// 	address to;
-// 	address asset;
-// 	uint256 part1;
-// 	uint256 part2;
-// 	storage init = lastStorage;
-// 	withdraw(e, asset, part1, to);
-// 	withdraw(e, asset, part2, to);
-// 	withdraw@withrevert(e, asset, part1 + part2, to) at init;
-// 	assert !lastReverted;
-// }
-
-// The liquidity index should not give different result if we called mintToTreasury before a function (flashloan)
-// !!! Times out !!!
-// rule accruToTreasury()
-// {
-// 	env e;
-// 	calldataarg args;
-// 	calldataarg args2;
-// 	calldataarg args3;
-// 	storage init = lastStorage;
-// 	mintToTreasury(e, args);
-// 	flashLoan(e, args2);
-// 	//mintToTreasury(e, args);
-// 	uint256 withMintBefore = getReserveNormalizedIncome(e, args3);
-// 	flashLoan(e, args2) at init;
-// 	//mintToTreasury(e, args);
-// 	uint256 withoutMintBefore = getReserveNormalizedIncome(e, args3);
-// 	assert withoutMintBefore == withMintBefore;
-// }
