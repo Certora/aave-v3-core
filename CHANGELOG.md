@@ -1,5 +1,42 @@
 # Changelog
 
+## [1.19.1](https://github.com/aave/aave-v3-core/compare/v1.19.0...v1.19.1) (2023-07-04)
+
+
+### Bug Fixes
+
+* Fix prepublish step in CI ([#862](https://github.com/aave/aave-v3-core/issues/862)) ([ec2902a](https://github.com/aave/aave-v3-core/commit/ec2902a4a113c6584434d49742ee1a5616070f90))
+
+## [1.19.0](https://github.com/aave/aave-v3-core/compare/v1.18.0...v1.19.0) (2023-07-04)
+
+
+### Features
+
+* add OpenZeppelin SafeERC20 and Address dependencies ([#859](https://github.com/aave/aave-v3-core/issues/859)) ([493bb4d](https://github.com/aave/aave-v3-core/commit/493bb4dfd3e0a69f7c3fbf468bc8ef310da9960b))
+
+
+### Bug Fixes
+
+* add natspec docs to flags of reserve configuration map ([#854](https://github.com/aave/aave-v3-core/issues/854)) ([792c23e](https://github.com/aave/aave-v3-core/commit/792c23eed73d3791fde31f6d26c69bc62f3533bf))
+* remove initial config of fee params in pool initialize function ([#846](https://github.com/aave/aave-v3-core/issues/846)) ([3bb960b](https://github.com/aave/aave-v3-core/commit/3bb960b92bcb3d58d8bdcd2d2f924340ba812164))
+* Soften solidity version of FlashLoanBase contracts ([#861](https://github.com/aave/aave-v3-core/issues/861)) ([364a779](https://github.com/aave/aave-v3-core/commit/364a779efd9a7e42ec1882156d95a62f22ea3fc4))
+
+## [1.18.0](https://github.com/aave/aave-v3-core/compare/v1.17.2...v1.18.0) (2023-06-26)
+
+
+### Features
+
+* Add zero IR strategy ([#818](https://github.com/aave/aave-v3-core/issues/818)) ([ade6cf8](https://github.com/aave/aave-v3-core/commit/ade6cf86f296ee68e82077ca18a3218096516862))
+
+
+### Bug Fixes
+
+* communicate correct premium in case of debt-bearing flashloan ([#822](https://github.com/aave/aave-v3-core/issues/822)) ([7b2a284](https://github.com/aave/aave-v3-core/commit/7b2a2840e1bc7e1201fd4ed37cbbd8da967dda11))
+* Fix collateral behavior of zero-ltv assets ([#820](https://github.com/aave/aave-v3-core/issues/820)) ([ea48670](https://github.com/aave/aave-v3-core/commit/ea4867086d39f094303916e72e180f99d8149fd5))
+* Fix event checks in test cases ([#824](https://github.com/aave/aave-v3-core/issues/824)) ([29ff9b9](https://github.com/aave/aave-v3-core/commit/29ff9b9f89af7cd8255231bc5faf26c3ce0fb7ce))
+* linting ([#837](https://github.com/aave/aave-v3-core/issues/837)) ([97cb6ea](https://github.com/aave/aave-v3-core/commit/97cb6ead76ed69dbeae144a47f4dbef807f06082))
+* Return final withdraw amount in L2Pool withdraw fn ([#831](https://github.com/aave/aave-v3-core/issues/831)) ([37b4d1f](https://github.com/aave/aave-v3-core/commit/37b4d1f0e770ccb9ebdf50037c81582f3c79c5ee))
+
 ## [1.17.2](https://github.com/aave/aave-v3-core/compare/v1.17.1...v1.17.2) (2023-01-31)
 
 
