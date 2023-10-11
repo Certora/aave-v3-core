@@ -1,8 +1,8 @@
 pragma solidity 0.8.10;
 
-import {StableDebtToken} from '../munged/protocol/tokenization/StableDebtToken.sol';
-import {IncentivizedERC20} from '../munged/protocol/tokenization/base/IncentivizedERC20.sol';
-import {IPool} from '../munged/interfaces/IPool.sol';
+import {StableDebtToken} from '../../contracts/protocol/tokenization/StableDebtToken.sol';
+import {IncentivizedERC20} from '../../contracts/protocol/tokenization/base/IncentivizedERC20.sol';
+import {IPool} from '../../contracts/interfaces/IPool.sol';
 // import {WadRayMath} from '../munged/protocol/libraries/math/WadRayMath.sol';
 // import {MathUtils} from '../munged/protocol/libraries/math/MathUtils.sol';
 
