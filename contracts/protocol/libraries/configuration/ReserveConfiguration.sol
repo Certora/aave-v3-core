@@ -180,7 +180,8 @@ library ReserveConfiguration {
    * @param self The reserve configuration
    * @return The active state
    */
-  function getActive(DataTypes.ReserveConfigurationMap memory self) internal pure returns (bool) {
+  function getActive(DataTypes.ReserveConfigurationMap memory self) external pure returns (bool) {
+    // certora munge external
     return (self.data & ~ACTIVE_MASK) != 0;
   }
 
@@ -200,7 +201,8 @@ library ReserveConfiguration {
    * @param self The reserve configuration
    * @return The frozen state
    */
-  function getFrozen(DataTypes.ReserveConfigurationMap memory self) internal pure returns (bool) {
+  function getFrozen(DataTypes.ReserveConfigurationMap memory self) external pure returns (bool) {
+    // certora munge external
     return (self.data & ~FROZEN_MASK) != 0;
   }
 
