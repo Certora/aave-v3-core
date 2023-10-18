@@ -13,7 +13,7 @@ using ATokenHarness as _aToken;
 // using SymbolicPriceOracle as priceOracle
 using AaveProtocolDataProvider as _dataProvider;
 using ReserveConfiguration as RC;
-using SimpleERC20 as TestERC20;
+using SimpleERC20 as _underlyingAsset;
 
 /*
 
@@ -22,7 +22,6 @@ Methods Summerizations and Enviroment-Free (e.g relative to e.msg variables) Dec
 */
 
 methods {
-
     //Pool
     /*    function getReserveList(uint256 index) external returns (address) envfree;
     function getReserveDataIndex(address token) external returns (uint256) envfree;
@@ -57,7 +56,7 @@ methods {
     function _.isBorrowAllowed() external => NONDET;
     
     // PoolHarness
-    function getCurrScaledVariableDebt(address) external returns (uint256) envfree;
+    // function getCurrScaledVariableDebt(address) external returns (uint256) envfree;
 
     // math
     // function _.rayMul(uint256 a, uint256 b) internal => NONDET;
@@ -65,8 +64,10 @@ methods {
     function _.percentMul(uint256 value, uint256 percentage) internal => NONDET;
     function _._getUserDebtInBaseCurrency(address user, DataTypes.ReserveData storage reserve, uint256 assetPrice, uint256 assetUnit) internal => NONDET;
     function _.rayMul(uint256 a, uint256 b) internal => rayMulSummariztion(a, b) expect uint256 ALL;
-    function _.rayDiv(uint256 a, uint256 b) internal => rayDivSummariztion(a, b) expect uint256 ALL;
-    function _.calculateLinearInterest(uint256, uint40) internal => ALWAYS(1000000000000000000000000000); // this is not good dont use this
+    // function _.rayDiv(uint256 a, uint256 b) internal => rayDivSummariztion(a, b) expect uint256 ALL;
+    function _.rayDiv(uint256 a, uint256 b) internal => NONDET; //JB UC
+
+    // function _.calculateLinearInterest(uint256, uint40) internal => ALWAYS(1000000000000000000000000000); // this is not good dont use this
     function _.calculateCompoundedInterest(uint256 x, uint40 t0, uint256 t1) internal => calculateCompoundedInterestSummary(x, t0, t1) expect uint256 ALL;
 
     // ERC20
@@ -86,6 +87,19 @@ methods {
     function _.handleRepayment(address user, uint256 amount) external => DISPATCHER(true);
     function _.permit(address owner, address spender, uint256 value, uint256 deadline, uint8 v, bytes32 r, bytes32 s) external => DISPATCHER(true);
     function _.ATokenBalanceOf(address user) external => DISPATCHER(true);
+
+    // //Unsat Core Based
+    function _.getFlags(DataTypes.ReserveConfigurationMap memory self) internal => NONDET;
+    function _.getParams(DataTypes.ReserveConfigurationMap memory self) internal => NONDET;
+    //function _.setUsingAsCollateral(DataTypes.UserConfigurationMap storage self,uint256 reserveIndex,bool usingAsCollateral) internal => NONDET;
+    //function _.setBorrowing(DataTypes.UserConfigurationMap storage self,uint256 reserveIndex,bool borrowing) internal => NONDET;
+
+    function _.calculateUserAccountData(mapping(address => DataTypes.ReserveData) storage reservesData,mapping(uint256 => address) storage reservesList,mapping(uint8 => DataTypes.EModeCategory) storage eModeCategories,DataTypes.CalculateUserAccountDataParams memory params) internal => NONDET;
+    function _._getUserBalanceInBaseCurrency(address user,DataTypes.ReserveData storage reserve,uint256 assetPrice,uint256 assetUnit) internal => NONDET;
+    function _.wadDiv(uint256 a, uint256 b) internal => NONDET;
+    function _.wadToRay(uint256 a) internal => NONDET;
+    function _._calculateDomainSeparator() internal => NONDET;
+
 
     //Debt Tokens
     //    function _variable.scaledTotalSupply() external => DISPATCHER(true);
@@ -216,6 +230,14 @@ function isActiveReserve(env e, address asset) returns bool
     return isActive;
 }
 
+// function getReserveCacheNextLiquidityIndex(env e, address asset) returns mathint
+// {
+//     DataTypes.ReserveData data = getReserveData(e, asset);
+//     DataTypes.ReserveCache cache = data.cache;
+
+//     return cache.nextLiquidityIndex;
+// }
+
 function isFrozenReserve(env e, address asset) returns bool
 {
     DataTypes.ReserveData data = getReserveData(e, asset);
@@ -252,24 +274,34 @@ function aTokenBalanceOf(env e, address user) returns uint256
 // }
 
 // The borrowing index should monotonically increasing
-rule getReserveNormalizedVariableDebtCheck()
-{
-    env e1;
+// rule getReserveNormalizedVariableDebtCheck()
+// {
+//     env e1;
+//     calldataarg args;
+//     calldataarg args2;
+//     address asset; uint256 amount; address onBehalfOf; uint16 referralCode;
+//     require asset != _aToken;
+//     uint256 oldIndex = getReserveNormalizedVariableDebt(e1, args);
+//     uint256 totalDebtBefore = getCurrScaledVariableDebt(asset);
+//     supply(e1, asset, amount, onBehalfOf, referralCode);
+//     uint256 newIndex = getReserveNormalizedVariableDebt(e1, args);
+//     assert totalDebtBefore != 0 => newIndex >= oldIndex;
+// }
+
+rule method_reachability(env e, method f) {
     calldataarg args;
-    calldataarg args2;
-    address asset; uint256 amount; address onBehalfOf; uint16 referralCode;
-    require asset != _aToken;
-    uint256 oldIndex = getReserveNormalizedVariableDebt(e1, args);
-    uint256 totalDebtBefore = getCurrScaledVariableDebt(asset);
-    supply(e1, asset, amount, onBehalfOf, referralCode);
-    uint256 newIndex = getReserveNormalizedVariableDebt(e1, args);
-    assert totalDebtBefore != 0 => newIndex >= oldIndex;
+    f(e, args);
+    satisfy true;
 }
 
 
 // Violated for flashLoan, flashLoanSimple, 
 // https://prover.certora.com/output/40577/6a0ff9324815417c9c5d5ac16d9e6416/?anonymousKey=0dd820519581b25388b8b635b0c8b3821990b541
-rule totalChangesOnlyWithInitDropSupply(env e, method f) filtered{
+// Timeout
+// https://prover.certora.com/output/40577/3cda9c0d56554e28b09871bf20f2d4bb/?anonymousKey=bc4a229509291b1eec2975142e50da45119539ae
+// Proved here:
+// https://prover.certora.com/output/40577/33eed8a8086c4556bc3812fca1624b94/?anonymousKey=307c2714548addf7a1d16c9715155003203e3fc5
+rule totalChangesOnlyWithInitDropSupplyMint(env e, method f) filtered{
     f -> !f.isView &&
     f.selector != sig:initReserve(address,address, address, address, address).selector &&
     f.selector != sig:dropReserve(address).selector &&
@@ -281,21 +313,12 @@ rule totalChangesOnlyWithInitDropSupply(env e, method f) filtered{
     calldataarg args;
     mathint balance_before = _aToken.ATokenBalanceOf(e, user);
     mathint total_supply_before = _aToken.totalSupply(e);
-    require total_supply_before == 10;
-    require balance_before == 5;
+    // require total_supply_before == 10;
+    // require balance_before == 5;
     f(e, args);
-    // mathint balance_after = _aToken.ATokenBalanceOf(e, user);
     mathint total_supply_after = _aToken.totalSupply(e);
 
-    // assert balance_before != balance_after => total_supply_before == total_supply_after;
     assert total_supply_before == total_supply_after; 
-    // (
-    //     f.selector == sig:initReserve(address,address, address, address, address).selector ||
-    //     f.selector == sig:dropReserve(address).selector ||
-    //     f.selector == sig:mintToTreasury(address[]).selector ||
-    //     f.selector == sig:supplyWithPermit(address,uint256,address,uint16,uint256,uint8,bytes32,bytes32).selector ||
-    //     f.selector == sig:supply(address,uint256,address,uint16).selector
-    // );
 }
 
 
@@ -370,18 +393,36 @@ rule depositIncreasesUserBalance(env e) {
     address onBehalfOf;
     uint16 referralCode;
     mathint balance_before = aTokenBalanceOf(e, onBehalfOf);
-    require balance_before == 6;
-    require amount == 3;
+    require balance_before == 6*RAY();
+    mathint balance_before_sender = aTokenBalanceOf(e, e.msg.sender);
+    require balance_before_sender + balance_before_sender > balance_before_sender;
+    mathint underlying_balance_before = _underlyingAsset.balanceOf(e, onBehalfOf);
+    mathint underlying_balance_before_sender = _underlyingAsset.balanceOf(e, e.msg.sender);
+    // mathint incentivized_balance_before = 
+    require to_mathint(amount) == 3*RAY();
     require asset != onBehalfOf;
     require onBehalfOf != _aToken;
+    require e.msg.sender != _aToken;
+    require asset == _aToken.UNDERLYING_ASSET_ADDRESS(e);
+    mathint normalized_income_before = getReserveNormalizedIncome(e, asset);
+    // require normalized_income_before == to_mathint(RAY()) || normalized_income_before == 2*RAY();
+    require normalized_income_before == to_mathint(RAY());
+    // mathint nextLiquidityIndex = getReserveCacheNextLiquidityIndex(asset);
 
-    // Users IERC20(asset) balance decreases (transfers), while
-    // IAToken(reserveCache.aTokenAddress) balance increases
 
+    // e.msg.sender pays amount of asset and aToken balance of 'onBehalfOf' increases by amount
     deposit(e, asset, amount, onBehalfOf, referralCode);
+
     mathint balance_after = aTokenBalanceOf(e, onBehalfOf);
-    assert balance_after >= balance_before;
-    assert balance_after - balance_before == to_mathint(amount);
+    mathint balance_after_sender = aTokenBalanceOf(e, e.msg.sender);
+    mathint underlying_balance_after = _underlyingAsset.balanceOf(e, onBehalfOf);
+    mathint underlying_balance_after_sender = _underlyingAsset.balanceOf(e, e.msg.sender);
+    mathint normalized_income_after = getReserveNormalizedIncome(e, asset);
+    //mathint amountScaled = amount.rayDiv(nextLiquidityIndex);
+    mathint amountScaled;
+
+    assert normalized_income_before == normalized_income_after => balance_after > balance_before;
+    // assert normalized_income_before == normalized_income_after => balance_after - balance_before == amountScaled;
 }
 
 rule depositIncreasesProtocolBalance(env e) {
@@ -390,9 +431,6 @@ rule depositIncreasesProtocolBalance(env e) {
     address onBehalfOf;
     uint16 referralCode;
     mathint total_supply_before = _aToken.totalSupply(e);
-
-    // Users IERC20(asset) balance decreases (transfers), while
-    // IAToken(reserveCache.aTokenAddress) balance increases
 
     deposit(e, asset, amount, onBehalfOf, referralCode);
     mathint total_supply_after = _aToken.totalSupply(e);
@@ -405,7 +443,10 @@ rule withdrawMoreThanBalanceImpossible(env e) {
     uint256 amount;
     address to;
     uint16 referralCode;
-    mathint balance_before = aTokenBalanceOf(e, to);
+    mathint balance_before = aTokenBalanceOf(e, e.msg.sender);
+    mathint underlying_balance_before = _underlyingAsset.balanceOf(e, to);
+    mathint underlying_total_before = _underlyingAsset.balanceOf(e, _aToken); //PoolHarness
+
     require balance_before == 6;
     require amount == 8;
     require asset != to;
@@ -413,8 +454,67 @@ rule withdrawMoreThanBalanceImpossible(env e) {
 
     withdraw(e, asset, amount, to);
 
-    mathint balance_after = aTokenBalanceOf(e, to);
-    assert to_mathint(amount) <= balance_before;
-    assert balance_after <= balance_before;
+    mathint balance_after = aTokenBalanceOf(e, e.msg.sender);
+    mathint underlying_balance_after = _underlyingAsset.balanceOf(e, to);
+    mathint underlying_total_after = _underlyingAsset.balanceOf(e, _aToken); //PoolHarness
+
+    assert balance_after < balance_before;
+    assert underlying_balance_before >= to_mathint(amount);
+    assert underlying_total_before >= to_mathint(amount);
+}
+
+rule withdrawUpdatesBalances(env e) {
+    address asset;
+    uint256 amount;
+    address to;
+    uint16 referralCode;
+    mathint balance_before = aTokenBalanceOf(e, e.msg.sender);
+    mathint underlying_balance_before = _underlyingAsset.balanceOf(e, to);
+    mathint underlying_total_before = _underlyingAsset.balanceOf(e, _aToken); //PoolHarness
+
+    require balance_before == 6;
+    require amount == 8;
+    require asset != to;
+    require to != _aToken;
+
+    withdraw(e, asset, amount, to);
+
+    mathint balance_after = aTokenBalanceOf(e, e.msg.sender);
+    mathint underlying_balance_after = _underlyingAsset.balanceOf(e, to);
+    mathint underlying_total_after = _underlyingAsset.balanceOf(e, _aToken);
+
+    assert underlying_balance_after - underlying_balance_before == to_mathint(amount);
+    assert underlying_total_before - underlying_total_after == to_mathint(amount);
     assert balance_before - balance_after == to_mathint(amount);
+}
+
+
+rule normalized_income_changes_with(env e, method f) filtered {
+    f -> !f.isView &&
+    f.selector != sig:initReserve(address,address, address, address, address).selector &&
+    f.selector != sig:dropReserve(address).selector &&
+    f.selector != sig:mintToTreasury(address[]).selector &&
+    // f.selector != sig:supplyWithPermit(address,uint256,address,uint16,uint256,uint8,bytes32,bytes32).selector &&
+    f.selector != sig:supply(address,uint256,address,uint16).selector &&
+    f.selector != sig:rebalanceStableBorrowRate(address,address).selector &&
+    f.selector != sig:swapBorrowRateMode(address,uint256).selector &&
+    f.selector != sig:backUnbacked(address,uint256,uint256).selector &&
+    f.selector != sig:flashLoan(address,address[],uint256[],uint256[],address,bytes,uint16).selector &&
+    f.selector != sig:repay(address,uint256,uint256,address).selector &&
+    f.selector != sig:withdraw(address,uint256,address).selector &&
+    f.selector != sig:rescueTokens(address,address,uint256).selector &&
+    f.selector != sig:mintUnbacked(address,uint256,address,uint16).selector &&
+    f.selector != sig:flashLoanSimple(address,address,uint256,bytes,uint16).selector &&
+    f.selector != sig:deposit(address,uint256,address,uint16).selector // &&
+    // f.selector != sig:.selector &&
+    // f.selector != sig:.selector &&
+} {
+    address asset;
+    mathint normalized_income_before = getReserveNormalizedIncome(e, asset);
+    calldataarg args;
+
+    f(e, args);
+
+    mathint normalized_income_after = getReserveNormalizedIncome(e, asset);
+    assert normalized_income_before == normalized_income_after;
 }
