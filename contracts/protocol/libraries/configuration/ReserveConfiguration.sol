@@ -307,7 +307,8 @@ library ReserveConfiguration {
    */
   function getBorrowingEnabled(
     DataTypes.ReserveConfigurationMap memory self
-  ) internal pure returns (bool) {
+  ) external pure returns (bool) {
+    // certora munge external
     return (self.data & ~BORROWING_MASK) != 0;
   }
 
