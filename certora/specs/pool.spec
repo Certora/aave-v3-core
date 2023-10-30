@@ -346,6 +346,7 @@ rule cannotDepositInInactiveReserve(env e) {
 
     deposit(e, asset, amount, onBehalfOf, referralCode);
 
+
     assert isActiveReserve(e, asset);
 }
 
@@ -450,7 +451,6 @@ rule withdrawMoreThanBalanceImpossible(env e) {
     require amount == 8;
     require asset != to;
     require to != _aToken;
-    require asset == _aToken.UNDERLYING_ASSET_ADDRESS(e);
 
     withdraw(e, asset, amount, to);
 
