@@ -206,6 +206,18 @@ function aTokenBalanceOf(env e, address user) returns uint256
     return _aToken.ATokenBalanceOf(e, user);
 }
 
+function rayMulPreciseSummariztion(uint256 x, uint256 y) returns uint256
+{
+    mathint c = x * y;
+	return c / RAY();
+}
+
+function rayDivPreciseSummariztion(uint256 x, uint256 y) returns uint256
+{
+    mathint c = x * RAY();
+	return c / y;
+}
+
 // The borrowing index should monotonically increasing
 // rule getReserveNormalizedVariableDebtCheck()
 // {
