@@ -81,12 +81,16 @@ rule depositUpdatesUserATokenBalance(env e) {
     address onBehalfOf;
     uint16 referralCode;
 
+
+
     require to_mathint(amount) == 30*RAY(); //under approx
     require asset != onBehalfOf;
     require onBehalfOf != _aToken;
     require e.msg.sender != _aToken;
     require e.msg.sender != asset;
     require asset == _aToken.UNDERLYING_ASSET_ADDRESS(e);
+
+    // require _userState[onBehalfOf].additionalData == 1 * RAY();
 
     mathint balanceBefore = aTokenBalanceOf(e, onBehalfOf);
     // require balanceBefore == 20*RAY(); //under approx
@@ -98,6 +102,7 @@ rule depositUpdatesUserATokenBalance(env e) {
     mathint normalized_income_before = getReserveNormalizedIncome(e, asset);
     require normalized_income_before == to_mathint(RAY());
 
+    // e.msg.sender pays amount of asset and aToken balance of 'onBehalfOf' increases by amount
     deposit(e, asset, amount, onBehalfOf, referralCode);
 
     mathint balanceAfter = aTokenBalanceOf(e, onBehalfOf);
@@ -130,12 +135,14 @@ rule depositUpdatesUserATokenSuperBalance(env e) {
 
     mathint superBalanceBefore = _aToken.superBalance(e, onBehalfOf);
     require superBalanceBefore == 20*RAY(); //under approx
+    // mathint currentLiquidityRateBefore = getCurrentLiquidityRate(e, asset);
     mathint liquidityIndexBefore = getLiquidityIndex(e, asset);
     require liquidityIndexBefore == to_mathint(RAY()); //under approx
     mathint currentLiquidityRateBefore = getCurrentLiquidityRate(e, asset);
     require currentLiquidityRateBefore == 1; //under approx
     // require currentLiquidityRateBefore == 0; //under approx
 
+    // e.msg.sender pays amount of asset and aToken balance of 'onBehalfOf' increases by amount
     deposit(e, asset, amount, onBehalfOf, referralCode);
 
     // mathint balanceAfter = aTokenBalanceOf(e, onBehalfOf);
