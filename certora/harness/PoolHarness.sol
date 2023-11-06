@@ -2,9 +2,13 @@
 pragma solidity 0.8.10;
 
 import {Pool} from '../munged/protocol/pool/Pool.sol';
-import {DataTypes} from '../../contracts/protocol/libraries/types/DataTypes.sol';
-import {ReserveLogic} from '../../contracts//protocol/libraries/logic/ReserveLogic.sol';
-import {IPoolAddressesProvider} from '../../contracts//interfaces/IPoolAddressesProvider.sol';
+import {DataTypes} from '../munged/protocol/libraries/types/DataTypes.sol';
+import {ReserveLogic} from '../munged/protocol/libraries/logic/ReserveLogic.sol';
+import {IPoolAddressesProvider} from '../munged/interfaces/IPoolAddressesProvider.sol';
+
+import {IERC20} from '../../contracts/dependencies/openzeppelin/contracts/IERC20.sol';
+
+
 
 contract PoolHarness is Pool {
     
@@ -17,5 +21,15 @@ contract PoolHarness is Pool {
         DataTypes.ReserveData storage reserve = _reserves[asset];
         DataTypes.ReserveCache memory reserveCache = reserve.cache();
         return reserveCache.currScaledVariableDebt;
+    }
+
+    function getTotalDebt(address asset) public view returns (uint256) {
+        uint256 totalVariable = IERC20(_reserves[asset].variableDebtTokenAddress).totalSupply();
+        uint256 totalStable = IERC20(_reserves[asset].stableDebtTokenAddress).totalSupply();
+        return totalVariable + totalStable;
+    }
+
+    function getTotalATokenSupply(address asset) public view returns (uint256) {
+        return IERC20(_reserves[asset].aTokenAddress).totalSupply();
     }
 }
