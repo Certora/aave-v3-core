@@ -131,7 +131,6 @@ methods {
 
 /* definitions and functions to be used within the spec file */
 
-definition RAY() returns uint256 = 10^27;
 definition IS_UINT256(uint256 x) returns bool = ((x >= 0) && (x <= max_uint256));
 
 // definition ACTIVE_MASK() returns uint256 = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFFFFFFFFFF;
