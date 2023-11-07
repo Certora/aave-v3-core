@@ -3,9 +3,14 @@ import "pool-simple-properties.spec";
 methods {
     // //Unsat Core Based
     function _.getFlags(DataTypes.ReserveConfigurationMap memory self) internal => NONDET;
-    //function _.setUsingAsCollateral(DataTypes.UserConfigurationMap storage self,uint256 reserveIndex,bool usingAsCollateral) internal => NONDET;
-    //function _.setBorrowing(DataTypes.UserConfigurationMap storage self,uint256 reserveIndex,bool borrowing) internal => NONDET;
+    function _.setUsingAsCollateral(DataTypes.UserConfigurationMap storage self,uint256 reserveIndex,bool usingAsCollateral) internal => NONDET;
+    function _.setBorrowing(DataTypes.UserConfigurationMap storage self,uint256 reserveIndex,bool borrowing) internal => NONDET;
+    // function _.getTotalATokenSupply(address asset) external envfree => DISPATCHER(true);
+    // function _.getTotalDebt(address asset) external envfree => DISPATCHER(true);
 }
+
+invariant supply_gte_debt(env e, address user)
+    getTotalATokenSupply(e, user) >= getTotalDebt(e, user);
 
 // Violated for flashLoan, flashLoanSimple, 
 // https://prover.certora.com/output/40577/6a0ff9324815417c9c5d5ac16d9e6416/?anonymousKey=0dd820519581b25388b8b635b0c8b3821990b541
@@ -19,28 +24,58 @@ rule totalChangesOnlyWithInitDropSupplyMint(env e, method f) filtered{
     f.selector != sig:dropReserve(address).selector &&
     f.selector != sig:mintToTreasury(address[]).selector &&
     f.selector != sig:supplyWithPermit(address,uint256,address,uint16,uint256,uint8,bytes32,bytes32).selector &&
-    f.selector != sig:supply(address,uint256,address,uint16).selector &&
-    f.selector != sig:repayWithPermit(address,uint256,uint256,address,uint256,uint8,bytes32,bytes32).selector &&
-    f.selector != sig:swapBorrowRateMode(address,uint256).selector &&
-    f.selector != sig:flashLoan(address,address[],uint256[],uint256[],address,bytes,uint16).selector &&
-    f.selector != sig:repay(address,uint256,uint256,address).selector &&
-    f.selector != sig:deposit(address,uint256,address,uint16).selector &&
-    f.selector != sig:flashLoanSimple(address,address,uint256,bytes,uint16).selector &&
-    f.selector != sig:borrow(address,uint256,uint256,uint16,address).selector &&
-    f.selector != sig:mintUnbacked(address,uint256,address,uint16).selector
+    f.selector != sig:supply(address,uint256,address,uint16).selector
+    // f.selector != sig:repayWithPermit(address,uint256,uint256,address,uint256,uint8,bytes32,bytes32).selector &&
+    // f.selector != sig:swapBorrowRateMode(address,uint256).selector &&
+    // f.selector != sig:flashLoan(address,address[],uint256[],uint256[],address,bytes,uint16).selector &&
+    // f.selector != sig:repay(address,uint256,uint256,address).selector &&
+    // f.selector != sig:deposit(address,uint256,address,uint16).selector &&
+    // f.selector != sig:flashLoanSimple(address,address,uint256,bytes,uint16).selector &&
+    // f.selector != sig:borrow(address,uint256,uint256,uint16,address).selector &&
+    // f.selector != sig:mintUnbacked(address,uint256,address,uint16).selector
 } {
     address user;
     calldataarg args;
     // mathint balance_before = _aToken.ATokenBalanceOf(e, user);
-    mathint superBalanceBefore = _aToken.superBalance(e, user);
-    mathint totalSupplyBefore = _aToken.totalSupply(e);
+    // mathint superBalanceBefore = _aToken.superBalance(e, user);
+    mathint totalSupplyBefore = getTotalATokenSupply(e, user);
 
     f(e, args);
 
-    mathint superBalanceAfter = _aToken.superBalance(e, user);
-    mathint totalSupplyAfter = _aToken.totalSupply(e);
+    // mathint superBalanceAfter = _aToken.superBalance(e, user);
+    mathint totalSupplyAfter = getTotalATokenSupply(e, user);
 
     assert totalSupplyBefore == totalSupplyAfter; 
+}
+
+rule totalDeptCanChangeInFunctions(env e, method f) filtered{
+    f -> !f.isView //&&
+    //f.selector != sig:initReserve(address,address, address, address, address).selector &&
+    //f.selector != sig:dropReserve(address).selector &&
+    //f.selector != sig:mintToTreasury(address[]).selector &&
+    //f.selector != sig:supplyWithPermit(address,uint256,address,uint16,uint256,uint8,bytes32,bytes32).selector &&
+    //f.selector != sig:supply(address,uint256,address,uint16).selector
+    // f.selector != sig:repayWithPermit(address,uint256,uint256,address,uint256,uint8,bytes32,bytes32).selector &&
+    // f.selector != sig:swapBorrowRateMode(address,uint256).selector &&
+    // f.selector != sig:flashLoan(address,address[],uint256[],uint256[],address,bytes,uint16).selector &&
+    // f.selector != sig:repay(address,uint256,uint256,address).selector &&
+    // f.selector != sig:deposit(address,uint256,address,uint16).selector &&
+    // f.selector != sig:flashLoanSimple(address,address,uint256,bytes,uint16).selector &&
+    // f.selector != sig:borrow(address,uint256,uint256,uint16,address).selector &&
+    // f.selector != sig:mintUnbacked(address,uint256,address,uint16).selector
+} {
+    address user;
+    calldataarg args;
+    // mathint balance_before = _aToken.ATokenBalanceOf(e, user);
+    // mathint superBalanceBefore = _aToken.superBalance(e, user);
+    mathint totalDebtBefore = getTotalDebt(e, user);
+
+    f(e, args);
+
+    // mathint superBalanceAfter = _aToken.superBalance(e, user);
+    mathint totalDebtAfter = getTotalDebt(e, user);
+
+    satisfy totalDebtAfter != totalDebtBefore; 
 }
 
 // Run: https://prover.certora.com/output/40577/9b8ea632aa4147288a6a8b5309e78021/?anonymousKey=8c1dd7499eb3c52ed76045917b1b2dccb1031162

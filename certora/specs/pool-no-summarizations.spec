@@ -2,16 +2,19 @@ import "pool-base.spec";
 
 methods {
     // //Unsat Core Based
-    function _.getFlags(DataTypes.ReserveConfigurationMap memory self) internal => NONDET;
-    function _.setUsingAsCollateral(DataTypes.UserConfigurationMap storage self,uint256 reserveIndex,bool usingAsCollateral) internal => NONDET;
-    function _.setBorrowing(DataTypes.UserConfigurationMap storage self,uint256 reserveIndex,bool borrowing) internal => NONDET;
+    function _.getFlags(DataTypes.ReserveConfigurationMap memory self) internal => NONDET; // TODO: Not safe, justify.
+    // function _.setUsingAsCollateral(DataTypes.UserConfigurationMap storage self,uint256 reserveIndex,bool usingAsCollateral) internal => NONDET;
+    // function _.setBorrowing(DataTypes.UserConfigurationMap storage self,uint256 reserveIndex,bool borrowing) internal => NONDET;
 
 
     // function _.calculateInterestRates(DataTypes.CalculateInterestRatesParams storage params) external => NONDET;
     // function _.calculateInterestRates(DataTypes.CalculateInterestRatesParams params) external => calculateInterestRatesMock(params) expect uint256, uint256, uint256 ALL;
 
-    function _.rayMul(uint256 a, uint256 b) internal => rayMulPreciseSummarization(a, b) expect uint256 ALL;
-    function _.rayDiv(uint256 a, uint256 b) internal => rayDivPreciseSummarization(a, b) expect uint256 ALL;
+    // function _.rayMul(uint256 a, uint256 b) internal => rayMulPreciseSummarization(a, b) expect uint256 ALL;
+    // function _.rayDiv(uint256 a, uint256 b) internal => rayDivPreciseSummarization(a, b) expect uint256 ALL;
+
+    function _.rayMul(uint256 a, uint256 b) internal => mulDivDownAbstractPlus(a, b, 10^27) expect uint256 ALL;
+    function _.rayDiv(uint256 a, uint256 b) internal => mulDivDownAbstractPlus(a, 10^27, b) expect uint256 ALL;
 }
 
 
@@ -92,28 +95,18 @@ rule depositUpdatesUserATokenBalance(env e) {
 
     mathint liquidityIndexBefore = getLiquidityIndex(e, asset);
     require liquidityIndexBefore == to_mathint(RAY()); //under approx
-    // mathint currentLiquidityRateBefore = getCurrentLiquidityRate(e, asset);
-    // require currentLiquidityRateBefore == 1; //under approx
-    // require currentLiquidityRateBefore == 0; //under approx
     mathint normalized_income_before = getReserveNormalizedIncome(e, asset);
     require normalized_income_before == to_mathint(RAY());
 
     deposit(e, asset, amount, onBehalfOf, referralCode);
 
     mathint balanceAfter = aTokenBalanceOf(e, onBehalfOf);
-    // mathint currentLiquidityRateAfter = getCurrentLiquidityRate(e, asset);
-    // require currentLiquidityRateAfter == currentLiquidityRateBefore;
     mathint normalized_income_after = getReserveNormalizedIncome(e, asset);
     require normalized_income_after == normalized_income_before;
 
     mathint liquidityIndexAfter = getLiquidityIndex(e, asset);
 
     require liquidityIndexAfter == liquidityIndexBefore;
-
-    // uint256 liquidityRate;
-    // uint256 stableBorrowRate;
-    // uint256 variableBorrowRate;
-    // (liquidityRate, stableBorrowRate, variableBorrowRate) = getInterestRates();
 
     assert balanceAfter >= balanceBefore + amount - RAY() - RAY();
     assert balanceAfter <= balanceBefore + amount + RAY() + RAY();

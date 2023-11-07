@@ -18,4 +18,14 @@ contract PoolHarness is Pool {
         DataTypes.ReserveCache memory reserveCache = reserve.cache();
         return reserveCache.currScaledVariableDebt;
     }
+
+    function getTotalDebt(address asset) public view returns (uint256) {
+        uint256 totalVariable = IERC20(_reserves[asset].variableDebtTokenAddress).totalSupply();
+        uint256 totalStable = IERC20(_reserves[asset].stableDebtTokenAddress).totalSupply();
+        return totalVariable + totalStable;
+    }
+
+    function getTotalATokenSupply(address asset) public view returns (uint256) {
+        return IERC20(_reserves[asset].aTokenAddress).totalSupply();
+    }
 }

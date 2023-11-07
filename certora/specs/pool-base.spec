@@ -1,3 +1,5 @@
+import "CVLMath.spec";
+
 /*
     This is a Base Specification File for Smart Contract Verification with the Certora Prover.
     This file is meant to be included
@@ -70,7 +72,9 @@ methods {
     function _.mint(address, uint256) external => DISPATCHER(true);
     function _.burn(uint256) external => DISPATCHER(true);
     function _.balanceOf(address) external => DISPATCHER(true);
-    
+
+    function _.totalSupply() external => DISPATCHER(true);
+
     // ATOKEN
     function _.mint(address user, uint256 amount, uint256 index) external => DISPATCHER(true);
     function _.burn(address user, address receiverOfUnderlying, uint256 amount, uint256 index) external => DISPATCHER(true);
@@ -97,6 +101,11 @@ methods {
     //Debt Tokens
     //    function _variable.scaledTotalSupply() external => DISPATCHER(true);
     function _.scaledTotalSupply() external => DISPATCHER(true);
+
+    function _.getReserveNormalizedIncome(address asset) external => DISPATCHER(true);
+    function _.getReserveNormalizedVariableDebt(address asset) external => DISPATCHER(true);
+    function _.getACLManager() external  => DISPATCHER(true);
+    function _.isBridge(address) external => DISPATCHER(true);
     
     // StableDebt
     function _.mint(address user, address onBehalfOf, uint256 amount, uint256 rate) external => DISPATCHER(true);
@@ -122,7 +131,6 @@ methods {
 
 /* definitions and functions to be used within the spec file */
 
-definition RAY() returns uint256 = 10^27;
 definition IS_UINT256(uint256 x) returns bool = ((x >= 0) && (x <= max_uint256));
 
 // definition ACTIVE_MASK() returns uint256 = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFFFFFFFFFF;
