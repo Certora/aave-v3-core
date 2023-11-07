@@ -28,4 +28,8 @@ using WadRayMath for uint256;
   function scaledBalanceOfToBalanceOf(uint256 bal) public view returns (uint256) {
     return bal.rayMul(POOL.getReserveNormalizedIncome(_underlyingAsset));
   }
+  
+  function ATokenBalanceOf(address user) public view returns (uint256) {
+    return super.balanceOf(user);
+  }
 }
