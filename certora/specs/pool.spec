@@ -275,3 +275,17 @@ rule normalized_income_changes_with(env e, method f) filtered {
     mathint normalized_income_after = getReserveNormalizedIncome(e, asset);
     assert normalized_income_before == normalized_income_after;
 }
+
+// P19: It's not possible to borrow with an interest rate mode that is different than 1 (stable) or 2 (variable)
+// Passing: https://prover.certora.com/output/31688/5cb1398883fb4162854b74af0bae79e9/?anonymousKey=0d7f3c6dc8249ba58a6af0d749ac7c9782611817
+rule borrowOnlyVariableOrStableRate(env e) {
+    address asset;
+    uint256 amount;
+    uint256 interestRateMode;
+    uint16 referralCode;
+    address onBehalfOf;
+
+    borrow@withrevert(e, asset, amount, interestRateMode, referralCode, onBehalfOf);
+
+    assert (interestRateMode != 1 && interestRateMode != 2) => lastReverted;
+}
