@@ -75,7 +75,7 @@ rule totalDeptCanChangeInFunctions(env e, method f) filtered{
     // mathint superBalanceAfter = _aToken.superBalance(e, user);
     mathint totalDebtAfter = getTotalDebt(e, user);
 
-    satisfy totalDebtAfter != totalDebtBefore; 
+    satisfy totalDebtAfter != totalDebtBefore;
 }
 
 // Run: https://prover.certora.com/output/40577/9b8ea632aa4147288a6a8b5309e78021/?anonymousKey=8c1dd7499eb3c52ed76045917b1b2dccb1031162
