@@ -35,7 +35,31 @@ library DataTypes {
     uint128 isolationModeTotalDebt;
   }
 
-  struct ReserveConfigurationMap {
+struct ReserveConfigurationMap {
+  //uint256 data; //original data
+
+  uint256 Ltv;                     
+  uint256 LiquidationThreshold;   
+  uint256 LiquidationBonus;       
+  uint256 Decimals;                
+  bool Active;                  
+  bool Frozen;                  
+  bool BorrowingEnabled;               
+  bool StableBorrowingEnabled;        
+  bool Paused;                  
+  bool BorrowableInIsolation; 
+  bool SiloedBorrowing;        
+  bool FlashLoanEnabled;       
+  uint256 ReserveFactor;          
+  uint256 BorrowCap;              
+  uint256 SupplyCap;              
+  uint256 LiquidationProtocolFee;
+  uint256 EModeCategory;          
+  uint256 UnbackedMintCap;       
+  uint256 DebtCeiling; 
+    
+  }
+  struct ReserveConfigurationMap_orig {
     //bit 0-15: LTV
     //bit 16-31: Liq. threshold
     //bit 32-47: Liq. bonus
@@ -54,7 +78,7 @@ library DataTypes {
     //bit 152-167 liquidation protocol fee
     //bit 168-175 eMode category
     //bit 176-211 unbacked mint cap in whole tokens, unbackedMintCap == 0 => minting disabled
-    //bit 212-251 debt ceiling for isolation mode with (ReserveConfiguration::DEBT_CEILING_DECIMALS) decimals
+    //bit 212-251 debt ceiling for isolation mode with (ReserveConfiguration::DEBTCEILING_DECIMALS) decimals
     //bit 252-255 unused
 
     uint256 data;

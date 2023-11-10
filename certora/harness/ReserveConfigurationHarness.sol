@@ -1,20 +1,22 @@
 pragma solidity 0.8.10;
 pragma experimental ABIEncoderV2;
 
-import {ReserveConfiguration} from '../munged/protocol/libraries/configuration/ReserveConfiguration.sol';
+//import {ReserveConfiguration} from '../munged/protocol/libraries/configuration/ReserveConfiguration.sol';
+import {ReserveConfiguration} from './ReserveConfiguration_noBV.sol';
+
 import {DataTypes} from '../munged/protocol/libraries/types/DataTypes.sol';
 
 contract ReserveConfigurationHarness {
     DataTypes.ReserveConfigurationMap public reservesConfig;
-    mapping(uint256 => uint256) public intSettersUpperBounds;
-    mapping(uint256 => uint256) public intSetterslowerBounds;
-    mapping(uint256 => uint256) public boolSettersCompare;
+    //mapping(uint256 => uint256) public intSettersUpperBounds;
+    //mapping(uint256 => uint256) public intSetterslowerBounds;
+    //mapping(uint256 => uint256) public boolSettersCompare;
     
     // Sets the Loan to Value of the reserve
     function setLtv(uint256 ltv) public {
         DataTypes.ReserveConfigurationMap memory configNew = reservesConfig;
         ReserveConfiguration.setLtv(configNew, ltv);
-        reservesConfig.data = configNew.data;
+        //reservesConfig.data = configNew.data;
     }
 
     // Gets the Loan to Value of the reserve
@@ -26,7 +28,7 @@ contract ReserveConfigurationHarness {
     function setLiquidationThreshold(uint256 threshold) public {
         DataTypes.ReserveConfigurationMap memory configNew = reservesConfig;
         ReserveConfiguration.setLiquidationThreshold(configNew, threshold);
-        reservesConfig.data = configNew.data;
+        //reservesConfig.data = configNew.data;
     }
 
     // Gets the liquidation threshold of the reserve
@@ -38,7 +40,7 @@ contract ReserveConfigurationHarness {
     function setLiquidationBonus(uint256 bonus) public {
         DataTypes.ReserveConfigurationMap memory configNew = reservesConfig;
         ReserveConfiguration.setLiquidationBonus(configNew, bonus);
-        reservesConfig.data = configNew.data;
+        //reservesConfig.data = configNew.data;
     }
 
     // Gets the liquidation bonus of the reserve
@@ -50,7 +52,7 @@ contract ReserveConfigurationHarness {
     function setDecimals(uint256 decimals) public {
         DataTypes.ReserveConfigurationMap memory configNew = reservesConfig;
         ReserveConfiguration.setDecimals(configNew, decimals);
-        reservesConfig.data = configNew.data;
+        //reservesConfig.data = configNew.data;
     }
 
     // Gets the decimals of the underlying asset of the reserve
@@ -62,7 +64,7 @@ contract ReserveConfigurationHarness {
     function setActive(bool active) public {
         DataTypes.ReserveConfigurationMap memory configNew = reservesConfig;
         ReserveConfiguration.setActive(configNew, active);
-        reservesConfig.data = configNew.data;
+        //reservesConfig.data = configNew.data;
     }
 
     // Gets the active state of the reserve
@@ -74,7 +76,7 @@ contract ReserveConfigurationHarness {
     function setFrozen(bool frozen) public {
         DataTypes.ReserveConfigurationMap memory configNew = reservesConfig;
         ReserveConfiguration.setFrozen(configNew, frozen);
-        reservesConfig.data = configNew.data;
+        //reservesConfig.data = configNew.data;
     }
 
     // Gets the frozen state of the reserve
@@ -86,7 +88,7 @@ contract ReserveConfigurationHarness {
     function setPaused(bool paused) public {
         DataTypes.ReserveConfigurationMap memory configNew = reservesConfig;
         ReserveConfiguration.setPaused(configNew, paused);
-        reservesConfig.data = configNew.data;
+        //reservesConfig.data = configNew.data;
     }
 
     // Gets the paused state of the reserve
@@ -98,7 +100,7 @@ contract ReserveConfigurationHarness {
     function setBorrowableInIsolation(bool borrowable) public {
         DataTypes.ReserveConfigurationMap memory configNew = reservesConfig;
         ReserveConfiguration.setBorrowableInIsolation(configNew, borrowable);
-        reservesConfig.data = configNew.data;
+        //reservesConfig.data = configNew.data;
     }
 
     // Gets the borrowable in isolation flag for the reserve.
@@ -110,7 +112,7 @@ contract ReserveConfigurationHarness {
     function setSiloedBorrowing(bool siloed) public {
         DataTypes.ReserveConfigurationMap memory configNew = reservesConfig;
         ReserveConfiguration.setSiloedBorrowing(configNew, siloed);
-        reservesConfig.data = configNew.data;
+        //reservesConfig.data = configNew.data;
     }
 
     // Gets the siloed borrowing flag for the reserve.
@@ -122,7 +124,7 @@ contract ReserveConfigurationHarness {
     function setBorrowingEnabled(bool enabled) public {
         DataTypes.ReserveConfigurationMap memory configNew = reservesConfig;
         ReserveConfiguration.setBorrowingEnabled(configNew, enabled);
-        reservesConfig.data = configNew.data;
+        //reservesConfig.data = configNew.data;
     }
 
     // Gets the borrowing state of the reserve
@@ -134,7 +136,7 @@ contract ReserveConfigurationHarness {
     function setStableRateBorrowingEnabled(bool enabled) public {
         DataTypes.ReserveConfigurationMap memory configNew = reservesConfig;
         ReserveConfiguration.setStableRateBorrowingEnabled(configNew, enabled);
-        reservesConfig.data = configNew.data;
+        //reservesConfig.data = configNew.data;
     }
 
     // Gets the stable rate borrowing state of the reserve
@@ -146,7 +148,7 @@ contract ReserveConfigurationHarness {
     function setReserveFactor(uint256 reserveFactor) public {
         DataTypes.ReserveConfigurationMap memory configNew = reservesConfig;
         ReserveConfiguration.setReserveFactor(configNew, reserveFactor);
-        reservesConfig.data = configNew.data;
+        //reservesConfig.data = configNew.data;
     }
 
     // Gets the reserve factor of the reserve
@@ -158,7 +160,7 @@ contract ReserveConfigurationHarness {
     function setBorrowCap(uint256 borrowCap) public {
         DataTypes.ReserveConfigurationMap memory configNew = reservesConfig;
         ReserveConfiguration.setBorrowCap(configNew, borrowCap);
-        reservesConfig.data = configNew.data;
+        //reservesConfig.data = configNew.data;
     }
 
     // Gets the borrow cap of the reserve
@@ -170,7 +172,7 @@ contract ReserveConfigurationHarness {
     function setSupplyCap(uint256 supplyCap) public {
         DataTypes.ReserveConfigurationMap memory configNew = reservesConfig;
         ReserveConfiguration.setSupplyCap(configNew, supplyCap);
-        reservesConfig.data = configNew.data;
+        //reservesConfig.data = configNew.data;
     }
 
     // Gets the supply cap of the reserve
@@ -182,7 +184,7 @@ contract ReserveConfigurationHarness {
     function setDebtCeiling(uint256 ceiling) public {
         DataTypes.ReserveConfigurationMap memory configNew = reservesConfig;
         ReserveConfiguration.setDebtCeiling(configNew, ceiling);
-        reservesConfig.data = configNew.data;
+        //reservesConfig.data = configNew.data;
     }
 
     // Gets the debt ceiling for the asset if the asset is in isolation mode
@@ -194,7 +196,7 @@ contract ReserveConfigurationHarness {
     function setLiquidationProtocolFee(uint256 liquidationProtocolFee) public {
         DataTypes.ReserveConfigurationMap memory configNew = reservesConfig;
         ReserveConfiguration.setLiquidationProtocolFee(configNew, liquidationProtocolFee);
-        reservesConfig.data = configNew.data;
+        //reservesConfig.data = configNew.data;
     }
 
     // Gets the liquidation protocol fee
@@ -206,7 +208,7 @@ contract ReserveConfigurationHarness {
     function setUnbackedMintCap(uint256 unbackedMintCap) public {
         DataTypes.ReserveConfigurationMap memory configNew = reservesConfig;
         ReserveConfiguration.setUnbackedMintCap(configNew, unbackedMintCap);
-        reservesConfig.data = configNew.data;
+        //reservesConfig.data = configNew.data;
     }
 
     // Gets the unbacked mint cap of the reserve
@@ -218,7 +220,7 @@ contract ReserveConfigurationHarness {
     function setEModeCategory(uint256 category) public {
         DataTypes.ReserveConfigurationMap memory configNew = reservesConfig;
         ReserveConfiguration.setEModeCategory(configNew, category);
-        reservesConfig.data = configNew.data;
+        //reservesConfig.data = configNew.data;
     }
 
     // Gets the eMode asset category
@@ -230,7 +232,7 @@ contract ReserveConfigurationHarness {
     function setFlashLoanEnabled(bool flashLoanEnabled) public {
         DataTypes.ReserveConfigurationMap memory configNew = reservesConfig;
         ReserveConfiguration.setFlashLoanEnabled(configNew, flashLoanEnabled);
-        reservesConfig.data = configNew.data;
+        //reservesConfig.data = configNew.data;
     }
 
     // Gets the flashloanable flag for the reserve
@@ -239,9 +241,9 @@ contract ReserveConfigurationHarness {
     }
 
     // returns the entire data in form of unit256
-    function getData() public view returns (uint256) {
-        return reservesConfig.data;
-    }
+    //function getData() public view returns (uint256) {
+    //    return reservesConfig.data;
+    //}
 
     // Executes a setter of an int parameter according to the given id
     function executeIntSetterById(uint256 id, uint256 val) public {

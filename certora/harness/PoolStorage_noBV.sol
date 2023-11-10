@@ -3,7 +3,8 @@ pragma solidity 0.8.10;
 
 //import {UserConfiguration} from './UserConfiguration_noBV.sol';
 import {UserConfiguration} from './UserConfiguration_noBV_3reserves.sol';
-import {ReserveConfiguration} from '../munged/protocol/libraries/configuration/ReserveConfiguration.sol';
+//import {ReserveConfiguration} from '../munged/protocol/libraries/configuration/ReserveConfiguration.sol';
+import {ReserveConfiguration} from './ReserveConfiguration_noBV.sol';
 import {ReserveLogic} from '../munged/protocol/libraries/logic/ReserveLogic.sol';
 import {DataTypes} from '../munged/protocol/libraries/types/DataTypes.sol';
 
