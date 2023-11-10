@@ -61,7 +61,17 @@ library DataTypes {
   }
 
   struct UserConfigurationMap {
-      uint256 data; //original data
+      //uint256 data; //original data
+      bool isBorrowing0;
+      bool isBorrowing1;
+      bool isBorrowing2;
+      bool isUsingAsCollateral0;
+      bool isUsingAsCollateral1;
+      bool isUsingAsCollateral2;
+    }
+
+  struct UserConfigurationMap_noBV {
+      //uint256 data; //original data
       bool[] isBorrowing;
       bool[] isUsingAsCollateral;
       uint16 borrowingCount;
