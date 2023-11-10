@@ -1,9 +1,12 @@
 pragma solidity 0.8.10;
 pragma experimental ABIEncoderV2;
 
+
 import {UserConfiguration} from '../munged/protocol/libraries/configuration/UserConfiguration.sol';
+//import {UserConfiguration} from './UserConfiguration_noBV.sol';
 import {DataTypes} from '../munged/protocol/libraries/types/DataTypes.sol';
-import {PoolStorage} from '../munged/protocol/pool/PoolStorage.sol';
+//import {PoolStorage} from '../munged/protocol/pool/PoolStorage.sol';
+import {PoolStorage} from './PoolStorage_noBV.sol';
 
 /*
 A wrapper contract for calling functions from the library UserConfiguration.
@@ -11,6 +14,11 @@ A wrapper contract for calling functions from the library UserConfiguration.
 contract UserConfigurationHarness is PoolStorage {
     DataTypes.UserConfigurationMap public usersConfig;
     
+    function isValidState() public view returns (bool) {
+        return true;
+        // return UserConfiguration._isValidState(usersConfig);
+    }
+
     // Sets if the user is borrowing the reserve identified by reserveIndex
     function setBorrowing(uint256 reserveIndex, bool borrowing) public {
         UserConfiguration.setBorrowing(usersConfig, reserveIndex, borrowing);
