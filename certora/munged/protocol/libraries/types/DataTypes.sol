@@ -36,29 +36,39 @@ library DataTypes {
   }
 
 struct ReserveConfigurationMap {
-  //uint256 data; //original data
-
-  uint256 Ltv;                     
-  uint256 LiquidationThreshold;   
-  uint256 LiquidationBonus;       
-  uint256 Decimals;                
-  bool Active;                  
-  bool Frozen;                  
-  bool BorrowingEnabled;               
-  bool StableBorrowingEnabled;        
-  bool Paused;                  
-  bool BorrowableInIsolation; 
-  bool SiloedBorrowing;        
-  bool FlashLoanEnabled;       
-  uint256 ReserveFactor;          
-  uint256 BorrowCap;              
-  uint256 SupplyCap;              
-  uint256 LiquidationProtocolFee;
-  uint256 EModeCategory;          
-  uint256 UnbackedMintCap;       
-  uint256 DebtCeiling; 
-    
+    uint256 data; //original data
+    // splitting to two object to avoid "Stack too deep error"
+    // for having more than 16 local variables in the same scope.
+    ReserveConfigurationMap_ints intData;
+    ReserveConfigurationMap_bools boolData;
   }
+
+  struct ReserveConfigurationMap_ints {
+    
+    uint256 Ltv;                     
+    uint256 LiquidationThreshold;   
+    uint256 LiquidationBonus;       
+    uint256 Decimals;                    
+    uint256 ReserveFactor;          
+    uint256 BorrowCap;              
+    uint256 SupplyCap;              
+    uint256 LiquidationProtocolFee;
+    uint256 EModeCategory;          
+    uint256 UnbackedMintCap;       
+    uint256 DebtCeiling; 
+  }
+
+  struct ReserveConfigurationMap_bools {
+    bool Active;                  
+    bool Frozen;                  
+    bool BorrowingEnabled;               
+    bool StableBorrowingEnabled;        
+    bool Paused;                  
+    bool BorrowableInIsolation; 
+    bool SiloedBorrowing;        
+    bool FlashLoanEnabled;
+  }
+
   struct ReserveConfigurationMap_orig {
     //bit 0-15: LTV
     //bit 16-31: Liq. threshold

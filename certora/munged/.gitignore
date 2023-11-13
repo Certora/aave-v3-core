@@ -1,3 +1,6 @@
 *
 !.gitignore
-!*protocol/libraries/types/DataTypes.sol
+!protocol/
+!protocol/libraries/
+!protocol/libraries/types/
+!protocol/libraries/types/DataTypes.sol
