@@ -42,7 +42,7 @@ methods {
     //function getCaps() external returns (uint256, uint256) envfree;
 
     //function init_state() external envfree;
-    function getData() external returns uint256 envfree;
+    //function getData() external returns uint256 envfree;
     //function xorWithReserve(uint256) external returns uint256 envfree;
     //function initMaps() external envfree;
     
