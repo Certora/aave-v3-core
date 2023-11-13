@@ -32,7 +32,7 @@ library ReserveConfiguration {
    */
   function setLtv(DataTypes.ReserveConfigurationMap memory self, uint256 ltv) internal pure {
     require(ltv <= MAX_VALID_LTV, Errors.INVALID_LTV);
-    self.Ltv = ltv;
+    self.intData.Ltv = ltv;
   }
 
   /**
@@ -41,7 +41,7 @@ library ReserveConfiguration {
    * @return The loan to value
    */
   function getLtv(DataTypes.ReserveConfigurationMap memory self) internal pure returns (uint256) {
-    return self.Ltv;
+    return self.intData.Ltv;
   }
 
   /**
@@ -54,7 +54,7 @@ library ReserveConfiguration {
     uint256 threshold
   ) internal pure {
     require(threshold <= MAX_VALID_LIQUIDATION_THRESHOLD, Errors.INVALID_LIQ_THRESHOLD);
-    self.LiquidationThreshold = threshold;
+    self.intData.LiquidationThreshold = threshold;
   }
 
   /**
@@ -65,7 +65,7 @@ library ReserveConfiguration {
   function getLiquidationThreshold(
     DataTypes.ReserveConfigurationMap memory self
   ) internal pure returns (uint256) {
-    return self.LiquidationThreshold;
+    return self.intData.LiquidationThreshold;
   }
 
   /**
@@ -79,7 +79,7 @@ library ReserveConfiguration {
   ) internal pure {
     require(bonus <= MAX_VALID_LIQUIDATION_BONUS, Errors.INVALID_LIQ_BONUS);
 
-    self.LiquidationBonus = bonus;
+    self.intData.LiquidationBonus = bonus;
   }
 
   /**
@@ -90,7 +90,7 @@ library ReserveConfiguration {
   function getLiquidationBonus(
     DataTypes.ReserveConfigurationMap memory self
   ) internal pure returns (uint256) {
-    return self.LiquidationBonus;
+    return self.intData.LiquidationBonus;
   }
 
   /**
@@ -104,7 +104,7 @@ library ReserveConfiguration {
   ) internal pure {
     require(decimals <= MAX_VALID_DECIMALS, Errors.INVALID_DECIMALS);
 
-    self.Decimals = decimals;
+    self.intData.Decimals = decimals;
   }
 
   /**
@@ -115,7 +115,7 @@ library ReserveConfiguration {
   function getDecimals(
     DataTypes.ReserveConfigurationMap memory self
   ) internal pure returns (uint256) {
-    return self.Decimals;
+    return self.intData.Decimals;
   }
 
   /**
@@ -124,7 +124,7 @@ library ReserveConfiguration {
    * @param active The active state
    */
   function setActive(DataTypes.ReserveConfigurationMap memory self, bool active) internal pure {
-    self.Active = active;
+    self.boolData.Active = active;
   }
 
   /**
@@ -134,7 +134,7 @@ library ReserveConfiguration {
    */
   function getActive(DataTypes.ReserveConfigurationMap memory self) external pure returns (bool) {
     // certora munge external
-    return self.Active;
+    return self.boolData.Active;
   }
 
   /**
@@ -143,7 +143,7 @@ library ReserveConfiguration {
    * @param frozen The frozen state
    */
   function setFrozen(DataTypes.ReserveConfigurationMap memory self, bool frozen) internal pure {
-    self.Frozen = frozen;
+    self.boolData.Frozen = frozen;
   }
 
   /**
@@ -153,7 +153,7 @@ library ReserveConfiguration {
    */
   function getFrozen(DataTypes.ReserveConfigurationMap memory self) external pure returns (bool) {
     // certora munge external
-    return self.Frozen;
+    return self.boolData.Frozen;
   }
 
   /**
@@ -162,7 +162,7 @@ library ReserveConfiguration {
    * @param paused The paused state
    */
   function setPaused(DataTypes.ReserveConfigurationMap memory self, bool paused) internal pure {
-    self.Paused = paused;
+    self.boolData.Paused = paused;
   }
 
   /**
@@ -171,7 +171,7 @@ library ReserveConfiguration {
    * @return The paused state
    */
   function getPaused(DataTypes.ReserveConfigurationMap memory self) internal pure returns (bool) {
-    return self.Paused;
+    return self.boolData.Paused;
   }
 
   /**
@@ -187,7 +187,7 @@ library ReserveConfiguration {
     DataTypes.ReserveConfigurationMap memory self,
     bool borrowable
   ) internal pure {
-    self.BorrowableInIsolation = borrowable;
+    self.boolData.BorrowableInIsolation = borrowable;
   }
 
   /**
@@ -202,7 +202,7 @@ library ReserveConfiguration {
   function getBorrowableInIsolation(
     DataTypes.ReserveConfigurationMap memory self
   ) internal pure returns (bool) {
-    return self.BorrowableInIsolation;
+    return self.boolData.BorrowableInIsolation;
   }
 
   /**
@@ -215,7 +215,7 @@ library ReserveConfiguration {
     DataTypes.ReserveConfigurationMap memory self,
     bool siloed
   ) internal pure {
-    self.SiloedBorrowing = siloed;
+    self.boolData.SiloedBorrowing = siloed;
   }
 
   /**
@@ -227,7 +227,7 @@ library ReserveConfiguration {
   function getSiloedBorrowing(
     DataTypes.ReserveConfigurationMap memory self
   ) internal pure returns (bool) {
-    return self.SiloedBorrowing;
+    return self.boolData.SiloedBorrowing;
   }
 
   /**
@@ -239,7 +239,7 @@ library ReserveConfiguration {
     DataTypes.ReserveConfigurationMap memory self,
     bool enabled
   ) internal pure {
-    self.BorrowingEnabled = enabled;
+    self.boolData.BorrowingEnabled = enabled;
   }
 
   /**
@@ -251,7 +251,7 @@ library ReserveConfiguration {
     DataTypes.ReserveConfigurationMap memory self
   ) external pure returns (bool) {
     // certora munge external
-    return self.BorrowingEnabled;
+    return self.boolData.BorrowingEnabled;
   }
 
   /**
@@ -263,7 +263,7 @@ library ReserveConfiguration {
     DataTypes.ReserveConfigurationMap memory self,
     bool enabled
   ) internal pure {
-    self.StableBorrowingEnabled = enabled;
+    self.boolData.StableBorrowingEnabled = enabled;
   }
 
   /**
@@ -274,7 +274,7 @@ library ReserveConfiguration {
   function getStableRateBorrowingEnabled(
     DataTypes.ReserveConfigurationMap memory self
   ) internal pure returns (bool) {
-    return self.StableBorrowingEnabled;
+    return self.boolData.StableBorrowingEnabled;
   }
 
   /**
@@ -288,7 +288,7 @@ library ReserveConfiguration {
   ) internal pure {
     require(reserveFactor <= MAX_VALID_RESERVE_FACTOR, Errors.INVALID_RESERVE_FACTOR);
 
-    self.ReserveFactor = reserveFactor;
+    self.intData.ReserveFactor = reserveFactor;
   }
 
   /**
@@ -299,7 +299,7 @@ library ReserveConfiguration {
   function getReserveFactor(
     DataTypes.ReserveConfigurationMap memory self
   ) internal pure returns (uint256) {
-    return self.ReserveFactor;
+    return self.intData.ReserveFactor;
   }
 
   /**
@@ -313,7 +313,7 @@ library ReserveConfiguration {
   ) internal pure {
     require(borrowCap <= MAX_VALID_BORROW_CAP, Errors.INVALID_BORROW_CAP);
 
-    self.BorrowCap = borrowCap;
+    self.intData.BorrowCap = borrowCap;
   }
 
   /**
@@ -324,7 +324,7 @@ library ReserveConfiguration {
   function getBorrowCap(
     DataTypes.ReserveConfigurationMap memory self
   ) internal pure returns (uint256) {
-    return self.BorrowCap;
+    return self.intData.BorrowCap;
   }
 
   /**
@@ -338,7 +338,7 @@ library ReserveConfiguration {
   ) internal pure {
     require(supplyCap <= MAX_VALID_SUPPLY_CAP, Errors.INVALID_SUPPLY_CAP);
 
-    self.SupplyCap = supplyCap;
+    self.intData.SupplyCap = supplyCap;
   }
 
   /**
@@ -349,7 +349,7 @@ library ReserveConfiguration {
   function getSupplyCap(
     DataTypes.ReserveConfigurationMap memory self
   ) internal pure returns (uint256) {
-    return self.SupplyCap;
+    return self.intData.SupplyCap;
   }
 
   /**
@@ -363,7 +363,7 @@ library ReserveConfiguration {
   ) internal pure {
     require(ceiling <= MAX_VALID_DEBT_CEILING, Errors.INVALID_DEBT_CEILING);
 
-    self.DebtCeiling = ceiling;
+    self.intData.DebtCeiling = ceiling;
   }
 
   /**
@@ -374,7 +374,7 @@ library ReserveConfiguration {
   function getDebtCeiling(
     DataTypes.ReserveConfigurationMap memory self
   ) internal pure returns (uint256) {
-    return self.DebtCeiling;
+    return self.intData.DebtCeiling;
   }
 
   /**
@@ -391,7 +391,7 @@ library ReserveConfiguration {
       Errors.INVALID_LIQUIDATION_PROTOCOL_FEE
     );
 
-    self.LiquidationProtocolFee = liquidationProtocolFee;
+    self.intData.LiquidationProtocolFee = liquidationProtocolFee;
   }
 
   /**
@@ -402,7 +402,7 @@ library ReserveConfiguration {
   function getLiquidationProtocolFee(
     DataTypes.ReserveConfigurationMap memory self
   ) internal pure returns (uint256) {
-    return self.LiquidationProtocolFee;
+    return self.intData.LiquidationProtocolFee;
   }
 
   /**
@@ -416,7 +416,7 @@ library ReserveConfiguration {
   ) internal pure {
     require(unbackedMintCap <= MAX_VALID_UNBACKED_MINT_CAP, Errors.INVALID_UNBACKED_MINT_CAP);
 
-    self.UnbackedMintCap = unbackedMintCap;
+    self.intData.UnbackedMintCap = unbackedMintCap;
   }
 
   /**
@@ -427,7 +427,7 @@ library ReserveConfiguration {
   function getUnbackedMintCap(
     DataTypes.ReserveConfigurationMap memory self
   ) internal pure returns (uint256) {
-    return self.UnbackedMintCap;
+    return self.intData.UnbackedMintCap;
   }
 
   /**
@@ -441,7 +441,7 @@ library ReserveConfiguration {
   ) internal pure {
     require(category <= MAX_VALID_EMODE_CATEGORY, Errors.INVALID_EMODE_CATEGORY);
 
-    self.EModeCategory = category;
+    self.intData.EModeCategory = category;
   }
 
   /**
@@ -452,7 +452,7 @@ library ReserveConfiguration {
   function getEModeCategory(
     DataTypes.ReserveConfigurationMap memory self
   ) internal pure returns (uint256) {
-    return self.EModeCategory;
+    return self.intData.EModeCategory;
   }
 
   /**
@@ -464,7 +464,7 @@ library ReserveConfiguration {
     DataTypes.ReserveConfigurationMap memory self,
     bool flashLoanEnabled
   ) internal pure {
-    self.FlashLoanEnabled = flashLoanEnabled;
+    self.boolData.FlashLoanEnabled = flashLoanEnabled;
   }
 
   /**
@@ -475,7 +475,7 @@ library ReserveConfiguration {
   function getFlashLoanEnabled(
     DataTypes.ReserveConfigurationMap memory self
   ) internal pure returns (bool) {
-    return self.FlashLoanEnabled;
+    return self.boolData.FlashLoanEnabled;
   }
 
   /**
@@ -491,11 +491,11 @@ library ReserveConfiguration {
     DataTypes.ReserveConfigurationMap memory self
   ) internal pure returns (bool, bool, bool, bool, bool) {
     return (
-      self.Active,
-      self.Frozen,
-      self.BorrowingEnabled,
-      self.StableBorrowingEnabled,
-      self.Paused
+      self.boolData.Active,
+      self.boolData.Frozen,
+      self.boolData.BorrowingEnabled,
+      self.boolData.StableBorrowingEnabled,
+      self.boolData.Paused
     );
   }
 
@@ -513,12 +513,12 @@ library ReserveConfiguration {
     DataTypes.ReserveConfigurationMap memory self
   ) internal pure returns (uint256, uint256, uint256, uint256, uint256, uint256) {
     return (
-      self.Ltv,
-      self.LiquidationThreshold,
-      self.LiquidationBonus,
-      self.Decimals,
-      self.ReserveFactor,
-      self.EModeCategory
+      self.intData.Ltv,
+      self.intData.LiquidationThreshold,
+      self.intData.LiquidationBonus,
+      self.intData.Decimals,
+      self.intData.ReserveFactor,
+      self.intData.EModeCategory
     );
   }
 
@@ -532,8 +532,8 @@ library ReserveConfiguration {
     DataTypes.ReserveConfigurationMap memory self
   ) internal pure returns (uint256, uint256) {
     return (
-      self.BorrowCap,
-      self.SupplyCap
+      self.intData.BorrowCap,
+      self.intData.SupplyCap
     );
   }
 }
