@@ -5,8 +5,8 @@ methods {
     function getAverageStableRate() external returns uint256 envfree;
     function _.handleAction(address, uint256, uint256) external => NONDET;
     
-    function _.rayMul(uint256 x, uint256 y) internal => rayMulSummariztion(x, y) expect uint256 ALL;
-    function _.rayDiv(uint256 x, uint256 y) internal => rayDivSummariztion(x, y) expect uint256 ALL;
+    function _.rayMul(uint256 x, uint256 y) internal => rayMulSummarization(x, y) expect uint256 ALL;
+    function _.rayDiv(uint256 x, uint256 y) internal => rayDivSummarization(x, y) expect uint256 ALL;
 }
 
 function PLUS256(uint256 x, uint256 y) returns uint256 {
@@ -46,8 +46,8 @@ function calculateCompoundedInterestSummary(uint256 rate, uint40 t0, uint256 t1)
     return calculateCompoundedInterestSummaryValues[rate][deltaT];
 }
 
-ghost mapping(uint256 => mapping(uint256 => uint256)) rayMulSummariztionValues;
-function rayMulSummariztion(uint256 x, uint256 y) returns uint256
+ghost mapping(uint256 => mapping(uint256 => uint256)) rayMulSummarizationValues;
+function rayMulSummarization(uint256 x, uint256 y) returns uint256
 {
     if (x == 0) || (y == 0)
                        {
@@ -66,29 +66,29 @@ function rayMulSummariztion(uint256 x, uint256 y) returns uint256
 	{
 		if (y > RAY())
 		{
-			require rayMulSummariztionValues[y][x] >= x;
+			require rayMulSummarizationValues[y][x] >= x;
 		}
 		if (x > RAY())
 		{
-			require rayMulSummariztionValues[y][x] >= y;
+			require rayMulSummarizationValues[y][x] >= y;
 		}
-		return rayMulSummariztionValues[y][x];
+		return rayMulSummarizationValues[y][x];
 	}
 	else{
 		if (x > RAY())
 		{
-			require rayMulSummariztionValues[x][y] >= y;
+			require rayMulSummarizationValues[x][y] >= y;
 		}
 		if (y > RAY())
 		{
-			require rayMulSummariztionValues[x][y] >= x;
+			require rayMulSummarizationValues[x][y] >= x;
 		}
-		return rayMulSummariztionValues[x][y];
+		return rayMulSummarizationValues[x][y];
 	}
 }
 
-ghost mapping(uint256 => mapping(uint256 => uint256)) rayDivSummariztionValues;
-function rayDivSummariztion(uint256 x, uint256 y) returns uint256
+ghost mapping(uint256 => mapping(uint256 => uint256)) rayDivSummarizationValues;
+function rayDivSummarization(uint256 x, uint256 y) returns uint256
 {
 	if (x == 0)
 	{
@@ -102,9 +102,9 @@ function rayDivSummariztion(uint256 x, uint256 y) returns uint256
 	{
 		return RAY();
 	}
-	require y > RAY() => rayDivSummariztionValues[x][y] <= x;
-	// require y < RAY() => rayDivSummariztionValues[x][y] =< x;
-	return rayDivSummariztionValues[x][y];
+	require y > RAY() => rayDivSummarizationValues[x][y] <= x;
+	// require y < RAY() => rayDivSummarizationValues[x][y] =< x;
+	return rayDivSummarizationValues[x][y];
 }
 
 
