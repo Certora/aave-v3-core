@@ -6,7 +6,7 @@ import {ReserveConfiguration} from './ReserveConfiguration_noBV.sol';
 import {DataTypes} from '../munged/protocol/libraries/types/DataTypes.sol';
 import {PoolStorage} from './PoolStorage_noBV.sol';
 
-contract ReserveConfigurationHarness is PoolStorage {
+contract ReserveConfigurationHarness {
     DataTypes.ReserveConfigurationMap public reservesConfig;
     //mapping(uint256 => uint256) public intSettersUpperBounds;
     //mapping(uint256 => uint256) public intSetterslowerBounds;
