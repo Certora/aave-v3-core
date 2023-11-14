@@ -11,10 +11,13 @@ methods {
     function isBorrowingOne() external returns (bool) envfree;
     function isBorrowingAny() external returns bool envfree;
     function isEmpty() external returns bool envfree;
+    function isValidState() external returns bool envfree;
     function getIsolationModeState() external returns (bool, address, uint256) envfree;
     function getSiloedBorrowingState() external returns (bool, address) envfree;
 }
 
+//invariant validState() 
+//    isValidState();
 
 // checks the integrity of set Borrowing function and correct retrieval of the corresponding getter
 rule setBorrowing(uint256 reserveIndex, bool borrowing)
