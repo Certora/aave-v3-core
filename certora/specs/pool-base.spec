@@ -2,7 +2,7 @@
     This is a Base Specification File for Smart Contract Verification with the Certora Prover.
     This file is meant to be included
 */
-
+import "pool-math-summaries.spec";
 /*
     Declaration of contracts used in the spec
 */
@@ -54,7 +54,7 @@ methods {
     function _.getAssetPrice(address) external => NONDET;
     function _.getPriceOracle() external => ALWAYS(2);
     function _.getPriceOracleSentinel() external => ALWAYS(4);
-    function _.isBorrowAllowed() external => NONDET;
+    //function _.isBorrowAllowed() external => NONDET;
     
     // PoolHarness
     // function getCurrScaledVariableDebt(address) external returns (uint256) envfree;
@@ -82,16 +82,10 @@ methods {
     function _.ATokenBalanceOf(address user) external => DISPATCHER(true);
 
     // //Unsat Core Based
-    // function _.getFlags(DataTypes.ReserveConfigurationMap memory self) internal => NONDET;
-    function _.getParams(DataTypes.ReserveConfigurationMap memory self) internal => NONDET;
-    //function _.setUsingAsCollateral(DataTypes.UserConfigurationMap storage self,uint256 reserveIndex,bool usingAsCollateral) internal => NONDET;
-    //function _.setBorrowing(DataTypes.UserConfigurationMap storage self,uint256 reserveIndex,bool borrowing) internal => NONDET;
-
-    function _.calculateUserAccountData(mapping(address => DataTypes.ReserveData) storage reservesData,mapping(uint256 => address) storage reservesList,mapping(uint8 => DataTypes.EModeCategory) storage eModeCategories,DataTypes.CalculateUserAccountDataParams memory params) internal => NONDET;
-    function _._getUserBalanceInBaseCurrency(address user,DataTypes.ReserveData storage reserve,uint256 assetPrice,uint256 assetUnit) internal => NONDET;
-    function _.wadDiv(uint256 a, uint256 b) internal => NONDET;
-    function _.wadToRay(uint256 a) internal => NONDET;
-    function _._calculateDomainSeparator() internal => NONDET;
+    //function _.calculateUserAccountData(mapping(address => DataTypes.ReserveData) storage reservesData,mapping(uint256 => address) storage reservesList,mapping(uint8 => DataTypes.EModeCategory) storage eModeCategories,DataTypes.CalculateUserAccountDataParams memory params) internal => NONDET;
+    //function _._getUserBalanceInBaseCurrency(address user,DataTypes.ReserveData storage reserve,uint256 assetPrice,uint256 assetUnit) internal => NONDET;
+    
+    //function _._calculateDomainSeparator() internal => NONDET;
 
 
     //Debt Tokens
@@ -121,12 +115,6 @@ methods {
 }
 
 /* definitions and functions to be used within the spec file */
-
-definition RAY() returns uint256 = 10^27;
-definition IS_UINT256(uint256 x) returns bool = ((x >= 0) && (x <= max_uint256));
-
-// definition ACTIVE_MASK() returns uint256 = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFFFFFFFFFF;
-// definition FROZEN_MASK() returns uint256 = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFDFFFFFFFFFFFFFF;
 
 function first_term(uint256 x, uint256 y) returns uint256 { return x; }
 ghost mapping(uint256 => mapping(uint256 => uint256)) calculateCompoundedInterestSummaryValues;
@@ -206,43 +194,6 @@ function aTokenBalanceOf(env e, address user) returns uint256
     return _aToken.ATokenBalanceOf(e, user);
 }
 
-function rayMulPreciseSummarization(uint256 x, uint256 y) returns uint256
-{
-    if (x == 0) || (y == 0)
-	{
-		return 0;
-	}
-	if (x == RAY())
-	{
-		return y;
-	}
-	if (y == RAY())
-	{
-		return x;
-	}
-
-    mathint c = x * y;
-	return require_uint256(c / RAY());
-}
-
-function rayDivPreciseSummarization(uint256 x, uint256 y) returns uint256
-{
-    require y != 0;
-    if (x == 0)
-	{
-		return 0;
-	}
-	if (y == RAY())
-	{
-		return x;
-	}
-    if (y == x)
-	{
-		return RAY();
-	}
-    mathint c = x * RAY();
-	return require_uint256(c / y);
-}
 
 // The borrowing index should monotonically increasing
 // rule getReserveNormalizedVariableDebtCheck()
