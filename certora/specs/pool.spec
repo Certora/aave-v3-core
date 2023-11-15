@@ -2,7 +2,7 @@ import "pool-simple-properties.spec";
 
 methods {
     // //Unsat Core Based
-    function _.getFlags(DataTypes.ReserveConfigurationMap memory self) internal => NONDET;
+    // function _.getFlags(DataTypes.ReserveConfigurationMap memory self) internal => NONDET;
     //function _.setUsingAsCollateral(DataTypes.UserConfigurationMap storage self,uint256 reserveIndex,bool usingAsCollateral) internal => NONDET;
     //function _.setBorrowing(DataTypes.UserConfigurationMap storage self,uint256 reserveIndex,bool borrowing) internal => NONDET;
 }
@@ -288,4 +288,20 @@ rule borrowOnlyVariableOrStableRate(env e) {
     borrow@withrevert(e, asset, amount, interestRateMode, referralCode, onBehalfOf);
 
     assert (interestRateMode != 1 && interestRateMode != 2) => lastReverted;
+}
+
+
+// P21: It's not possible to borrow at a stable rate in a reserve where the stable rate is not enabled.
+// Passing: https://prover.certora.com/output/31688/1a54ecdfe0c442c29c13e014a34fe6d8/?anonymousKey=c93d707061d275058a3245dbbfb5beb39efe3c57
+rule borrowStableRateOnlyWhenEnabled(env e) {
+    address asset;
+    uint256 amount;
+    uint256 interestRateMode;
+    uint16 referralCode;
+    address onBehalfOf;
+
+    borrow@withrevert(e, asset, amount, getStableRateConstant(e), referralCode, onBehalfOf);
+    bool borrowRevert = lastReverted;
+
+    assert !isStableRateEnabled(e, asset) => borrowRevert;
 }
