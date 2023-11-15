@@ -206,6 +206,44 @@ function aTokenBalanceOf(env e, address user) returns uint256
     return _aToken.ATokenBalanceOf(e, user);
 }
 
+function rayMulPreciseSummarization(uint256 x, uint256 y) returns uint256
+{
+    if (x == 0) || (y == 0)
+	{
+		return 0;
+	}
+	if (x == RAY())
+	{
+		return y;
+	}
+	if (y == RAY())
+	{
+		return x;
+	}
+
+    mathint c = x * y;
+	return require_uint256(c / RAY());
+}
+
+function rayDivPreciseSummarization(uint256 x, uint256 y) returns uint256
+{
+    require y != 0;
+    if (x == 0)
+	{
+		return 0;
+	}
+	if (y == RAY())
+	{
+		return x;
+	}
+    if (y == x)
+	{
+		return RAY();
+	}
+    mathint c = x * RAY();
+	return require_uint256(c / y);
+}
+
 // The borrowing index should monotonically increasing
 // rule getReserveNormalizedVariableDebtCheck()
 // {

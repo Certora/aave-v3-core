@@ -7,6 +7,10 @@ import {ReserveLogic} from '../../contracts/protocol/libraries/logic/ReserveLogi
 import {IPoolAddressesProvider} from '../../contracts//interfaces/IPoolAddressesProvider.sol';
 import {ReserveConfiguration} from '../../contracts/protocol/libraries/configuration/ReserveConfiguration.sol';
 
+import {IERC20} from '../../contracts/dependencies/openzeppelin/contracts/IERC20.sol';
+
+
+
 contract PoolHarness is Pool {
     
     using ReserveLogic for DataTypes.ReserveData;
@@ -30,5 +34,14 @@ contract PoolHarness is Pool {
 
     function getStableRateConstant() public view returns (uint256) {
         return uint256(DataTypes.InterestRateMode.STABLE);
+
+    function getTotalDebt(address asset) public view returns (uint256) {
+        uint256 totalVariable = IERC20(_reserves[asset].variableDebtTokenAddress).totalSupply();
+        uint256 totalStable = IERC20(_reserves[asset].stableDebtTokenAddress).totalSupply();
+        return totalVariable + totalStable;
+    }
+
+    function getTotalATokenSupply(address asset) public view returns (uint256) {
+        return IERC20(_reserves[asset].aTokenAddress).totalSupply();
     }
 }

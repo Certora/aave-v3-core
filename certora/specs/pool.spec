@@ -101,7 +101,7 @@ rule depositIncreasesUserATokenSuperBalance(env e) {
     address asset;
     uint256 amount;
     address onBehalfOf;
-    uint16 referralCode;   
+    uint16 referralCode;
 
     require to_mathint(amount) == 3*RAY(); //under approx
     require asset != onBehalfOf;
