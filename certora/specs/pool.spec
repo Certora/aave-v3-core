@@ -305,3 +305,6 @@ rule borrowStableRateOnlyWhenEnabled(env e) {
 
     assert !isStableRateEnabled(e, asset) => borrowRevert;
 }
+
+invariant cannotBorrowMoreThanReserve(env e)
+    to_mathint(_aToken.scaledTotalSupply(e)) >= _stable.debtTotalSupply(e) + _variable.debtTotalSupply(e);
