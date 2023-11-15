@@ -35,7 +35,41 @@ library DataTypes {
     uint128 isolationModeTotalDebt;
   }
 
-  struct ReserveConfigurationMap {
+struct ReserveConfigurationMap {
+    uint256 data; //original data
+    // splitting to two object to avoid "Stack too deep error"
+    // for having more than 16 local variables in the same scope.
+    ReserveConfigurationMap_ints intData;
+    ReserveConfigurationMap_bools boolData;
+  }
+
+  struct ReserveConfigurationMap_ints {
+    
+    uint256 Ltv;                     
+    uint256 LiquidationThreshold;   
+    uint256 LiquidationBonus;       
+    uint256 Decimals;                    
+    uint256 ReserveFactor;          
+    uint256 BorrowCap;              
+    uint256 SupplyCap;              
+    uint256 LiquidationProtocolFee;
+    uint256 EModeCategory;          
+    uint256 UnbackedMintCap;       
+    uint256 DebtCeiling; 
+  }
+
+  struct ReserveConfigurationMap_bools {
+    bool Active;                  
+    bool Frozen;                  
+    bool BorrowingEnabled;               
+    bool StableBorrowingEnabled;        
+    bool Paused;                  
+    bool BorrowableInIsolation; 
+    bool SiloedBorrowing;        
+    bool FlashLoanEnabled;
+  }
+
+  struct ReserveConfigurationMap_orig {
     //bit 0-15: LTV
     //bit 16-31: Liq. threshold
     //bit 32-47: Liq. bonus
@@ -54,13 +88,31 @@ library DataTypes {
     //bit 152-167 liquidation protocol fee
     //bit 168-175 eMode category
     //bit 176-211 unbacked mint cap in whole tokens, unbackedMintCap == 0 => minting disabled
-    //bit 212-251 debt ceiling for isolation mode with (ReserveConfiguration::DEBT_CEILING_DECIMALS) decimals
+    //bit 212-251 debt ceiling for isolation mode with (ReserveConfiguration::DEBTCEILING_DECIMALS) decimals
     //bit 252-255 unused
 
     uint256 data;
   }
 
   struct UserConfigurationMap {
+      //uint256 data; //original data
+      bool isBorrowing0;
+      bool isBorrowing1;
+      bool isBorrowing2;
+      bool isUsingAsCollateral0;
+      bool isUsingAsCollateral1;
+      bool isUsingAsCollateral2;
+    }
+
+  struct UserConfigurationMap_noBV {
+      //uint256 data; //original data
+      bool[] isBorrowing;
+      bool[] isUsingAsCollateral;
+      uint16 borrowingCount;
+      uint16 usingAsCollateralCount;
+    }
+
+  struct UserConfigurationMap_original {
     /**
      * @dev Bitmap of the users collaterals and borrows. It is divided in pairs of bits, one pair per asset.
      * The first bit indicates if an asset is used as collateral by the user, the second whether an
