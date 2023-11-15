@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.0;
 
-import {Errors} from '../munged/protocol/libraries/helpers/Errors.sol';
-import {DataTypes} from '../munged/protocol/libraries/types/DataTypes.sol';
+import {Errors} from '../helpers/Errors.sol';
+import {DataTypes} from '../types/DataTypes.sol';
 
 /**
  * @title ReserveConfiguration library
