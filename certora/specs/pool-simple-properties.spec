@@ -6,8 +6,8 @@ methods {
     // function _.rayDiv(uint256 a, uint256 b) internal => NONDET;
     // function _.percentMul(uint256 value, uint256 percentage) internal => NONDET;
     function _._getUserDebtInBaseCurrency(address user, DataTypes.ReserveData storage reserve, uint256 assetPrice, uint256 assetUnit) internal => NONDET;
-    function _.rayMul(uint256 a, uint256 b) internal => rayMulSummarization(a, b) expect uint256 ALL;
-    function _.rayDiv(uint256 a, uint256 b) internal => rayDivSummarization(a, b) expect uint256 ALL;
+    //function _.rayMul(uint256 a, uint256 b) internal => rayMulSummarization(a, b) expect uint256 ALL;
+    //function _.rayDiv(uint256 a, uint256 b) internal => rayDivSummarization(a, b) expect uint256 ALL;
     // function _.rayDiv(uint256 a, uint256 b) internal => NONDET; //JB UC
 }
 
