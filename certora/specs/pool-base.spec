@@ -12,7 +12,7 @@ using PoolHarness as PH;
 // using VariableDebtToken as _variable
 // using SimpleERC20 as _asset
 // using SymbolicPriceOracle as priceOracle
-using AaveProtocolDataProvider as _dataProvider;
+//using AaveProtocolDataProvider as _dataProvider;
 using ReserveConfiguration as RC;
 using SimpleERC20 as _underlyingAsset;
 
