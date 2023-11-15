@@ -2,11 +2,11 @@
 pragma solidity 0.8.10;
 
 import {Pool} from '../munged/protocol/pool/Pool.sol';
-import {DataTypes} from '../../contracts/protocol/libraries/types/DataTypes.sol';
-import {ReserveLogic} from '../../contracts//protocol/libraries/logic/ReserveLogic.sol';
-import {IPoolAddressesProvider} from '../../contracts//interfaces/IPoolAddressesProvider.sol';
+import {DataTypes} from '../munged/protocol/libraries/types/DataTypes.sol';
+import {ReserveLogic} from '../munged/protocol/libraries/logic/ReserveLogic.sol';
+import {IPoolAddressesProvider} from '../munged//interfaces/IPoolAddressesProvider.sol';
 
-import {IERC20} from '../../contracts/dependencies/openzeppelin/contracts/IERC20.sol';
+import {IERC20} from '../munged/dependencies/openzeppelin/contracts/IERC20.sol';
 
 
 
