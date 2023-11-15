@@ -11,67 +11,7 @@ methods {
     // function _.rayDiv(uint256 a, uint256 b) internal => NONDET; //JB UC
 }
 
-ghost mapping(uint256 => mapping(uint256 => uint256)) rayMulSummarizationValues;
-ghost mapping(uint256 => mapping(uint256 => uint256)) rayDivSummarizationValues;
 
-function rayMulSummarization(uint256 x, uint256 y) returns uint256
-{
-	if (x == 0) || (y == 0)
-	{
-		return 0;
-	}
-	if (x == RAY())
-	{
-		return y;
-	}
-	if (y == RAY())
-	{
-		return x;
-	}
-	
-	if (y > x)
-	{
-		if (y > RAY())
-		{
-			require rayMulSummarizationValues[y][x] >= x;
-		}
-		if (x > RAY())
-		{
-			require rayMulSummarizationValues[y][x] >= y;
-		}
-		return rayMulSummarizationValues[y][x];
-	}
-	else{
-		if (x > RAY())
-		{
-			require rayMulSummarizationValues[x][y] >= y;
-		}
-		if (y > RAY())
-		{
-			require rayMulSummarizationValues[x][y] >= x;
-		}
-		return rayMulSummarizationValues[x][y];
-	}
-}
-
-function rayDivSummarization(uint256 x, uint256 y) returns uint256
-{
-	if (x == 0)
-	{
-		return 0;
-	}
-	if (y == RAY())
-	{
-		return x;
-	}
-	if (y == x)
-	{
-		return RAY();
-	}
-	require y > RAY() => rayDivSummarizationValues[x][y] <= x;
-	require y < RAY() => x <= rayDivSummarizationValues[x][y];
-	return rayDivSummarizationValues[x][y];
-}
 
 // Passing for PoolHarness:
 // https://prover.certora.com/output/40577/e75bfa369a10490ca0cc71992984dc54/?anonymousKey=c12450d39df13d66fd92b82819c9dcc7f66d2012
