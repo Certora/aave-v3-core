@@ -57,7 +57,8 @@ methods {
     //function _.isBorrowAllowed() external => NONDET;
     
     // PoolHarness
-    // function getCurrScaledVariableDebt(address) external returns (uint256) envfree;
+    function getCurrScaledVariableDebt(address) external returns (uint256) envfree;
+    function getReserveNormalizedVariableDebt(address) external returns (uint256) envfree;
 
 
     // function _.calculateLinearInterest(uint256, uint40) internal => ALWAYS(1000000000000000000000000000); // this is not good dont use this
