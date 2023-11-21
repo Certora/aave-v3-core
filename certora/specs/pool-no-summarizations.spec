@@ -1,9 +1,19 @@
 import "pool-base.spec";
+//import "pool_mintBurnIndex.spec";
 
 methods {
     // function _.calculateInterestRates(DataTypes.CalculateInterestRatesParams storage params) external => NONDET;
     // function _.calculateInterestRates(DataTypes.CalculateInterestRatesParams params) external => calculateInterestRatesMock(params) expect uint256, uint256, uint256 ALL;
     function _.getACLManager() external => DISPATCHER(true);
+    function _.hasRole(bytes32 b ,address a) external => DISPATCHER(true);
+    function _.isBridge(address a) external => DISPATCHER(true);
+
+    function _.getReservesList() external => DISPATCHER(true);
+    function _.getReserveData(address a) external => DISPATCHER(true);
+
+    function _.symbol() external => DISPATCHER(true);
+    
+    
 }
 
 
@@ -13,6 +23,26 @@ function calculateInterestRatesMock(DataTypes.CalculateInterestRatesParams param
     uint256 stableBorrowRate = 1;
     uint256 variableBorrowRate = 1;
 	return (liquidityRate, stableBorrowRate, variableBorrowRate);
+}
+
+rule indexGteRay(method f)
+{
+    address asset;
+    env e;
+	calldataarg arg;
+    uint256 indexBefore = getReserveLiquidityIndex(e, asset);
+    require indexBefore >= RAY();
+	f(e, arg); 
+    uint256 indexAfter = getReserveLiquidityIndex(e, asset);
+    assert indexAfter >= RAY();
+}
+
+rule dummy(method f)
+{
+    env e;
+	calldataarg arg;
+	f(e, arg); 
+    assert true;
 }
 
 // rule depositUpdatesUserATokenBalance(env e) {

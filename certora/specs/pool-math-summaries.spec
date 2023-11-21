@@ -102,7 +102,7 @@ function wadToRayPreciseSummarization(uint256 x) returns uint256
 		return 0;
 	}
     mathint c = x * WadRay_ratio();
-    assert c <= max_uint256;
+    require c <= max_uint256;
 	return require_uint256(c);
 }
 

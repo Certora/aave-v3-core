@@ -32,4 +32,8 @@ contract PoolHarness is Pool {
     function getTotalATokenSupply(address asset) public view returns (uint256) {
         return IERC20(_reserves[asset].aTokenAddress).totalSupply();
     }
+
+    function getReserveLiquidityIndex(address asset) public view returns (uint256) {
+        return _reserves[asset].liquidityIndex;
+    } 
 }
