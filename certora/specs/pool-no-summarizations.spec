@@ -12,8 +12,10 @@ methods {
     function _.getReserveData(address a) external => DISPATCHER(true);
 
     function _.symbol() external => DISPATCHER(true);
-    
-    
+    function _.isFlashBorrower(address a) external => DISPATCHER(true);
+    function _.isBorrowAllowed() external => DISPATCHER(true);
+
+    function _.executeOperation(address[] a ,uint256[]b ,uint256[]c ,address d ,bytes e )
 }
 
 
