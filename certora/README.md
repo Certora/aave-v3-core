@@ -47,3 +47,6 @@ which can then be checked into git.
 Note: there have been reports of unexpected behavior on mac, see
 [issue CUST-62](https://certora.atlassian.net/browse/CUST-62?atlOrigin=eyJpIjoiZWI1MGFjNGZkZGE0NGFlNjkwYjUwYjY2NmE4ZmQ1OTIiLCJwIjoiaiJ9).
 
+Our current `munging` replaces files `DataTypes.sol`, `ReserveConfiguration.sol` and `UserConfiguration.sol` by mock objects that provide the same functionality but don't use bitwise operations. This increases performance of our solver. After running `make munged`, the original files will be copied to `munged` folder with suffix `_orig` so that it's easy to switch back to the original implementation if needed. 
+
+The mock objects have been verified by `certora/specs/UserConfiguration.spec` and `certora/specs/ReserveConfiguration.spec` and all rules are passing.
