@@ -36,4 +36,12 @@ contract PoolHarness is Pool {
     function getReserveLiquidityIndex(address asset) public view returns (uint256) {
         return _reserves[asset].liquidityIndex;
     } 
+
+    function getReserveStableBorrowRate(address asset) public view returns (uint256) {
+        return _reserves[asset].currentStableBorrowRate;
+    } 
+
+    function getReserveVariableBorrowIndex(address asset) public view returns (uint256) {
+        return _reserves[asset].variableBorrowIndex;
+    } 
 }

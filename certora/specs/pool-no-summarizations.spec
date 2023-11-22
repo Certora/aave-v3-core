@@ -13,9 +13,21 @@ methods {
 
     function _.symbol() external => DISPATCHER(true);
     function _.isFlashBorrower(address a) external => DISPATCHER(true);
-    function _.isBorrowAllowed() external => DISPATCHER(true);
 
     function _.executeOperation(address[] a, uint256[]b, uint256[]c, address d, bytes e) external => DISPATCHER(true);
+    function _.totalSupply() external => DISPATCHER(true);
+
+    function _.getAverageStableRate() external => DISPATCHER(true);
+    function _.isPoolAdmin(address a) external => DISPATCHER(true);
+    function _.getConfiguration(address a) external => DISPATCHER(true);
+
+    //IPriceOracleSentinel
+    function _.isBorrowAllowed() external => DISPATCHER(true);
+    function _.isLiquidationAllowed() external => DISPATCHER(true);
+    function _.setSequencerOracle(address newSequencerOracle) external => DISPATCHER(true);
+    function _.setGracePeriod(uint256 newGracePeriod) external => DISPATCHER(true);
+    function _.getGracePeriod() external => DISPATCHER(true);
+
 }
 
 
@@ -27,7 +39,9 @@ function calculateInterestRatesMock(DataTypes.CalculateInterestRatesParams param
 	return (liquidityRate, stableBorrowRate, variableBorrowRate);
 }
 
-rule indexGteRay(method f)
+rule liquidityIndexGteRay(method f) filtered 
+    { f -> f.contract == currentContract && 
+           f.selector != sig:dropReserve(address).selector }
 {
     address asset;
     env e;
@@ -36,6 +50,34 @@ rule indexGteRay(method f)
     require indexBefore >= RAY();
 	f(e, arg); 
     uint256 indexAfter = getReserveLiquidityIndex(e, asset);
+    assert indexAfter >= RAY();
+}
+
+rule stableBorrowRateGteRay(method f) filtered 
+    { f -> f.contract == currentContract && 
+           f.selector != sig:dropReserve(address).selector }
+{
+    address asset;
+    env e;
+	calldataarg arg;
+    uint256 indexBefore = getReserveStableBorrowRate(e, asset);
+    require indexBefore >= RAY();
+	f(e, arg); 
+    uint256 indexAfter = getReserveStableBorrowRate(e, asset);
+    assert indexAfter >= RAY();
+}
+
+rule variableBorrowIndexGteRay(method f) filtered 
+    { f -> f.contract == currentContract && 
+           f.selector != sig:dropReserve(address).selector }
+{
+    address asset;
+    env e;
+	calldataarg arg;
+    uint256 indexBefore = getReserveVariableBorrowIndex(e, asset);
+    require indexBefore >= RAY();
+	f(e, arg); 
+    uint256 indexAfter = getReserveVariableBorrowIndex(e, asset);
     assert indexAfter >= RAY();
 }
 
