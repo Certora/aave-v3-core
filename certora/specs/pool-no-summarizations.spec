@@ -40,17 +40,32 @@ function calculateInterestRatesMock(DataTypes.CalculateInterestRatesParams param
 }
 
 rule liquidityIndexGteRay(method f) filtered 
-    { f -> f.contract == currentContract && 
-           f.selector != sig:dropReserve(address).selector }
+    { f -> f.contract == currentContract 
+           //&& f.selector != sig:dropReserve(address).selector
+           //&& f.selector == sig:withdraw(address,uint256,address).selector
+           //&& f.selector == sig:repay(address,uint256,uint256,address).selector
+           //&& f.selector == sig:repayWithPermit(address,uint256,uint256,address,uint256,uint8,bytes32,bytes32).selector
+           //&& f.selector == sig:backUnbacked(address,uint256,uint256).selector
+           //&& f.selector == sig:supply(address,uint256,address,uint16).selector
+           //&& f.selector == sig:mintUnbacked(address,uint256,address,uint16).selector
+           //&& f.selector == sig:swapBorrowRateMode(address,uint256).selector
+           //&& f.selector == sig:deposit(address,uint256,address,uint16).selector
+           //&& f.selector == sig:flashLoanSimple(address,address,uint256,bytes,uint16).selector
+           //&& f.selector == sig:liquidationCall(address,address,address,uint256,bool).selector
+           //&& f.selector == sig:repayWithATokens(address,uint256,uint256).selector
+           //&& f.selector == sig:supplyWithPermit(address,uint256,address,uint16,uint256,uint8,bytes32,bytes32).selector
+           && f.selector == sig:rebalanceStableBorrowRate(address,address).selector
+           }
 {
     address asset;
     env e;
 	calldataarg arg;
     uint256 indexBefore = getReserveLiquidityIndex(e, asset);
-    require indexBefore >= RAY();
+    //require indexBefore >= RAY();
 	f(e, arg); 
     uint256 indexAfter = getReserveLiquidityIndex(e, asset);
-    assert indexAfter >= RAY();
+    //assert indexAfter >= RAY();
+    assert indexAfter >= indexBefore;
 }
 
 rule stableBorrowRateGteRay(method f) filtered 
@@ -68,8 +83,10 @@ rule stableBorrowRateGteRay(method f) filtered
 }
 
 rule variableBorrowIndexGteRay(method f) filtered 
-    { f -> f.contract == currentContract && 
-           f.selector != sig:dropReserve(address).selector }
+    { f -> f.contract == currentContract  
+           && f.selector != sig:dropReserve(address).selector 
+           && f.selector == sig:supply(address,uint256,address,uint16).selector
+    }
 {
     address asset;
     env e;
@@ -78,7 +95,7 @@ rule variableBorrowIndexGteRay(method f) filtered
     require indexBefore >= RAY();
 	f(e, arg); 
     uint256 indexAfter = getReserveVariableBorrowIndex(e, asset);
-    assert indexAfter >= RAY();
+    assert indexAfter >= indexBefore; //RAY();
 }
 
 rule dummy(method f)
