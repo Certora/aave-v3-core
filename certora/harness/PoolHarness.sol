@@ -34,6 +34,11 @@ contract PoolHarness is Pool {
 
     function getStableRateConstant() public view returns (uint256) {
         return uint256(DataTypes.InterestRateMode.STABLE);
+    }
+
+    function getVariableRateConstant() public view returns (uint256) {
+        return uint256(DataTypes.InterestRateMode.VARIABLE);
+    }
 
     function getTotalDebt(address asset) public view returns (uint256) {
         uint256 totalVariable = IERC20(_reserves[asset].variableDebtTokenAddress).totalSupply();
@@ -43,5 +48,17 @@ contract PoolHarness is Pool {
 
     function getTotalATokenSupply(address asset) public view returns (uint256) {
         return IERC20(_reserves[asset].aTokenAddress).totalSupply();
+    }
+
+    function getAvailableLiquidity(address asset) public view returns (uint256) {
+        return IERC20(asset).balanceOf(_reserves[asset].aTokenAddress);
+    }
+
+    function getStableRate(address asset) public view returns (uint256) {
+        return _reserves[asset].currentStableBorrowRate;
+    }
+
+    function ballanceOfInAsset(address asset, address user) public view returns (uint256) {
+        return IERC20(_reserves[asset].aTokenAddress).balanceOf(user);
     }
 }

@@ -276,7 +276,7 @@ rule normalized_income_changes_with(env e, method f) filtered {
     assert normalized_income_before == normalized_income_after;
 }
 
-// P19: It's not possible to borrow with an interest rate mode that is different than 1 (stable) or 2 (variable)
+// @title P19: It's not possible to borrow with an interest rate mode that is different than 1 (stable) or 2 (variable)
 // Passing: https://prover.certora.com/output/31688/5cb1398883fb4162854b74af0bae79e9/?anonymousKey=0d7f3c6dc8249ba58a6af0d749ac7c9782611817
 rule borrowOnlyVariableOrStableRate(env e) {
     address asset;
@@ -291,7 +291,7 @@ rule borrowOnlyVariableOrStableRate(env e) {
 }
 
 
-// P21: It's not possible to borrow at a stable rate in a reserve where the stable rate is not enabled.
+// @title P21: It's not possible to borrow at a stable rate in a reserve where the stable rate is not enabled.
 // Passing: https://prover.certora.com/output/31688/1a54ecdfe0c442c29c13e014a34fe6d8/?anonymousKey=c93d707061d275058a3245dbbfb5beb39efe3c57
 rule borrowStableRateOnlyWhenEnabled(env e) {
     address asset;
@@ -306,5 +306,73 @@ rule borrowStableRateOnlyWhenEnabled(env e) {
     assert !isStableRateEnabled(e, asset) => borrowRevert;
 }
 
+// @title P20: It's not possible to borrow more than the available liquidity in the reserve.
+// @dev: Aave works on similar invariant so this one is postponed
 invariant cannotBorrowMoreThanReserve(env e)
     to_mathint(_aToken.scaledTotalSupply(e)) >= _stable.debtTotalSupply(e) + _variable.debtTotalSupply(e);
+
+// @title P22: It's not possible to borrow at a stable rate more than the percentage over the available liquidity defined by the parameters returned by getMaxStableRateBorrowSizePercent()
+rule notBorrowMoreThanMaxStableRate(env e) {
+    address asset;
+    uint256 amount;
+    uint16 referralCode;
+    address onBehalfOf;
+
+    uint256 maxStableRate = MAX_STABLE_RATE_BORROW_SIZE_PERCENT(e);
+    uint256 availableLiquidity = getAvailableLiquidity(e, asset);
+    uint256 maxLoanSizeStable = require_uint256(require_uint256(require_uint256(availableLiquidity*maxStableRate)+5000)/10000);
+    borrow@withrevert(e, asset, amount, getStableRateConstant(e), referralCode, onBehalfOf);
+
+    assert (amount > maxLoanSizeStable) => lastReverted;
+}
+
+// @title P24: A borrower can only borrow up to the amount which would set the HF to 1 (alternatively written, after a borrow action the HF of the borrower is always > 1)
+rule lowHealthFactor(env e) {
+    address asset;
+    uint256 amount;
+    uint16 referralCode;
+    uint256 interestRateMode;
+    address onBehalfOf;
+    uint256 healthFactorBefore;
+    uint256 healthFactor;
+
+    require(e.msg.sender != currentContract);
+    _, _, _, _, _, healthFactorBefore = getUserAccountData(e, e.msg.sender);
+
+    borrow@withrevert(e, asset, amount, interestRateMode, referralCode, onBehalfOf);
+    bool borrowReverted = lastReverted;
+
+    _, _, _, _, _, healthFactor = getUserAccountData(e, e.msg.sender);
+
+    assert !borrowReverted => (healthFactor >= 1);
+    //satisfy (!borrowReverted) && (healthFactor < 1);
+}
+
+// @title P25: Whenever a user borrows an asset at a variable rate the balanceOf(user) on the VariableDebtToken increases by the amount borrowed
+rule balanceIncreaseAfterBorrowVariable(env e) {
+    address asset;
+    uint256 amount;
+    uint16 referralCode;
+    address onBehalfOf;
+
+
+    uint256 balanceBefore = ballanceOfInAsset(e, asset, e.msg.sender);
+    borrow(e, asset, amount, getVariableRateConstant(e), referralCode, onBehalfOf);
+    uint256 balanceAfter = ballanceOfInAsset(e, asset, e.msg.sender);
+
+    assert balanceAfter == require_uint256(balanceBefore + amount);
+}
+
+// @title P26: Whenever a user borrows an asset at a stable rate, the  balanceOf(user) on the StableDebtToken increases by the amount borrowed
+rule balanceIncreaseAfterBorrowStable(env e) {
+    address asset;
+    uint256 amount;
+    uint16 referralCode;
+    address onBehalfOf;
+
+    uint256 balanceBefore = ballanceOfInAsset(e, asset, e.msg.sender);
+    borrow(e, asset, amount, getStableRateConstant(e), referralCode, onBehalfOf);
+    uint256 balanceAfter = ballanceOfInAsset(e, asset, e.msg.sender);
+
+    assert balanceAfter == require_uint256(balanceBefore + amount);
+}
