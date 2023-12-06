@@ -56,7 +56,7 @@ methods {
     function _.getAssetPrice(address) external => NONDET;
     function _.getPriceOracle() external => ALWAYS(2);
     function _.getPriceOracleSentinel() external => ALWAYS(4);
-    function _.isBorrowAllowed() external => NONDET;
+    // function _.isBorrowAllowed() external => NONDET;
     
     // PoolHarness
     // function getCurrScaledVariableDebt(address) external returns (uint256) envfree;
