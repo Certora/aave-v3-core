@@ -1,20 +1,23 @@
-methods {
-    setBorrowing(uint256, bool) envfree
-    setUsingAsCollateral(uint256, bool) envfree
-    isUsingAsCollateralOrBorrowing(uint256) returns bool envfree
-    isBorrowing(uint256) returns bool envfree
-    isUsingAsCollateral(uint256) returns bool envfree
-	isUsingAsCollateralOne() returns bool envfree
-    isUsingAsCollateralAny() returns bool envfree
-    isBorrowingOne() returns (bool) envfree
-    isBorrowingAny() returns bool envfree
-    isEmpty() returns bool envfree    
-    getIsolationModeState() returns (bool, address, uint256) envfree
-    getSiloedBorrowingState() returns (bool, address) envfree
-	isIsolated() returns bool envfree
 
+
+methods {
+    function setBorrowing(uint256, bool) external envfree;
+    function setUsingAsCollateral(uint256, bool) external envfree;
+    function isUsingAsCollateralOrBorrowing(uint256) external returns bool envfree;
+    function isBorrowing(uint256) external returns bool envfree;
+    function isUsingAsCollateral(uint256) external returns bool envfree;
+    function isUsingAsCollateralOne() external returns bool envfree;
+    function isUsingAsCollateralAny() external returns bool envfree;
+    function isBorrowingOne() external returns (bool) envfree;
+    function isBorrowingAny() external returns bool envfree;
+    function isEmpty() external returns bool envfree;
+    function isValidState() external returns bool envfree;
+    function getIsolationModeState() external returns (bool, address, uint256) envfree;
+    function getSiloedBorrowingState() external returns (bool, address) envfree;
 }
 
+//invariant validState() 
+//    isValidState();
 
 // checks the integrity of set Borrowing function and correct retrieval of the corresponding getter
 rule setBorrowing(uint256 reserveIndex, bool borrowing)
@@ -79,7 +82,7 @@ rule setCollateralNoChangeToOther(uint256 reserveIndex, uint256 reserveIndexOthe
 // }
 
 invariant isUsingAsCollateralOrBorrowing(uint256 reserveIndex ) 
-	(isUsingAsCollateral(reserveIndex) || isBorrowing(reserveIndex)) <=>  isUsingAsCollateralOrBorrowing(reserveIndex) 
+    (isUsingAsCollateral(reserveIndex) || isBorrowing(reserveIndex)) <=>  isUsingAsCollateralOrBorrowing(reserveIndex);
 
 // // if at 1 asset is used as collateral and isUsingAsCollateralOne, then any other asset is not used as collateral
 // rule integrityOfisUsingAsCollateralOne(uint256 reserveIndex, uint256 reserveIndexOther){
@@ -90,7 +93,7 @@ invariant isUsingAsCollateralOrBorrowing(uint256 reserveIndex )
 
 invariant integrityOfisUsingAsCollateralOne(uint256 reserveIndex, uint256 reserveIndexOther)
     isUsingAsCollateral(reserveIndex) && isUsingAsCollateralOne() => 
-        !isUsingAsCollateral(reserveIndexOther) || reserveIndexOther == reserveIndex
+    !isUsingAsCollateral(reserveIndexOther) || reserveIndexOther == reserveIndex;
 
 // // if at least 1 asset is used as collateral, isUsingAsCollateralAny is true
 // // ** not implmented yet - if isUsingAsCollateralAny is true then there exist at least 1 asset that is being used as collateral
@@ -101,7 +104,7 @@ invariant integrityOfisUsingAsCollateralOne(uint256 reserveIndex, uint256 reserv
 // }
 
 invariant integrityOfisUsingAsCollateralAny(uint256 reserveIndex)
-    isUsingAsCollateral(reserveIndex) => isUsingAsCollateralAny()
+    isUsingAsCollateral(reserveIndex) => isUsingAsCollateralAny();
 
 // // if at 1 asset is used for borrowing and isBorrowingOne, then any other asset is not used for borrowing
 // rule integrityOfisBorrowingOne(uint256 reserveIndex, uint256 reserveIndexOther){
@@ -111,7 +114,7 @@ invariant integrityOfisUsingAsCollateralAny(uint256 reserveIndex)
 // }
 
 invariant integrityOfisBorrowingOne(uint256 reserveIndex, uint256 reserveIndexOther)
-    isBorrowing(reserveIndex) && isBorrowingOne() => !isBorrowing(reserveIndexOther) || reserveIndexOther == reserveIndex
+    isBorrowing(reserveIndex) && isBorrowingOne() => !isBorrowing(reserveIndexOther) || reserveIndexOther == reserveIndex;
 
 // // if at least 1 asset is borrowed, isBorrowing is true
 // // ** not implmented yet - if isBorrowingAny is true then there exist at least 1 asset that is being used for borrowing
@@ -122,20 +125,12 @@ invariant integrityOfisBorrowingOne(uint256 reserveIndex, uint256 reserveIndexOt
 // }
 
 invariant integrityOfisBorrowingAny(uint256 reserveIndex)
-    isBorrowing(reserveIndex) => isBorrowingAny()
+    isBorrowing(reserveIndex) => isBorrowingAny();
 
-// // if user data is empty then for any index neither borrowing nor collateral is set
-// rule integrityOfEmpty(uint256 reserveIndex){
-//     bool borrowingOrCollateral = isUsingAsCollateralOrBorrowing(reserveIndex);
-//     bool anyBorrowed = isBorrowingAny();
-//     assert isEmpty() => !borrowingOrCollateral;
-// }
 
 invariant integrityOfEmpty(uint256 reserveIndex) 
-	 isEmpty() => !isBorrowingAny() && !isUsingAsCollateralOrBorrowing(reserveIndex)
+    isEmpty() => !isBorrowingAny() && !isUsingAsCollateralOrBorrowing(reserveIndex);
 
-// invariant notEmpty(uint256 reserveIndex) 
-// 	(isBorrowingAny() ||  isUsingAsCollateral(reserveIndex)) => !isEmpty()
 
 // if IsolationModeState is active then there must be exactly one asset register as collateral.
 // note that this is a necessary requirement, but it is not sufficient.
@@ -146,8 +141,6 @@ rule integrityOfIsolationModeState(){
     assert answer => existExactlyOneCollateral;
 }
 
-// invariant integrityOfIsolationModeState(calldataarg args)
-//     !isUsingAsCollateralOne() => !isIsolated()
 
 // if IsolationModeState is active then there must be exactly one asset register as collateral.
 // note that this is a necessary requirement, but it is not sufficient.

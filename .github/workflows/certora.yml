@@ -31,7 +31,7 @@ jobs:
         with: { java-version: '11', java-package: jre }
 
       - name: Install certora cli
-        run: pip install certora-cli==3.6.8.post3
+        run: pip install certora-cli
 
       - name: Install solc
         run: |
@@ -46,7 +46,7 @@ jobs:
           make munged
           cd ..
           echo "key length" ${#CERTORAKEY}
-          sh certora/scripts/${{ matrix.rule }}
+          certoraRun certora/conf/${{ matrix.rule }}
         env:
           CERTORAKEY: ${{ secrets.CERTORAKEY }}
 
@@ -55,9 +55,9 @@ jobs:
       max-parallel: 16
       matrix:
         rule:
-          - verifyAToken.sh
-          - verifyPool.sh getReserveNormalizedVariableDebtCheck
-          - verifyReserveConfiguration.sh
-          - verifyStableTokenCLI.sh
-          - verifyUserConfigCLI.sh
-          - verifyVariableTokenCLI.sh
+          - AToken.conf
+          - Pool.conf
+          - ReserveConfiguration.conf
+          - StableTokenCLI.conf
+          - UserConfigCLI.conf
+          - VariableTokenCLI.conf
