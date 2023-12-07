@@ -89,8 +89,8 @@ methods {
 
     // function _.calculateUserAccountData(mapping(address => DataTypes.ReserveData) storage reservesData,mapping(uint256 => address) storage reservesList,mapping(uint8 => DataTypes.EModeCategory) storage eModeCategories,DataTypes.CalculateUserAccountDataParams memory params) internal => NONDET;
     function _._getUserBalanceInBaseCurrency(address user,DataTypes.ReserveData storage reserve,uint256 assetPrice,uint256 assetUnit) internal => NONDET;
-    function _.wadDiv(uint256 a, uint256 b) internal => NONDET;
-    function _.wadToRay(uint256 a) internal => NONDET;
+   // function _.wadDiv(uint256 a, uint256 b) internal => NONDET;
+   // function _.wadToRay(uint256 a) internal => NONDET;
     function _._calculateDomainSeparator() internal => NONDET;
 
 
@@ -122,7 +122,7 @@ methods {
 
 /* definitions and functions to be used within the spec file */
 
-definition RAY() returns uint256 = 10^27;
+// definition RAY() returns uint256 = 10^27;
 definition IS_UINT256(uint256 x) returns bool = ((x >= 0) && (x <= max_uint256));
 
 // definition ACTIVE_MASK() returns uint256 = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFFFFFFFFFF;

@@ -292,7 +292,7 @@ rule borrowOnlyVariableOrStableRate(env e) {
 
 
 // @title P21: It's not possible to borrow at a stable rate in a reserve where the stable rate is not enabled.
-// Passing: https://prover.certora.com/output/31688/1a54ecdfe0c442c29c13e014a34fe6d8/?anonymousKey=c93d707061d275058a3245dbbfb5beb39efe3c57
+// Passing: https://prover.certora.com/output/31688/566a7085f86e46db86aba7b76cc8e565/?anonymousKey=10ba8cd538750242841a1b225053d4157fee11c4
 rule borrowStableRateOnlyWhenEnabled(env e) {
     address asset;
     uint256 amount;
@@ -333,19 +333,29 @@ rule lowHealthFactor(env e) {
     uint16 referralCode;
     uint256 interestRateMode;
     address onBehalfOf;
+    uint256 totalCollateralInBaseCurrency;
+    uint256 totalDebtInBaseCurrency;
+    uint256 avgLtv;
+    uint256 availableBorrowsBase;
     uint256 healthFactorBefore;
-    uint256 healthFactor;
+    uint256 currentLiquidationThreshold;
 
     require(e.msg.sender != currentContract);
-    _, _, _, _, _, healthFactorBefore = getUserAccountData(e, e.msg.sender);
+    totalCollateralInBaseCurrency, totalDebtInBaseCurrency, availableBorrowsBase, currentLiquidationThreshold, avgLtv, healthFactorBefore = getUserAccountData(e, onBehalfOf);
+    require healthFactorBefore > 0;
 
     borrow@withrevert(e, asset, amount, interestRateMode, referralCode, onBehalfOf);
     bool borrowReverted = lastReverted;
 
-    _, _, _, _, _, healthFactor = getUserAccountData(e, e.msg.sender);
+    uint256 totalCollateralInBaseCurrency1;
+    uint256 totalDebtInBaseCurrency1;
+    uint256 avgLtv1;
+    uint256 availableBorrowsBase1;
+    uint256 healthFactor;
+    uint256 currentLiquidationThreshold1;
+    totalCollateralInBaseCurrency1, totalDebtInBaseCurrency1, availableBorrowsBase1, currentLiquidationThreshold1, avgLtv1, healthFactor = getUserAccountData(e, onBehalfOf);
 
     assert !borrowReverted => (healthFactor >= 1);
-    //satisfy (!borrowReverted) && (healthFactor < 1);
 }
 
 // @title P25: Whenever a user borrows an asset at a variable rate the balanceOf(user) on the VariableDebtToken increases by the amount borrowed
