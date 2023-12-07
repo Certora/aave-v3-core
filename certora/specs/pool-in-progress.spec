@@ -144,3 +144,23 @@ rule totalChangesOnlyWithInitDropSupplyMint(env e, method f) filtered{
 
     assert totalSupplyBefore == totalSupplyAfter; 
 }
+
+// @title After withdraw, the withdrawn amount is subtracted from the user aToken balance.
+// WIP
+// Failing here: https://prover.certora.com/output/40577/836d9b39c113460a8dab6530a52ceb6c/?anonymousKey=6da278a0a4287899be2df3d7d03faacdd6b2dbd0
+rule withdrawUpdatesBalances(env e) {
+    address asset;
+    uint256 amount;
+    address to;
+    uint16 referralCode;
+    mathint balance_before = aTokenBalanceOf(e, e.msg.sender);
+
+    require asset != to;
+    require to != _aToken;
+
+    withdraw(e, asset, amount, to);
+
+    mathint balance_after = aTokenBalanceOf(e, e.msg.sender);
+
+    assert balance_before - balance_after == to_mathint(amount);
+}

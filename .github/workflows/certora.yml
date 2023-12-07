@@ -61,3 +61,4 @@ jobs:
           - StableTokenCLI.conf
           - UserConfigCLI.conf
           - VariableTokenCLI.conf
+          - PoolSimpleProperties.conf
