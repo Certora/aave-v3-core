@@ -90,7 +90,7 @@ rule liquidityIndexNonDecresingFor_cumulateToLiquidityIndex()
 // Almost Proved. In these runs (only for liquidationCall timeouts):
 // repayWithATokens: https://prover.certora.com/output/40577/cde7addcfdf94737bc83afb01c8935db/?anonymousKey=160f24175b6c590e99b2c5f24501854ed8cabe90
 // repayWithPermit: https://prover.certora.com/output/40577/722a0fcc745e4a6aad84aadcfafe051f/?anonymousKey=ba5250252cac965ece652255af19c514ac338613
-// !!! liquidationCall: https://prover.certora.com/output/40577/4b3395d424dd453f8631c417058d8a58/?anonymousKey=5c3a840f6f5c7d948752fc37de801f92cd7819fa
+// TIMEOUT !!! liquidationCall: https://prover.certora.com/output/40577/4b3395d424dd453f8631c417058d8a58/?anonymousKey=5c3a840f6f5c7d948752fc37de801f92cd7819fa
 // repay: https://prover.certora.com/output/40577/1cfbfdeca1f742e289f7db3e5b99bb5a/?anonymousKey=25806694d7eb991c9b66f3268b8a055b291b7fc9
 // everything else: https://prover.certora.com/output/40577/9499b88814524c0ea03e2286250cb79c/?anonymousKey=8391a758d5594555c69cc3230509fe0bb9a478bf
 rule indexChangesOnlyWith_updateIndexes(env e, method f) filtered {
@@ -145,77 +145,78 @@ rule indexesNonDecresingFor_updateIndexes()
 // We proved something similar here:
 // https://prover.certora.com/output/40577/fad5aaf8dcd749448281077a94787820/?anonymousKey=0038e1e03f375e0e1a5b77a77f703ed059a86afd
 // But still we keep this little stronger rule. This rule is currently timeouting:
+// TIMEOUT:
 // https://prover.certora.com/output/40577/91d9cf9aac8846ad9e84569b4a05fded/?anonymousKey=01b9afcf3cbfb036c9a02557cfe9ac1d575ecfbe
-rule depositIncreasesUserBalance(env e) {
-    address asset;
-    uint256 amount;
-    address onBehalfOf;
-    uint16 referralCode;
-    mathint balance_before = aTokenBalanceOf(e, onBehalfOf);
-    require balance_before == 6*RAY();
-    mathint balance_before_sender = aTokenBalanceOf(e, e.msg.sender);
-    require balance_before_sender + balance_before_sender > balance_before_sender;
-    mathint underlying_balance_before = _underlyingAsset.balanceOf(e, onBehalfOf);
-    mathint underlying_balance_before_sender = _underlyingAsset.balanceOf(e, e.msg.sender);
-    require to_mathint(amount) == 3*RAY();
-    require asset != onBehalfOf;
-    require onBehalfOf != _aToken;
-    require e.msg.sender != _aToken;
-    require asset == _aToken.UNDERLYING_ASSET_ADDRESS(e);
-    mathint normalized_income_before = getReserveNormalizedIncome(e, asset);
-    require normalized_income_before == to_mathint(RAY());
+// rule depositIncreasesUserBalance(env e) {
+//     address asset;
+//     uint256 amount;
+//     address onBehalfOf;
+//     uint16 referralCode;
+//     mathint balance_before = aTokenBalanceOf(e, onBehalfOf);
+//     require balance_before == 6*RAY();
+//     mathint balance_before_sender = aTokenBalanceOf(e, e.msg.sender);
+//     require balance_before_sender + balance_before_sender > balance_before_sender;
+//     mathint underlying_balance_before = _underlyingAsset.balanceOf(e, onBehalfOf);
+//     mathint underlying_balance_before_sender = _underlyingAsset.balanceOf(e, e.msg.sender);
+//     require to_mathint(amount) == 3*RAY();
+//     require asset != onBehalfOf;
+//     require onBehalfOf != _aToken;
+//     require e.msg.sender != _aToken;
+//     require asset == _aToken.UNDERLYING_ASSET_ADDRESS(e);
+//     mathint normalized_income_before = getReserveNormalizedIncome(e, asset);
+//     require normalized_income_before == to_mathint(RAY());
 
-    // e.msg.sender pays amount of asset and aToken balance of 'onBehalfOf' increases by amount
-    deposit(e, asset, amount, onBehalfOf, referralCode);
+//     // e.msg.sender pays amount of asset and aToken balance of 'onBehalfOf' increases by amount
+//     deposit(e, asset, amount, onBehalfOf, referralCode);
 
-    mathint balance_after = aTokenBalanceOf(e, onBehalfOf);
-    mathint balance_after_sender = aTokenBalanceOf(e, e.msg.sender);
-    mathint underlying_balance_after = _underlyingAsset.balanceOf(e, onBehalfOf);
-    mathint underlying_balance_after_sender = _underlyingAsset.balanceOf(e, e.msg.sender);
-    mathint normalized_income_after = getReserveNormalizedIncome(e, asset);
-    mathint amountScaled;
+//     mathint balance_after = aTokenBalanceOf(e, onBehalfOf);
+//     mathint balance_after_sender = aTokenBalanceOf(e, e.msg.sender);
+//     mathint underlying_balance_after = _underlyingAsset.balanceOf(e, onBehalfOf);
+//     mathint underlying_balance_after_sender = _underlyingAsset.balanceOf(e, e.msg.sender);
+//     mathint normalized_income_after = getReserveNormalizedIncome(e, asset);
+//     mathint amountScaled;
 
-    assert normalized_income_before == normalized_income_after => balance_after > balance_before;
-}
+//     assert normalized_income_before == normalized_income_after => balance_after > balance_before;
+// }
 
 // @title When a user deposits X amount of an asset, he receives exactly X amount of the corresponding aToken.
-// Timeout:
+// TIMEOUT:
 // https://prover.certora.com/output/40577/c1bfa2d810f34762ba9af721b8ed45cf/?anonymousKey=dae12197a619d40fc71332968b1fce6ce2d04030
-rule depositUpdatesUserATokenBalance(env e) {
-    address asset;
-    uint256 amount;
-    address onBehalfOf;
-    uint16 referralCode;
+// rule depositUpdatesUserATokenBalance(env e) {
+//     address asset;
+//     uint256 amount;
+//     address onBehalfOf;
+//     uint16 referralCode;
 
-    require to_mathint(amount) == 30*RAY(); //under approx
-    require asset != onBehalfOf;
-    require onBehalfOf != _aToken;
-    require e.msg.sender != _aToken;
-    require e.msg.sender != asset;
-    require asset == _aToken.UNDERLYING_ASSET_ADDRESS(e);
+//     require to_mathint(amount) == 30*RAY(); //under approx
+//     require asset != onBehalfOf;
+//     require onBehalfOf != _aToken;
+//     require e.msg.sender != _aToken;
+//     require e.msg.sender != asset;
+//     require asset == _aToken.UNDERLYING_ASSET_ADDRESS(e);
 
-    mathint balanceBefore = aTokenBalanceOf(e, onBehalfOf);
-    mathint superBalanceBefore = _aToken.superBalance(e, onBehalfOf);
-    require superBalanceBefore == 20*RAY(); //under approx
+//     mathint balanceBefore = aTokenBalanceOf(e, onBehalfOf);
+//     mathint superBalanceBefore = _aToken.superBalance(e, onBehalfOf);
+//     require superBalanceBefore == 20*RAY(); //under approx
 
-    mathint liquidityIndexBefore = getLiquidityIndex(e, asset);
-    require liquidityIndexBefore == to_mathint(RAY()); //under approx
-    mathint normalized_income_before = getReserveNormalizedIncome(e, asset);
-    require normalized_income_before == to_mathint(RAY());
+//     mathint liquidityIndexBefore = getLiquidityIndex(e, asset);
+//     require liquidityIndexBefore == to_mathint(RAY()); //under approx
+//     mathint normalized_income_before = getReserveNormalizedIncome(e, asset);
+//     require normalized_income_before == to_mathint(RAY());
 
-    deposit(e, asset, amount, onBehalfOf, referralCode);
+//     deposit(e, asset, amount, onBehalfOf, referralCode);
 
-    mathint balanceAfter = aTokenBalanceOf(e, onBehalfOf);
-    mathint normalized_income_after = getReserveNormalizedIncome(e, asset);
-    require normalized_income_after == normalized_income_before;
+//     mathint balanceAfter = aTokenBalanceOf(e, onBehalfOf);
+//     mathint normalized_income_after = getReserveNormalizedIncome(e, asset);
+//     require normalized_income_after == normalized_income_before;
 
-    mathint liquidityIndexAfter = getLiquidityIndex(e, asset);
+//     mathint liquidityIndexAfter = getLiquidityIndex(e, asset);
 
-    require liquidityIndexAfter == liquidityIndexBefore;
+//     require liquidityIndexAfter == liquidityIndexBefore;
 
-    assert balanceAfter >= balanceBefore + amount - RAY() - RAY();
-    assert balanceAfter <= balanceBefore + amount + RAY() + RAY();
-}
+//     assert balanceAfter >= balanceBefore + amount - RAY() - RAY();
+//     assert balanceAfter <= balanceBefore + amount + RAY() + RAY();
+// }
 
 // @title When a user deposits X amount of an asset and the current liquidity index for this asset is 1, his scaled balance (=superBalance) increases by X.
 // Using superBalance is easier for the prover as we do not need to compute the balance from the scaled balance.
@@ -283,39 +284,20 @@ rule depositCannotChangeOthersATokenSuperBalance(env e) {
 }
 
 // @title Transferring AToken does not change AToken total supply.
+// TIMEOUT
 // Latest timeout: https://prover.certora.com/output/40577/1edb3b6f54404c2fbde79ef1b66553e6/?anonymousKey=8043b4fb6ff3e8ef32fd6f6db09de09e4b40acab
-rule transferATokenDoesntChangeTotal(env e, method f) filtered{
-    f -> !f.isView &&
-    f.selector != sig:initReserve(address,address, address, address, address).selector &&
-    f.selector != sig:dropReserve(address).selector
-} {
-    address user;
-    calldataarg args;
-    mathint balance_before = aTokenBalanceOf(e, user);
-    mathint total_supply_before = _aToken.totalSupply(e);
-    f(e, args);
-    mathint balance_after = aTokenBalanceOf(e, user);
-    mathint total_supply_after = _aToken.totalSupply(e);
+// rule transferATokenDoesntChangeTotal(env e, method f) filtered{
+//     f -> !f.isView &&
+//     f.selector != sig:initReserve(address,address, address, address, address).selector &&
+//     f.selector != sig:dropReserve(address).selector
+// } {
+//     address user;
+//     calldataarg args;
+//     mathint balance_before = aTokenBalanceOf(e, user);
+//     mathint total_supply_before = _aToken.totalSupply(e);
+//     f(e, args);
+//     mathint balance_after = aTokenBalanceOf(e, user);
+//     mathint total_supply_after = _aToken.totalSupply(e);
 
-    assert balance_before != balance_after => total_supply_before == total_supply_after;
-}
-
-//@title
-// Latest timeout:
-// https://prover.certora.com/output/40577/836d9b39c113460a8dab6530a52ceb6c/?anonymousKey=6da278a0a4287899be2df3d7d03faacdd6b2dbd0
-rule withdrawUpdatesBalances(env e) {
-    address asset;
-    uint256 amount;
-    address to;
-    uint16 referralCode;
-    mathint balance_before = aTokenBalanceOf(e, e.msg.sender);
-
-    require asset != to;
-    require to != _aToken;
-
-    withdraw(e, asset, amount, to);
-
-    mathint balance_after = aTokenBalanceOf(e, e.msg.sender);
-
-    assert balance_before - balance_after == to_mathint(amount);
-}
+//     assert balance_before != balance_after => total_supply_before == total_supply_after;
+// }
