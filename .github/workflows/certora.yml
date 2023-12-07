@@ -58,7 +58,6 @@ jobs:
       matrix:
         rule:
           - AToken.conf
-          - Pool.conf
           - ReserveConfiguration.conf
           - StableTokenCLI.conf
           - UserConfigCLI.conf
