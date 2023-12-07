@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - certora
   pull_request:
     branches:
       - master
