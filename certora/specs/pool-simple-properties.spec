@@ -1,5 +1,5 @@
 import "pool-base.spec";
-import "cvlmath.spec";
+import "CVLMath.spec";
 
 methods {
     // math
