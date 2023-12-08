@@ -164,3 +164,106 @@ rule withdrawUpdatesBalances(env e) {
 
     assert balance_before - balance_after == to_mathint(amount);
 }
+
+// @title P20: It's not possible to borrow more than the available liquidity in the reserve.
+// @dev: Aave works on similar invariant so this one is obsolete
+// invariant cannotBorrowMoreThanReserve(env e)
+//     to_mathint(_aToken.scaledTotalSupply(e)) >= _stable.debtTotalSupply(e) + _variable.debtTotalSupply(e);
+
+
+// @title P21: It's not possible to borrow at a stable rate in a reserve where the stable rate is not enabled.
+// @dev: This rule has been proved but now it fails after diffterent configurations were merged.
+// Passing: https://prover.certora.com/output/31688/566a7085f86e46db86aba7b76cc8e565/?anonymousKey=10ba8cd538750242841a1b225053d4157fee11c4
+// Failing in the current setup: https://prover.certora.com/output/31688/44e15483753a4ca28b620fc4180678cb/?anonymousKey=81bad1c54c7f098635d5e9cbca93cf2be07f2449
+rule borrowStableRateOnlyWhenEnabled(env e) {
+    address asset;
+    uint256 amount;
+    uint256 interestRateMode;
+    uint16 referralCode;
+    address onBehalfOf;
+
+    borrow@withrevert(e, asset, amount, getStableRateConstant(e), referralCode, onBehalfOf);
+    bool borrowRevert = lastReverted;
+
+    assert !isStableRateEnabled(e, asset) => borrowRevert;
+}
+
+// @title P22: It's not possible to borrow at a stable rate more than the percentage over the available liquidity defined by the parameters returned by getMaxStableRateBorrowSizePercent()
+// link: https://prover.certora.com/output/31688/23986e61346846878965d305995df7bd/?anonymousKey=2bfc3b014fec3129bc227dfe59dd494ba867bbee
+rule notBorrowMoreThanMaxStableRate(env e) {
+    address asset;
+    uint256 amount;
+    uint16 referralCode;
+    address onBehalfOf;
+
+    uint256 maxStableRate = MAX_STABLE_RATE_BORROW_SIZE_PERCENT(e);
+    uint256 availableLiquidity = getAvailableLiquidity(e, asset);
+    uint256 maxLoanSizeStable = require_uint256(require_uint256(require_uint256(availableLiquidity*maxStableRate)+5000)/10000);
+    borrow@withrevert(e, asset, amount, getStableRateConstant(e), referralCode, onBehalfOf);
+
+    assert (amount > maxLoanSizeStable) => lastReverted;
+}
+
+// @title P24: A borrower can only borrow up to the amount which would set the HF to 1 (alternatively written, after a borrow action the HF of the borrower is always > 1)
+// link: https://prover.certora.com/output/31688/25d2c63198d34de6af5fcd404085208e/?anonymousKey=957accecb954a52bdde687f2b2c2fe182efaf902
+rule lowHealthFactor(env e) {
+    address asset;
+    uint256 amount;
+    uint16 referralCode;
+    uint256 interestRateMode;
+    address onBehalfOf;
+    uint256 totalCollateralInBaseCurrency;
+    uint256 totalDebtInBaseCurrency;
+    uint256 avgLtv;
+    uint256 availableBorrowsBase;
+    uint256 healthFactorBefore;
+    uint256 currentLiquidationThreshold;
+
+    require(e.msg.sender != currentContract);
+    totalCollateralInBaseCurrency, totalDebtInBaseCurrency, availableBorrowsBase, currentLiquidationThreshold, avgLtv, healthFactorBefore = getUserAccountData(e, onBehalfOf);
+    require healthFactorBefore > 0;
+
+    borrow@withrevert(e, asset, amount, interestRateMode, referralCode, onBehalfOf);
+    bool borrowReverted = lastReverted;
+
+    uint256 totalCollateralInBaseCurrency1;
+    uint256 totalDebtInBaseCurrency1;
+    uint256 avgLtv1;
+    uint256 availableBorrowsBase1;
+    uint256 healthFactor;
+    uint256 currentLiquidationThreshold1;
+    totalCollateralInBaseCurrency1, totalDebtInBaseCurrency1, availableBorrowsBase1, currentLiquidationThreshold1, avgLtv1, healthFactor = getUserAccountData(e, onBehalfOf);
+
+    assert !borrowReverted => (healthFactor >= 1);
+}
+
+// @title P25: Whenever a user borrows an asset at a variable rate the balanceOf(user) on the VariableDebtToken increases by the amount borrowed
+// Failing: https://prover.certora.com/output/31688/193b517f9ed24e17871b840cc3eb3d62/?anonymousKey=d254766ab67c09ac00ed09bed8669c8a8cd19088
+rule balanceIncreaseAfterBorrowVariable(env e) {
+    address asset;
+    uint256 amount;
+    uint16 referralCode;
+    address onBehalfOf;
+
+
+    uint256 balanceBefore = ballanceOfInAsset(e, asset, e.msg.sender);
+    borrow(e, asset, amount, getVariableRateConstant(e), referralCode, onBehalfOf);
+    uint256 balanceAfter = ballanceOfInAsset(e, asset, e.msg.sender);
+
+    assert balanceAfter == require_uint256(balanceBefore + amount);
+}
+
+// @title P26: Whenever a user borrows an asset at a stable rate, the  balanceOf(user) on the StableDebtToken increases by the amount borrowed
+// Failing: https://prover.certora.com/output/31688/00fafc3031a34fa7817787b8889b1ff4/?anonymousKey=4251aa5ce30e8f7d6429e33d4953c4bc20d8cfd5
+rule balanceIncreaseAfterBorrowStable(env e) {
+    address asset;
+    uint256 amount;
+    uint16 referralCode;
+    address onBehalfOf;
+
+    uint256 balanceBefore = ballanceOfInAsset(e, asset, e.msg.sender);
+    borrow(e, asset, amount, getStableRateConstant(e), referralCode, onBehalfOf);
+    uint256 balanceAfter = ballanceOfInAsset(e, asset, e.msg.sender);
+
+    assert balanceAfter == require_uint256(balanceBefore + amount);
+}
