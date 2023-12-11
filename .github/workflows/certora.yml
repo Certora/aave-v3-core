@@ -58,14 +58,14 @@ jobs:
       matrix:
         rule:
           - AToken.conf
-          - PoolAccurate.conf --message "Index non decreasing part 1" --rule {"_updateIndexesWrapperReachable", "indexChangesOnlyWith_updateIndexes", "liquidityIndexNonDecresingFor_cumulateToLiquidityIndex"}
-          - PoolAccurate.conf --message "Index non decreasing part 2" --rule {"indexesNonDecresingFor_updateIndexes"}
-          - PoolAccurate.conf --message "Deposit updates AToken scaled balance" --rule {"depositUpdatesUserATokenSuperBalance", "depositUpdatesUserATokenSuperBalance_sanity"}
-          - PoolAccurate.conf --message "Deposit cannot change other users scaled balance" --rule {"depositCannotChangeOthersATokenSuperBalance"}
+          - PoolAccurate.conf --msg "Index non decreasing part 1" --rule {"_updateIndexesWrapperReachable", "indexChangesOnlyWith_updateIndexes", "liquidityIndexNonDecresingFor_cumulateToLiquidityIndex"}
+          - PoolAccurate.conf --msg "Index non decreasing part 2" --rule {"indexesNonDecresingFor_updateIndexes"}
+          - PoolAccurate.conf --msg "Deposit updates AToken scaled balance" --rule {"depositUpdatesUserATokenSuperBalance", "depositUpdatesUserATokenSuperBalance_sanity"}
+          - PoolAccurate.conf --msg "Deposit cannot change other users scaled balance" --rule {"depositCannotChangeOthersATokenSuperBalance"}
           - ReserveConfiguration.conf
           - UserConfigCLI.conf
           - StableTokenCLI.conf
           - VariableTokenCLI.conf
-          - PoolSimpleProperties.conf --message "Deposit functionality" --rule {"cannotDepositInInactiveReserve", "cannotDepositInFrozenReserve", "cannotDepositZeroAmount"}
-          - PoolSimpleProperties.conf --message "Withdraw functionality PLUS reachability" --rule {"method_reachability", "cannotWithdrawZeroAmount", "cannotWithdrawFromInactiveReserve"}
-          - PoolSimpleProperties.conf --message "Borrow functionality" --rule {"cannotBorrowZeroAmount", "cannotBorrowOnInactiveReserve", "cannotBorrowOnReserveDisabledForBorrowing", "cannotBorrowOnFrozenReserve"}
+          - PoolSimpleProperties.conf --msg "Deposit functionality" --rule {"cannotDepositInInactiveReserve", "cannotDepositInFrozenReserve", "cannotDepositZeroAmount"}
+          - PoolSimpleProperties.conf --msg "Withdraw functionality PLUS reachability" --rule {"method_reachability", "cannotWithdrawZeroAmount", "cannotWithdrawFromInactiveReserve"}
+          - PoolSimpleProperties.conf --msg "Borrow functionality" --rule {"cannotBorrowZeroAmount", "cannotBorrowOnInactiveReserve", "cannotBorrowOnReserveDisabledForBorrowing", "cannotBorrowOnFrozenReserve"}
