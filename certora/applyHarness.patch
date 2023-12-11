@@ -1,12 +1,12 @@
 diff -ruN .gitignore .gitignore
 --- .gitignore	1970-01-01 01:00:00
-+++ .gitignore	2023-11-21 22:09:53
++++ .gitignore	2023-12-07 11:54:41
 @@ -0,0 +1 @@
 +*
 \ No newline at end of file
 diff -ruN protocol/libraries/configuration/ReserveConfiguration.sol protocol/libraries/configuration/ReserveConfiguration.sol
---- protocol/libraries/configuration/ReserveConfiguration.sol	2023-11-14 21:14:54
-+++ protocol/libraries/configuration/ReserveConfiguration.sol	2023-11-21 22:09:53
+--- protocol/libraries/configuration/ReserveConfiguration.sol	2023-12-07 10:09:58
++++ protocol/libraries/configuration/ReserveConfiguration.sol	2023-12-07 11:54:41
 @@ -10,46 +10,6 @@
   * @notice Implements the bitmap logic to handle the reserve configuration
   */
@@ -492,7 +492,7 @@ diff -ruN protocol/libraries/configuration/ReserveConfiguration.sol protocol/lib
  }
 diff -ruN protocol/libraries/configuration/ReserveConfiguration_noBV.sol protocol/libraries/configuration/ReserveConfiguration_noBV.sol
 --- protocol/libraries/configuration/ReserveConfiguration_noBV.sol	1970-01-01 01:00:00
-+++ protocol/libraries/configuration/ReserveConfiguration_noBV.sol	2023-11-21 22:09:53
++++ protocol/libraries/configuration/ReserveConfiguration_noBV.sol	2023-12-07 11:54:41
 @@ -0,0 +1,539 @@
 +// SPDX-License-Identifier: BUSL-1.1
 +pragma solidity ^0.8.0;
@@ -1035,7 +1035,7 @@ diff -ruN protocol/libraries/configuration/ReserveConfiguration_noBV.sol protoco
 +}
 diff -ruN protocol/libraries/configuration/ReserveConfiguration_orig.sol protocol/libraries/configuration/ReserveConfiguration_orig.sol
 --- protocol/libraries/configuration/ReserveConfiguration_orig.sol	1970-01-01 01:00:00
-+++ protocol/libraries/configuration/ReserveConfiguration_orig.sol	2023-11-21 22:09:53
++++ protocol/libraries/configuration/ReserveConfiguration_orig.sol	2023-12-07 11:54:41
 @@ -0,0 +1,614 @@
 +// SPDX-License-Identifier: BUSL-1.1
 +pragma solidity ^0.8.0;
@@ -1652,8 +1652,8 @@ diff -ruN protocol/libraries/configuration/ReserveConfiguration_orig.sol protoco
 +  }
 +}
 diff -ruN protocol/libraries/configuration/UserConfiguration.sol protocol/libraries/configuration/UserConfiguration.sol
---- protocol/libraries/configuration/UserConfiguration.sol	2023-09-15 08:31:43
-+++ protocol/libraries/configuration/UserConfiguration.sol	2023-11-21 22:09:53
+--- protocol/libraries/configuration/UserConfiguration.sol	2023-09-12 14:30:00
++++ protocol/libraries/configuration/UserConfiguration.sol	2023-12-07 11:54:41
 @@ -5,181 +5,120 @@
  import {DataTypes} from '../types/DataTypes.sol';
  import {ReserveConfiguration} from './ReserveConfiguration.sol';
@@ -1962,7 +1962,7 @@ diff -ruN protocol/libraries/configuration/UserConfiguration.sol protocol/librar
  }
 diff -ruN protocol/libraries/configuration/UserConfiguration_noBV.sol protocol/libraries/configuration/UserConfiguration_noBV.sol
 --- protocol/libraries/configuration/UserConfiguration_noBV.sol	1970-01-01 01:00:00
-+++ protocol/libraries/configuration/UserConfiguration_noBV.sol	2023-11-21 22:09:53
++++ protocol/libraries/configuration/UserConfiguration_noBV.sol	2023-12-07 11:54:41
 @@ -0,0 +1,153 @@
 +// SPDX-License-Identifier: BUSL-1.1
 +pragma solidity ^0.8.0;
@@ -2119,7 +2119,7 @@ diff -ruN protocol/libraries/configuration/UserConfiguration_noBV.sol protocol/l
 +}
 diff -ruN protocol/libraries/configuration/UserConfiguration_noBV_3reserves.sol protocol/libraries/configuration/UserConfiguration_noBV_3reserves.sol
 --- protocol/libraries/configuration/UserConfiguration_noBV_3reserves.sol	1970-01-01 01:00:00
-+++ protocol/libraries/configuration/UserConfiguration_noBV_3reserves.sol	2023-11-21 22:09:53
++++ protocol/libraries/configuration/UserConfiguration_noBV_3reserves.sol	2023-12-07 11:54:41
 @@ -0,0 +1,168 @@
 +// SPDX-License-Identifier: BUSL-1.1
 +pragma solidity ^0.8.0;
@@ -2291,7 +2291,7 @@ diff -ruN protocol/libraries/configuration/UserConfiguration_noBV_3reserves.sol 
 +}
 diff -ruN protocol/libraries/configuration/UserConfiguration_orig.sol protocol/libraries/configuration/UserConfiguration_orig.sol
 --- protocol/libraries/configuration/UserConfiguration_orig.sol	1970-01-01 01:00:00
-+++ protocol/libraries/configuration/UserConfiguration_orig.sol	2023-11-21 22:09:53
++++ protocol/libraries/configuration/UserConfiguration_orig.sol	2023-12-07 11:54:41
 @@ -0,0 +1,236 @@
 +// SPDX-License-Identifier: BUSL-1.1
 +pragma solidity ^0.8.0;
@@ -2529,9 +2529,40 @@ diff -ruN protocol/libraries/configuration/UserConfiguration_orig.sol protocol/l
 +    }
 +  }
 +}
+diff -ruN protocol/libraries/logic/ReserveLogic.sol protocol/libraries/logic/ReserveLogic.sol
+--- protocol/libraries/logic/ReserveLogic.sol	2023-12-07 09:26:55
++++ protocol/libraries/logic/ReserveLogic.sol	2023-12-11 10:16:01
+@@ -14,6 +14,11 @@
+ import {DataTypes} from '../types/DataTypes.sol';
+ import {SafeCast} from '../../../dependencies/openzeppelin/contracts/SafeCast.sol';
+ 
++// munged by certora
++interface ICVL {
++  function incrementCounter() external view returns(bool);
++}
++
+ /**
+  * @title ReserveLogic library
+  * @author Aave
+@@ -100,6 +105,7 @@
+       return;
+     }
+ 
++    ICVL(address(0xdeadc0de)).incrementCounter();
+     _updateIndexes(reserve, reserveCache);
+     _accrueToTreasury(reserve, reserveCache);
+ 
+@@ -122,6 +128,7 @@
+   ) internal returns (uint256) {
+     //next liquidity index is calculated this way: `((amount / totalLiquidity) + 1) * liquidityIndex`
+     //division `amount / totalLiquidity` done in ray for precision
++    ICVL(address(0xdeadc0de)).incrementCounter();
+     uint256 result = (amount.wadToRay().rayDiv(totalLiquidity.wadToRay()) + WadRayMath.RAY).rayMul(
+       reserve.liquidityIndex
+     );
 diff -ruN protocol/libraries/types/DataTypes.sol protocol/libraries/types/DataTypes.sol
---- protocol/libraries/types/DataTypes.sol	2023-09-15 08:31:43
-+++ protocol/libraries/types/DataTypes.sol	2023-11-21 22:17:06
+--- protocol/libraries/types/DataTypes.sol	2023-11-29 12:30:12
++++ protocol/libraries/types/DataTypes.sol	2023-12-07 11:54:41
 @@ -35,7 +35,41 @@
      uint128 isolationModeTotalDebt;
    }
@@ -2610,7 +2641,7 @@ diff -ruN protocol/libraries/types/DataTypes.sol protocol/libraries/types/DataTy
       * The first bit indicates if an asset is used as collateral by the user, the second whether an
 diff -ruN protocol/libraries/types/DataTypes_noBV.sol protocol/libraries/types/DataTypes_noBV.sol
 --- protocol/libraries/types/DataTypes_noBV.sol	1970-01-01 01:00:00
-+++ protocol/libraries/types/DataTypes_noBV.sol	2023-11-21 22:09:53
++++ protocol/libraries/types/DataTypes_noBV.sol	2023-12-07 11:54:41
 @@ -0,0 +1,317 @@
 +// SPDX-License-Identifier: BUSL-1.1
 +pragma solidity ^0.8.0;
@@ -2931,7 +2962,7 @@ diff -ruN protocol/libraries/types/DataTypes_noBV.sol protocol/libraries/types/D
 +}
 diff -ruN protocol/libraries/types/DataTypes_orig.sol protocol/libraries/types/DataTypes_orig.sol
 --- protocol/libraries/types/DataTypes_orig.sol	1970-01-01 01:00:00
-+++ protocol/libraries/types/DataTypes_orig.sol	2023-11-21 22:09:53
++++ protocol/libraries/types/DataTypes_orig.sol	2023-12-07 11:54:41
 @@ -0,0 +1,265 @@
 +// SPDX-License-Identifier: BUSL-1.1
 +pragma solidity ^0.8.0;
@@ -3199,8 +3230,8 @@ diff -ruN protocol/libraries/types/DataTypes_orig.sol protocol/libraries/types/D
 +  }
 +}
 diff -ruN protocol/tokenization/AToken.sol protocol/tokenization/AToken.sol
---- protocol/tokenization/AToken.sol	2023-09-15 08:31:43
-+++ protocol/tokenization/AToken.sol	2023-11-21 22:09:53
+--- protocol/tokenization/AToken.sol	2023-12-07 09:26:55
++++ protocol/tokenization/AToken.sol	2023-12-07 11:54:41
 @@ -70,16 +70,16 @@
  
      _domainSeparator = _calculateDomainSeparator();
@@ -3242,7 +3273,7 @@ diff -ruN protocol/tokenization/AToken.sol protocol/tokenization/AToken.sol
  }
 diff -ruN protocol/tokenization/AToken.sol.orig protocol/tokenization/AToken.sol.orig
 --- protocol/tokenization/AToken.sol.orig	1970-01-01 01:00:00
-+++ protocol/tokenization/AToken.sol.orig	2023-11-21 22:09:53
++++ protocol/tokenization/AToken.sol.orig	2023-12-07 11:54:41
 @@ -0,0 +1,256 @@
 +// SPDX-License-Identifier: BUSL-1.1
 +pragma solidity 0.8.10;
@@ -3501,8 +3532,8 @@ diff -ruN protocol/tokenization/AToken.sol.orig protocol/tokenization/AToken.sol
 +  }
 +}
 diff -ruN protocol/tokenization/StableDebtToken.sol protocol/tokenization/StableDebtToken.sol
---- protocol/tokenization/StableDebtToken.sol	2023-09-15 08:31:43
-+++ protocol/tokenization/StableDebtToken.sol	2023-11-21 22:09:53
+--- protocol/tokenization/StableDebtToken.sol	2023-12-07 09:26:55
++++ protocol/tokenization/StableDebtToken.sol	2023-12-07 11:54:41
 @@ -306,7 +306,7 @@
     * @param avgRate The average rate at which the total supply increases
     * @return The debt balance of the user since the last burn/mint action
@@ -3514,7 +3545,7 @@ diff -ruN protocol/tokenization/StableDebtToken.sol protocol/tokenization/Stable
      if (principalSupply == 0) {
 diff -ruN protocol/tokenization/StableDebtToken.sol.orig protocol/tokenization/StableDebtToken.sol.orig
 --- protocol/tokenization/StableDebtToken.sol.orig	1970-01-01 01:00:00
-+++ protocol/tokenization/StableDebtToken.sol.orig	2023-11-21 22:09:53
++++ protocol/tokenization/StableDebtToken.sol.orig	2023-12-07 11:54:41
 @@ -0,0 +1,388 @@
 +// SPDX-License-Identifier: BUSL-1.1
 +pragma solidity 0.8.10;

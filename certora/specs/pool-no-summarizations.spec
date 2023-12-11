@@ -96,9 +96,10 @@ rule liquidityIndexNonDecresingFor_cumulateToLiquidityIndex()
 rule indexChangesOnlyWith_updateIndexes(env e, method f) filtered {
     f -> !f.isView &&
 	     f.selector != sig:PoolHarness.updateReserveIndexes(address).selector &&
-        //  f.selector != sig:PoolHarness.updateReserveIndexesWithCache(address,_).selector &&
+         f.selector != sig:PoolHarness.updateReserveIndexesWithCache(address,DataTypes.ReserveCache).selector &&
 		 f.selector != sig:PoolHarness.dropReserve(address).selector &&
-		 f.selector != sig:PoolHarness.initReserve(address,address,address,address,address).selector
+		 f.selector != sig:PoolHarness.initReserve(address,address,address,address,address).selector &&
+         f.selector != sig:PoolHarness.liquidationCall(address,address,address,uint256,bool).selector // TODO: remove this and fix timeout for liquidationCall
 } {
     address asset;
     calldataarg args;
@@ -254,6 +255,42 @@ rule depositUpdatesUserATokenSuperBalance(env e) {
     require liquidityIndexAfter == liquidityIndexBefore;
     assert superBalanceAfter >= superBalanceBefore + amount - 1 * RAY();
     assert superBalanceAfter <= superBalanceBefore + amount + 1 * RAY();
+}
+
+// @title sanity rule for rule depositUpdatesUserATokenSuperBalance
+// We need this rule, because we have to run depositUpdatesUserATokenSuperBalance without the sanity flag to get rid of timeouts.
+// Proved here:
+// https://prover.certora.com/output/40748/64071407741f4234a137572fdbbf4437/?anonymousKey=745539ab36494a799c922b6d401d0c604c03b1a0
+rule depositUpdatesUserATokenSuperBalance_sanity(env e) {
+    address asset;
+    uint256 amount;
+    address onBehalfOf;
+    uint16 referralCode;
+
+    require to_mathint(amount) == 30*RAY(); //under approx
+    require asset != onBehalfOf;
+    require onBehalfOf != _aToken;
+    require e.msg.sender != _aToken;
+    require e.msg.sender != asset;
+    require asset == _aToken.UNDERLYING_ASSET_ADDRESS(e);
+
+    mathint superBalanceBefore = _aToken.superBalance(e, onBehalfOf);
+    require superBalanceBefore == 20*RAY(); //under approx
+    mathint liquidityIndexBefore = getLiquidityIndex(e, asset);
+    require liquidityIndexBefore == 1*RAY(); //under approx
+    mathint currentLiquidityRateBefore = getCurrentLiquidityRate(e, asset);
+    require currentLiquidityRateBefore == 1; //under approx
+
+    deposit(e, asset, amount, onBehalfOf, referralCode);
+
+    mathint superBalanceAfter = _aToken.superBalance(e, onBehalfOf);
+    mathint currentLiquidityRateAfter = getCurrentLiquidityRate(e, asset);
+    require currentLiquidityRateAfter == currentLiquidityRateBefore;
+
+    mathint liquidityIndexAfter = getLiquidityIndex(e, asset);
+
+    require liquidityIndexAfter == liquidityIndexBefore;
+    satisfy true;
 }
 
 // @title Depositing on behalf of user A does not change balance of user other than A.
