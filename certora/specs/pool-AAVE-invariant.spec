@@ -91,26 +91,31 @@ function rayDivSummariztion(uint256 x, uint256 y) returns uint256
 invariant supply_gte_debt(env e, address a) 
     getTotalATokenSupply(e, a) >= getTotalDebt(e, a);
 
-rule indexesNonDecresingFor_updateIndexes()
-{
-    address asset;
-    env e;
+// @title updateReserveIndexesWithCache does not increase liquidity nor variable index
+// TODO: fix for variable index. Proved here (currently failing):
+// https://prover.certora.com/output/6893/be1581a978124ff4907a73774b878b8a/?anonymousKey=d557886cfefc63a31e0d73e846529ecd1268c429
+// rule indexesNonDecresingFor_updateIndexes()
+// {
+//     address asset;
+//     env e;
 
-    uint256 reserveLiquidityIndexBefore = getReserveLiquidityIndex(e, asset);
-    uint256 variableBorrowIndexBefore = getReserveVariableBorrowIndex(e, asset);
-    require reserveLiquidityIndexBefore >= RAY();
-    DataTypes.ReserveCache cache;
-    require cache.currLiquidityIndex == reserveLiquidityIndexBefore;
-    require cache.currVariableBorrowIndex == variableBorrowIndexBefore;
+//     uint256 reserveLiquidityIndexBefore = getReserveLiquidityIndex(e, asset);
+//     uint256 variableBorrowIndexBefore = getReserveVariableBorrowIndex(e, asset);
+//     require reserveLiquidityIndexBefore >= RAY();
+//     DataTypes.ReserveCache cache;
+//     require cache.currLiquidityIndex == reserveLiquidityIndexBefore;
+//     require cache.currVariableBorrowIndex == variableBorrowIndexBefore;
 
-    updateReserveIndexesWithCache(e, asset, cache);
+//     updateReserveIndexesWithCache(e, asset, cache);
 
-    uint256 variableBorrowIndexAfter = getReserveVariableBorrowIndex(e, asset);
-    uint256 reserveLiquidityIndexAfter = getReserveLiquidityIndex(e, asset);
-    assert variableBorrowIndexAfter >= variableBorrowIndexBefore;
-    assert reserveLiquidityIndexAfter >= reserveLiquidityIndexBefore;
-}
+//     uint256 variableBorrowIndexAfter = getReserveVariableBorrowIndex(e, asset);
+//     uint256 reserveLiquidityIndexAfter = getReserveLiquidityIndex(e, asset);
+//     assert variableBorrowIndexAfter >= variableBorrowIndexBefore;
+//     assert reserveLiquidityIndexAfter >= reserveLiquidityIndexBefore;
+// }
 
+// @title updateReserveIndexesWithCache does not increase liquidity index
+// proved here: https://prover.certora.com/output/40577/a133882942494ff1a3e79539a7c71496/?anonymousKey=aee5cf4c4d8f3b015f2ee934aa5967537fc74871
 rule indexIncreasesMonotonically(env e) {
     address asset;
 

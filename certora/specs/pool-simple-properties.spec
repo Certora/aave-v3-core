@@ -12,6 +12,7 @@ methods {
     function _.rayMul(uint256 a, uint256 b) internal => mulDivDownAbstractPlus(a, b, 10^27) expect uint256 ALL;
     function _.rayDiv(uint256 a, uint256 b) internal => mulDivDownAbstractPlus(a, 10^27, b) expect uint256 ALL;
     // function _.rayDiv(uint256 a, uint256 b) internal => NONDET; //JB UC
+    function _.getFlags(DataTypes.ReserveConfigurationMap memory self) internal => NONDET;
 }
 
 ghost mapping(uint256 => mapping(uint256 => uint256)) rayMulSummariztionValues;

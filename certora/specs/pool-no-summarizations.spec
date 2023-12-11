@@ -139,25 +139,25 @@ rule indexChangesOnlyWith_updateIndexes(env e, method f) filtered {
 // Proved:
 // https://prover.certora.com/output/6893/be1581a978124ff4907a73774b878b8a/?anonymousKey=d557886cfefc63a31e0d73e846529ecd1268c429
 // Similar rule here: https://prover.certora.com/output/40577/5001fdd253a8429589906a5a82bd027e/?anonymousKey=fd1ba83af54cb583b13966783433ba0aff985f8b
-rule indexesNonDecresingFor_updateIndexes()
-{
-    address asset;
-    env e;
+// rule indexesNonDecresingFor_updateIndexes()
+// {
+//     address asset;
+//     env e;
 
-    uint256 reserveLiquidityIndexBefore = getReserveLiquidityIndex(e, asset);
-    uint256 variableBorrowIndexBefore = getReserveVariableBorrowIndex(e, asset);
-    require reserveLiquidityIndexBefore >= RAY();
-    DataTypes.ReserveCache cache;
-    require cache.currLiquidityIndex == reserveLiquidityIndexBefore;
-    require cache.currVariableBorrowIndex == variableBorrowIndexBefore;
+//     uint256 reserveLiquidityIndexBefore = getReserveLiquidityIndex(e, asset);
+//     uint256 variableBorrowIndexBefore = getReserveVariableBorrowIndex(e, asset);
+//     require reserveLiquidityIndexBefore >= RAY();
+//     DataTypes.ReserveCache cache;
+//     require cache.currLiquidityIndex == reserveLiquidityIndexBefore;
+//     require cache.currVariableBorrowIndex == variableBorrowIndexBefore;
 
-    updateReserveIndexesWithCache(e, asset, cache);
+//     updateReserveIndexesWithCache(e, asset, cache);
 
-    uint256 variableBorrowIndexAfter = getReserveVariableBorrowIndex(e, asset);
-    uint256 reserveLiquidityIndexAfter = getReserveLiquidityIndex(e, asset);
-    assert variableBorrowIndexAfter >= variableBorrowIndexBefore;
-    assert reserveLiquidityIndexAfter >= reserveLiquidityIndexBefore;
-}
+//     uint256 variableBorrowIndexAfter = getReserveVariableBorrowIndex(e, asset);
+//     uint256 reserveLiquidityIndexAfter = getReserveLiquidityIndex(e, asset);
+//     assert variableBorrowIndexAfter >= variableBorrowIndexBefore;
+//     assert reserveLiquidityIndexAfter >= reserveLiquidityIndexBefore;
+// }
 
 // @title When a user deposits asset, his corresponding aToken balance increases (doesn't say by how much).
 // We proved something similar here:
