@@ -289,6 +289,7 @@ function aTokenBalanceOf(env e, address user) returns uint256
 // }
 
 
+
 // @title P19: It's not possible to borrow with an interest rate mode that is different than 1 (stable) or 2 (variable)
 // Passing: https://prover.certora.com/output/31688/5cb1398883fb4162854b74af0bae79e9/?anonymousKey=0d7f3c6dc8249ba58a6af0d749ac7c9782611817
 rule borrowOnlyVariableOrStableRate(env e) {
