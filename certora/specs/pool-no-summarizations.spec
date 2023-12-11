@@ -96,7 +96,7 @@ rule liquidityIndexNonDecresingFor_cumulateToLiquidityIndex()
 rule indexChangesOnlyWith_updateIndexes(env e, method f) filtered {
     f -> !f.isView &&
 	     f.selector != sig:PoolHarness.updateReserveIndexes(address).selector &&
-         f.selector != sig:PoolHarness.updateReserveIndexesWithCache(address,DataTypes.ReserveCache).selector &&
+        // f.selector != sig:PoolHarness.updateReserveIndexesWithCache(address,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,bool,bool,bool,bool,bool,bool,bool,bool,address,address,address,uint40,uint40).selector &&
 		 f.selector != sig:PoolHarness.dropReserve(address).selector &&
 		 f.selector != sig:PoolHarness.initReserve(address,address,address,address,address).selector &&
          f.selector != sig:PoolHarness.liquidationCall(address,address,address,uint256,bool).selector // TODO: remove this and fix timeout for liquidationCall
