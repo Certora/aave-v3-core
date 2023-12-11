@@ -51,7 +51,23 @@ function calculateInterestRatesMock(DataTypes.CalculateInterestRatesParams param
 
 // @title Rule checking, that the ghostUpdate summary is correct and that it is being applied
 // This rule is part of a check, that the liquidity index cannot decrease.
-rule _updateIndexesWrapperReachable(env e, method f) {
+rule _updateIndexesWrapperReachable(env e, method f) filtered {
+    f -> f.selector == sig:PoolHarness.mintUnbacked(address,uint256,address,uint16).selector ||
+         f.selector == sig:PoolHarness.backUnbacked(address,uint256,uint256).selector ||
+         f.selector == sig:PoolHarness.flashLoanSimple(address,address,uint256,bytes,uint16).selector ||
+         f.selector == sig:PoolHarness.supplyWithPermit(address,uint256,address,uint16,uint256,uint8,bytes32,bytes32).selector ||
+         f.selector == sig:PoolHarness.borrow(address,uint256,uint256,uint16,address).selector ||
+         f.selector == sig:PoolHarness.cumulateToLiquidityIndex(address,uint256,uint256).selector ||
+         f.selector == sig:PoolHarness.repay(address,uint256,uint256,address).selector ||
+         f.selector == sig:PoolHarness.flashLoan(address,address[],uint256[],uint256[],address,bytes,uint16).selector ||
+         f.selector == sig:PoolHarness.withdraw(address,uint256,address).selector ||
+         f.selector == sig:PoolHarness.rebalanceStableBorrowRate(address,address).selector ||
+         f.selector == sig:PoolHarness.repayWithATokens(address,uint256,uint256).selector ||
+         f.selector == sig:PoolHarness.swapBorrowRateMode(address,uint256).selector ||
+         f.selector == sig:PoolHarness.supply(address,uint256,address,uint16).selector ||
+         f.selector == sig:PoolHarness.deposit(address,uint256,address,uint16).selector ||
+         f.selector == sig:PoolHarness.repayWithPermit(address,uint256,uint256,address,uint256,uint8,bytes32,bytes32).selector
+} {
     calldataarg args;
 
 	mathint updateIndexesCallCountBefore = counterUpdateIndexes;
@@ -96,7 +112,7 @@ rule liquidityIndexNonDecresingFor_cumulateToLiquidityIndex()
 rule indexChangesOnlyWith_updateIndexes(env e, method f) filtered {
     f -> !f.isView &&
 	     f.selector != sig:PoolHarness.updateReserveIndexes(address).selector &&
-        // f.selector != sig:PoolHarness.updateReserveIndexesWithCache(address,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,bool,bool,bool,bool,bool,bool,bool,bool,address,address,address,uint40,uint40).selector &&
+         f.selector != sig:PoolHarness.updateReserveIndexesWithCache(address,DataTypes.ReserveCache).selector &&
 		 f.selector != sig:PoolHarness.dropReserve(address).selector &&
 		 f.selector != sig:PoolHarness.initReserve(address,address,address,address,address).selector &&
          f.selector != sig:PoolHarness.liquidationCall(address,address,address,uint256,bool).selector // TODO: remove this and fix timeout for liquidationCall

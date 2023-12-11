@@ -146,7 +146,7 @@ rule totalChangesOnlyWithInitDropSupplyMint(env e, method f) filtered{
 }
 
 // @title After withdraw, the withdrawn amount is subtracted from the user aToken balance.
-// WIP
+// WIP - still in debug
 // Failing here: https://prover.certora.com/output/40577/836d9b39c113460a8dab6530a52ceb6c/?anonymousKey=6da278a0a4287899be2df3d7d03faacdd6b2dbd0
 rule withdrawUpdatesBalances(env e) {
     address asset;
