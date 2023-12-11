@@ -241,6 +241,8 @@ rule indexChangesOnlyWith_updateIndexes(env e, method f) filtered {
 // WE ALLOW OFF BY ONE RAY
 // Proved here:
 // https://prover.certora.com/output/40748/64071407741f4234a137572fdbbf4437/?anonymousKey=745539ab36494a799c922b6d401d0c604c03b1a0
+// Timeouting in CI:
+// https://github.com/Certora/aave-v3-core/actions/runs/7166830843/job/19511656240
 rule depositUpdatesUserATokenSuperBalance(env e) {
     address asset;
     uint256 amount;
@@ -313,6 +315,8 @@ rule depositUpdatesUserATokenSuperBalance_sanity(env e) {
 // @title Depositing on behalf of user A does not change balance of user other than A.
 // Proved here:
 // https://prover.certora.com/output/40577/f1ffe85de15b4dff80901c7de73dddaa/?anonymousKey=cd4234136f07cfc1d25aa13344a8ef7893af4ab0
+// Timeouting in CI:
+// https://github.com/Certora/aave-v3-core/actions/runs/7166830843/job/19511656240
 rule depositCannotChangeOthersATokenSuperBalance(env e) {
     address asset;
     uint256 amount;
