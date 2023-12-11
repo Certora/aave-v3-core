@@ -31,7 +31,7 @@ methods {
     function _.incrementCounter() external => ghostUpdate() expect bool ALL;
 }
 
-ghost mathint counterUpdateIndexes;
+ghost mathint counterUpdateIndexes; // TODO: check this ghost havoc
 
 function ghostUpdate() returns bool
 {

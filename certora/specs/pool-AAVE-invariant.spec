@@ -90,3 +90,42 @@ function rayDivSummariztion(uint256 x, uint256 y) returns uint256
 // The aToken total supply is never less than the total depth. 
 invariant supply_gte_debt(env e, address a) 
     getTotalATokenSupply(e, a) >= getTotalDebt(e, a);
+
+rule indexesNonDecresingFor_updateIndexes()
+{
+    address asset;
+    env e;
+
+    uint256 reserveLiquidityIndexBefore = getReserveLiquidityIndex(e, asset);
+    uint256 variableBorrowIndexBefore = getReserveVariableBorrowIndex(e, asset);
+    require reserveLiquidityIndexBefore >= RAY();
+    DataTypes.ReserveCache cache;
+    require cache.currLiquidityIndex == reserveLiquidityIndexBefore;
+    require cache.currVariableBorrowIndex == variableBorrowIndexBefore;
+
+    updateReserveIndexesWithCache(e, asset, cache);
+
+    uint256 variableBorrowIndexAfter = getReserveVariableBorrowIndex(e, asset);
+    uint256 reserveLiquidityIndexAfter = getReserveLiquidityIndex(e, asset);
+    assert variableBorrowIndexAfter >= variableBorrowIndexBefore;
+    assert reserveLiquidityIndexAfter >= reserveLiquidityIndexBefore;
+}
+
+rule indexIncreasesMonotonically(env e) {
+    address asset;
+
+    mathint liquidityIndexBefore = getLiquidityIndex(e, asset);
+    require liquidityIndexBefore < max_uint256;
+    mathint variableBorrowIndexBefore = getReserveVariableBorrowIndex(e, asset);
+    require liquidityIndexBefore >= to_mathint(RAY());
+
+    DataTypes.ReserveCache cache;
+    require to_mathint(cache.currLiquidityIndex) == liquidityIndexBefore;
+    require to_mathint(cache.currVariableBorrowIndex) == variableBorrowIndexBefore;
+
+    updateReserveIndexesWithCache(e, asset, cache);
+
+    mathint liquidityIndexAfter = getLiquidityIndex(e, asset);
+
+    assert liquidityIndexAfter >= liquidityIndexBefore, "liquidity index cannot decrease";
+}
