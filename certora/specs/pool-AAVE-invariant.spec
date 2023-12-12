@@ -144,7 +144,9 @@ rule borrowOnlyVariableOrStableRate(env e) {
     uint16 referralCode;
     address onBehalfOf;
 
-    borrow@withrevert(e, asset, amount, interestRateMode, referralCode, onBehalfOf);
+    // borrow@withrevert(e, asset, amount, interestRateMode, referralCode, onBehalfOf);
+    borrow(e, asset, amount, interestRateMode, referralCode, onBehalfOf);
 
-    assert (interestRateMode != 1 && interestRateMode != 2) => lastReverted;
+    // assert (interestRateMode != 1 && interestRateMode != 2) => lastReverted;
+    assert interestRateMode == 1 || interestRateMode == 2;
 }
