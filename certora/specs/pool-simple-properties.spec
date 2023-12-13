@@ -16,6 +16,139 @@ rule method_reachability(env e, method f) {
     satisfy true;
 }
 
+// @title based on this result of run in the CI:
+// https://prover.certora.com/output/33050/3e09e274b3644f6c9ed051b83a6e4dfb?anonymousKey=b6ade0dd3ada78730183db26a344bafb282861b4
+definition methodIsEasyForRuleMethodReachability(method f) returns bool = f.isView ||
+	     f.selector == sig:PoolHarness.getUserEMode(address).selector ||
+	     f.selector == sig:PoolHarness.mintUnbacked(address,uint256,address,uint16).selector ||
+	     f.selector == sig:PoolHarness.getUserConfiguration(address).selector ||
+	     f.selector == sig:PoolHarness.finalizeTransfer(address,address,address,uint256,uint256,uint256).selector ||
+	     // f.selector == sig:PoolHarness.POOL_REVISION().selector || // view function
+	     f.selector == sig:PoolHarness.supply(address,uint256,address,uint16).selector ||
+	     f.selector == sig:PoolHarness.getReserveAddressById(uint16).selector ||
+	     f.selector == sig:PoolHarness.isStableRateEnabled(address).selector ||
+	     f.selector == sig:PoolHarness.updateFlashloanPremiums(uint128,uint128).selector ||
+	     f.selector == sig:PoolHarness.cumulateToLiquidityIndex(address,uint256,uint256).selector ||
+	     f.selector == sig:PoolHarness.deposit(address,uint256,address,uint16).selector ||
+	     // f.selector == sig:PoolHarness.FLASHLOAN_PREMIUM_TOTAL().selector || // view function
+	     f.selector == sig:PoolHarness.swapBorrowRateMode(address,uint256).selector ||
+	     f.selector == sig:PoolHarness.getReserveNormalizedVariableDebt(address).selector ||
+	     f.selector == sig:PoolHarness.getReserveVariableBorrowIndex(address).selector ||
+	     f.selector == sig:PoolHarness.withdraw(address,uint256,address).selector ||
+	     // f.selector == sig:PoolHarness.FLASHLOAN_PREMIUM_TO_PROTOCOL().selector || // view function
+	     f.selector == sig:PoolHarness.dropReserve(address).selector ||
+	     f.selector == sig:PoolHarness.ballanceOfInAsset(address,address).selector ||
+	     f.selector == sig:PoolHarness.setConfiguration(address, DataTypes.ReserveConfigurationMap).selector ||
+	     f.selector == sig:PoolHarness.setUserEMode(uint8).selector ||
+	     f.selector == sig:PoolHarness.getReserveLiquidityIndex(address).selector ||
+	     f.selector == sig:PoolHarness.updateReserveIndexesWithCache(address,DataTypes.ReserveCache).selector ||
+	     // f.selector == sig:PoolHarness.MAX_STABLE_RATE_BORROW_SIZE_PERCENT().selector || // view function
+	     // f.selector == sig:PoolHarness.getReservesList().selector || // view function
+	     // f.selector == sig:PoolHarness.getAvailableLiquidity(address).selector || // view function
+	     // f.selector == sig:PoolHarness.getUserAccountData(address).selector || // view function
+	     f.selector == sig:PoolHarness.rescueTokens(address,address,uint256).selector ||
+	     // f.selector == sig:PoolHarness.getReserveStableBorrowRate(address).selector || // view function
+	     // f.selector == sig:PoolHarness.MAX_NUMBER_RESERVES().selector || // view function
+	     // f.selector == sig:PoolHarness.getVariableRateConstant().selector || // view function
+	     f.selector == sig:PoolHarness.configureEModeCategory(uint8,DataTypes.EModeCategory).selector ||
+	     f.selector == sig:PoolHarness.mintToTreasury(address[]).selector ||
+	     f.selector == sig:PoolHarness.updateBridgeProtocolFee(uint256).selector ||
+	     f.selector == sig:PoolHarness.setUserUseReserveAsCollateral(address,bool).selector ||
+	     // f.selector == sig:PoolHarness.getConfiguration(address).selector || // view function
+	     // f.selector == sig:PoolHarness.getTotalDebt(address).selector || // view function
+	     // f.selector == sig:PoolHarness.getStableRateConstant().selector || // view function
+	     // f.selector == sig:PoolHarness.getReserveNormalizedIncome(address).selector || // view function
+	     f.selector == sig:PoolHarness.setReserveInterestRateStrategyAddress(address,address).selector ||
+	     // f.selector == sig:PoolHarness.ADDRESSES_PROVIDER().selector || // view function
+	     f.selector == sig:PoolHarness.initReserve(address,address,address,address,address).selector ||
+	     // f.selector == sig:PoolHarness.getStableRate(address).selector || // view function
+	     f.selector == sig:PoolHarness.resetIsolationModeTotalDebt(address).selector ||
+	     // f.selector == sig:PoolHarness.getTotalATokenSupply(address).selector || // view function
+	     // f.selector == sig:PoolHarness.getCurrScaledVariableDebt(address).selector || // view function
+	     f.selector == sig:PoolHarness.initialize(address).selector ||
+	     // f.selector == sig:PoolHarness.getReserveVariableBorrowRate(address).selector || // view function
+	     // f.selector == sig:PoolHarness.getEModeCategoryData(uint8).selector || // view function
+	     f.selector == sig:PoolHarness.BRIDGE_PROTOCOL_FEE().selector ||
+	     // f.selector == sig:PoolHarness.getReserveData(address).selector || // view function
+	     f.selector == sig:PoolHarness.updateReserveIndexes(address).selector;
+
+rule method_reachability_split_for_CI_01(env e, method f, calldataarg args) filtered {
+    f -> methodIsEasyForRuleMethodReachability(f)
+} {
+    f(e, args);
+    satisfy true;
+}
+
+rule method_reachability_split_for_CI_02_backUnbacked(env e, method f, calldataarg args) filtered {
+    f -> f.selector == sig:PoolHarness.backUnbacked(address,uint256,uint256).selector
+} {
+    f(e, args);
+    satisfy true;
+}
+
+rule method_reachability_split_for_CI_03_repayWithATokens(env e, method f, calldataarg args) filtered {
+    f -> f.selector == sig:PoolHarness.repayWithATokens(address,uint256,uint256).selector
+} {
+    f(e, args);
+    satisfy true;
+}
+
+rule method_reachability_split_for_CI_04_repayWithPermit(env e, method f, calldataarg args) filtered {
+    f -> f.selector == sig:PoolHarness.repayWithPermit(address,uint256,uint256,address,uint256,uint8,bytes32,bytes32).selector
+} {
+    f(e, args);
+    satisfy true;
+}
+
+rule method_reachability_split_for_CI_05_liquidationCall(env e, method f, calldataarg args) filtered {
+    f -> f.selector == sig:PoolHarness.liquidationCall(address,address,address,uint256,bool).selector
+} {
+    f(e, args);
+    satisfy true;
+}
+
+rule method_reachability_split_for_CI_06_flashLoan(env e, method f, calldataarg args) filtered {
+    f -> f.selector == sig:PoolHarness.flashLoan(address,address[],uint256[],uint256[],address,bytes,uint16).selector
+} {
+    f(e, args);
+    satisfy true;
+}
+
+rule method_reachability_split_for_CI_07_borrow(env e, method f, calldataarg args) filtered {
+    f -> f.selector == sig:PoolHarness.borrow(address,uint256,uint256,uint16,address).selector
+} {
+    f(e, args);
+    satisfy true;
+}
+
+rule method_reachability_split_for_CI_08_supplyWithPermit(env e, method f, calldataarg args) filtered {
+    f -> f.selector == sig:PoolHarness.supplyWithPermit(address,uint256,address,uint16,uint256,uint8,bytes32,bytes32).selector
+} {
+    f(e, args);
+    satisfy true;
+}
+
+rule method_reachability_split_for_CI_09_rebalanceStableBorrowRate(env e, method f, calldataarg args) filtered {
+    f -> f.selector == sig:PoolHarness.rebalanceStableBorrowRate(address,address).selector
+} {
+    f(e, args);
+    satisfy true;
+}
+
+rule method_reachability_split_for_CI_10_repay(env e, method f, calldataarg args) filtered {
+    f -> f.selector == sig:PoolHarness.repay(address,uint256,uint256,address).selector
+} {
+    f(e, args);
+    satisfy true;
+}
+
+rule method_reachability_split_for_CI_11_flashLoanSimple(env e, method f, calldataarg args) filtered {
+    f -> f.selector == sig:PoolHarness.flashLoanSimple(address,address,uint256,bytes,uint16).selector
+} {
+    f(e, args);
+    satisfy true;
+}
+
 // @title It is impossible to deposit an inactive reserve
 // Proved:
 // https://prover.certora.com/output/40577/b8bd6244053e42e4bddb129f04e1dd93/?anonymousKey=5374001e512e1149d120f0efa19c18a3d531d115
