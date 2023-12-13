@@ -60,7 +60,7 @@ jobs:
           - AToken.conf
           - PoolInvariant.conf --msg "Martins rules with PoolInvariant.conf" --rule "borrowOnlyVariableOrStableRate"
           - PoolInvariant.conf --msg "Index non decreasing part 1" --rule "indexIncreasesMonotonically"
-          # - PoolAccurate.conf --msg "Index non decreasing part 3" --rule "indexChangesOnlyWith_updateIndexes" # TIMEOUT 2023
+          - PoolAccurate.conf --msg "Index non decreasing part 3" --rule "indexChangesOnlyWith_updateIndexes" # TIMEOUT 2023
           - PoolAccurate.conf --msg "Index non decreasing part 4" --rule "liquidityIndexNonDecresingFor_cumulateToLiquidityIndex"
           # - PoolAccurate.conf --msg "Deposit updates AToken scaled balance part 1" --rule "depositUpdatesUserATokenSuperBalance" # TIMEOUT 2023
           # - PoolAccurate.conf --msg "Deposit updates AToken scaled balance part 2" --rule "depositUpdatesUserATokenSuperBalance_sanity" # TIMEOUT 2023
@@ -90,4 +90,3 @@ jobs:
           - PoolSimpleProperties.conf --msg "Borrow functionality part 2" --rule "cannotBorrowOnInactiveReserve"
           - PoolSimpleProperties.conf --msg "Borrow functionality part 3" --rule "cannotBorrowOnReserveDisabledForBorrowing"
           - PoolSimpleProperties.conf --msg "Borrow functionality part 4" --rule "cannotBorrowOnFrozenReserve"
-         
