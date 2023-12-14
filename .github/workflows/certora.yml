@@ -60,35 +60,35 @@ jobs:
       matrix:
         rule:
           # - AToken.conf
-          # - PoolInvariant.conf --msg "Martins rules with PoolInvariant.conf" --rule "borrowOnlyVariableOrStableRate"
-          # - PoolInvariant.conf --msg "Index non decreasing part 1" --rule "indexIncreasesMonotonically"
+          - PoolInvariant.conf --msg "Martins rules with PoolInvariant.conf" --rule "borrowOnlyVariableOrStableRate"
+          - PoolInvariant.conf --msg "Index non decreasing part 1" --rule "indexIncreasesMonotonically"
           - PoolAccurate.conf --msg "Index non decreasing part 3" --rule "indexChangesOnlyWith_updateIndexes" # TIMEOUT 2023
-          # - PoolAccurate.conf --msg "Index non decreasing part 4" --rule "liquidityIndexNonDecresingFor_cumulateToLiquidityIndex"
-          # # - PoolAccurate.conf --msg "Deposit updates AToken scaled balance part 1" --rule "depositUpdatesUserATokenSuperBalance" # TIMEOUT 2023
-          # # - PoolAccurate.conf --msg "Deposit updates AToken scaled balance part 2" --rule "depositUpdatesUserATokenSuperBalance_sanity" # TIMEOUT 2023
-          # # - PoolAccurate.conf --msg "Deposit cannot change other users scaled balance" --rule "depositCannotChangeOthersATokenSuperBalance" # TIMEOUT 2023
-          # # - PoolAccurate.conf --msg "Index non decreasing part 2 -- timeouting when not split into different patches of methods" --rule _updateIndexesWrapperReachable # TIMEOUT 2023
-          # - ReserveConfiguration.conf
-          # - UserConfigCLI.conf
-          # - StableTokenCLI.conf
-          # - VariableTokenCLI.conf
-          # # - PoolSimpleProperties.conf --msg "Deposit functionality part 1" --rule "cannotDepositInInactiveReserve" # TIMEOUT 2023
-          # # - PoolSimpleProperties.conf --msg "Deposit functionality part 2" --rule "cannotDepositInFrozenReserve" #TIMEOUT 2023
-          # - PoolSimpleProperties.conf --msg "Deposit functionality part 3" --rule "cannotDepositZeroAmount"
-          # - PoolSimpleProperties.conf --msg "Methods reachability part 1" --rule "method_reachability_split_for_CI_01"
-          # - PoolSimpleProperties.conf --msg "Methods reachability part 2" --rule "method_reachability_split_for_CI_02_backUnbacked"
-          # - PoolSimpleProperties.conf --msg "Methods reachability part 3" --rule "method_reachability_split_for_CI_03_repayWithATokens"
-          # # - PoolSimpleProperties.conf --msg "Methods reachability part 4" --rule "method_reachability_split_for_CI_04_repayWithPermit" # TIMEOUT 2023
-          # # - PoolSimpleProperties.conf --msg "Methods reachability part 5" --rule "method_reachability_split_for_CI_05_liquidationCall" # TIMEOUT 2023
-          # - PoolSimpleProperties.conf --msg "Methods reachability part 6" --rule "method_reachability_split_for_CI_06_flashLoan"
-          # - PoolSimpleProperties.conf --msg "Methods reachability part 7" --rule "method_reachability_split_for_CI_07_borrow"
-          # - PoolSimpleProperties.conf --msg "Methods reachability part 8" --rule "method_reachability_split_for_CI_08_supplyWithPermit"
-          # - PoolSimpleProperties.conf --msg "Methods reachability part 9" --rule "method_reachability_split_for_CI_09_rebalanceStableBorrowRate"
-          # # - PoolSimpleProperties.conf --msg "Methods reachability part 10" --rule "method_reachability_split_for_CI_10_repay" # TIMEOUT 2023
-          # # - PoolSimpleProperties.conf --msg "Methods reachability part 11" --rule "method_reachability_split_for_CI_11_flashLoanSimple" # TIMEOUT 2023
-          # - PoolSimpleProperties.conf --msg "Withdraw functionality part 1" --rule "cannotWithdrawFromInactiveReserve"
-          # - PoolSimpleProperties.conf --msg "Withdraw functionality part 2" --rule "cannotWithdrawZeroAmount"
-          # - PoolSimpleProperties.conf --msg "Borrow functionality part 1" --rule "cannotBorrowZeroAmount"
-          # - PoolSimpleProperties.conf --msg "Borrow functionality part 2" --rule "cannotBorrowOnInactiveReserve"
-          # - PoolSimpleProperties.conf --msg "Borrow functionality part 3" --rule "cannotBorrowOnReserveDisabledForBorrowing"
-          # - PoolSimpleProperties.conf --msg "Borrow functionality part 4" --rule "cannotBorrowOnFrozenReserve"
+          - PoolAccurate.conf --msg "Index non decreasing part 4" --rule "liquidityIndexNonDecresingFor_cumulateToLiquidityIndex"
+          # - PoolAccurate.conf --msg "Deposit updates AToken scaled balance part 1" --rule "depositUpdatesUserATokenSuperBalance" # TIMEOUT 2023
+          # - PoolAccurate.conf --msg "Deposit updates AToken scaled balance part 2" --rule "depositUpdatesUserATokenSuperBalance_sanity" # TIMEOUT 2023
+          # - PoolAccurate.conf --msg "Deposit cannot change other users scaled balance" --rule "depositCannotChangeOthersATokenSuperBalance" # TIMEOUT 2023
+          # - PoolAccurate.conf --msg "Index non decreasing part 2 -- timeouting when not split into different patches of methods" --rule _updateIndexesWrapperReachable # TIMEOUT 2023
+          - ReserveConfiguration.conf
+          - UserConfigCLI.conf
+          - StableTokenCLI.conf
+          - VariableTokenCLI.conf
+          # - PoolSimpleProperties.conf --msg "Deposit functionality part 1" --rule "cannotDepositInInactiveReserve" # TIMEOUT 2023
+          # - PoolSimpleProperties.conf --msg "Deposit functionality part 2" --rule "cannotDepositInFrozenReserve" #TIMEOUT 2023
+          - PoolSimpleProperties.conf --msg "Deposit functionality part 3" --rule "cannotDepositZeroAmount"
+          - PoolSimpleProperties.conf --msg "Methods reachability part 1" --rule "method_reachability_split_for_CI_01"
+          - PoolSimpleProperties.conf --msg "Methods reachability part 2" --rule "method_reachability_split_for_CI_02_backUnbacked"
+          - PoolSimpleProperties.conf --msg "Methods reachability part 3" --rule "method_reachability_split_for_CI_03_repayWithATokens"
+          # - PoolSimpleProperties.conf --msg "Methods reachability part 4" --rule "method_reachability_split_for_CI_04_repayWithPermit" # TIMEOUT 2023
+          # - PoolSimpleProperties.conf --msg "Methods reachability part 5" --rule "method_reachability_split_for_CI_05_liquidationCall" # TIMEOUT 2023
+          - PoolSimpleProperties.conf --msg "Methods reachability part 6" --rule "method_reachability_split_for_CI_06_flashLoan"
+          - PoolSimpleProperties.conf --msg "Methods reachability part 7" --rule "method_reachability_split_for_CI_07_borrow"
+          - PoolSimpleProperties.conf --msg "Methods reachability part 8" --rule "method_reachability_split_for_CI_08_supplyWithPermit"
+          - PoolSimpleProperties.conf --msg "Methods reachability part 9" --rule "method_reachability_split_for_CI_09_rebalanceStableBorrowRate"
+          # - PoolSimpleProperties.conf --msg "Methods reachability part 10" --rule "method_reachability_split_for_CI_10_repay" # TIMEOUT 2023
+          # - PoolSimpleProperties.conf --msg "Methods reachability part 11" --rule "method_reachability_split_for_CI_11_flashLoanSimple" # TIMEOUT 2023
+          - PoolSimpleProperties.conf --msg "Withdraw functionality part 1" --rule "cannotWithdrawFromInactiveReserve"
+          - PoolSimpleProperties.conf --msg "Withdraw functionality part 2" --rule "cannotWithdrawZeroAmount"
+          - PoolSimpleProperties.conf --msg "Borrow functionality part 1" --rule "cannotBorrowZeroAmount"
+          - PoolSimpleProperties.conf --msg "Borrow functionality part 2" --rule "cannotBorrowOnInactiveReserve"
+          - PoolSimpleProperties.conf --msg "Borrow functionality part 3" --rule "cannotBorrowOnReserveDisabledForBorrowing"
+          - PoolSimpleProperties.conf --msg "Borrow functionality part 4" --rule "cannotBorrowOnFrozenReserve"
