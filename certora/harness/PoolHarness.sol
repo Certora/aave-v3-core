@@ -44,4 +44,21 @@ contract PoolHarness is Pool {
     function getReserveVariableBorrowIndex(address asset) public view returns (uint256) {
         return _reserves[asset].variableBorrowIndex;
     } 
+
+    function getReserveVariableBorrowRate(address asset) public view returns (uint256) {
+        return _reserves[asset].currentVariableBorrowRate;
+    } 
+
+
+
+
+    function updateReserveIndexes(address asset) public returns (bool) {
+        ReserveLogic._updateIndexes(_reserves[asset], _reserves[asset].cache());
+        return true;
+    } 
+
+    function updateReserveIndexesWithCache(address asset, DataTypes.ReserveCache memory cache) public returns (bool) {
+        ReserveLogic._updateIndexes(_reserves[asset], cache);
+        return true;
+    } 
 }

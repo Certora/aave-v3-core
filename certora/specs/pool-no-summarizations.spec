@@ -98,6 +98,29 @@ rule variableBorrowIndexGteRay(method f) filtered
     assert indexAfter >= indexBefore; //RAY();
 }
 
+rule indexesNonDecresing()
+{
+    address asset;
+    env e;
+    
+    uint256 reserveLiquidityIndexBefore = getReserveLiquidityIndex(e, asset);
+    uint256 variableBorrowIndexBefore = getReserveVariableBorrowIndex(e, asset);
+    //uint256 stableBorrowIndexBefore = getReserveVariableBorrowIndex(e, asset);
+    require reserveLiquidityIndexBefore >= RAY();   //from ReserveLogic.init
+    //require getReserveVariableBorrowRate(e, asset) >= RAY();
+    DataTypes.ReserveCache cache;
+    require cache.currLiquidityIndex == reserveLiquidityIndexBefore;
+    require cache.currVariableBorrowIndex == variableBorrowIndexBefore;
+
+	//updateReserveIndexes(e, asset);
+    updateReserveIndexesWithCache(e, asset, cache);
+
+    uint256 variableBorrowIndexAfter = getReserveVariableBorrowIndex(e, asset);
+    uint256 reserveLiquidityIndexAfter = getReserveLiquidityIndex(e, asset);
+    assert variableBorrowIndexAfter >= variableBorrowIndexBefore;
+    assert reserveLiquidityIndexAfter >= reserveLiquidityIndexBefore;
+}
+
 rule dummy(method f)
 {
     env e;
