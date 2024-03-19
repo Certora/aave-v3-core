@@ -6,8 +6,11 @@ methods {
     // function _.rayDiv(uint256 a, uint256 b) internal => NONDET;
     // function _.percentMul(uint256 value, uint256 percentage) internal => NONDET;
     function _._getUserDebtInBaseCurrency(address user, DataTypes.ReserveData storage reserve, uint256 assetPrice, uint256 assetUnit) internal => NONDET;
-    function _.rayMul(uint256 a, uint256 b) internal => rayMulSummariztion(a, b) expect uint256 ALL;
-    function _.rayDiv(uint256 a, uint256 b) internal => rayDivSummariztion(a, b) expect uint256 ALL;
+    // function _.rayMul(uint256 a, uint256 b) internal => rayMulSummariztion(a, b) expect uint256 ALL;
+    // function _.rayDiv(uint256 a, uint256 b) internal => rayDivSummariztion(a, b) expect uint256 ALL;
+
+    function _.rayMul(uint256 a, uint256 b) internal => mulDivDownAbstractPlus(a, b, 10^27) expect uint256 ALL;
+    function _.rayDiv(uint256 a, uint256 b) internal => mulDivDownAbstractPlus(a, 10^27, b) expect uint256 ALL;
     // function _.rayDiv(uint256 a, uint256 b) internal => NONDET; //JB UC
 }
 
@@ -81,6 +84,7 @@ rule method_reachability(env e, method f) {
     satisfy true;
 }
 
+// @title It is impossible to deposit an inactive reserve
 // Proved:
 // https://prover.certora.com/output/40577/b8bd6244053e42e4bddb129f04e1dd93/?anonymousKey=5374001e512e1149d120f0efa19c18a3d531d115
 // Note, that getFlags must not be NONDET.
@@ -96,6 +100,7 @@ rule cannotDepositInInactiveReserve(env e) {
     assert reserveIsActive;
 }
 
+// @title It is impossible to deposit a frozen reserve
 // Proved:
 // https://prover.certora.com/output/40577/d4f2bfae10ae4092bb7dab309e72b166/?anonymousKey=a370279a63e87a810fd79cb20d33ef00aead7c2b
 // Note, that getFlags must not be NONDET.
@@ -111,6 +116,7 @@ rule cannotDepositInFrozenReserve(env e) {
     assert !reserveIsFrozen;
 }
 
+// @title It is impossible to deposit zero amount
 // Proved
 // https://prover.certora.com/output/40577/400f77e9ca1948b9896ca35435b0ea03/?anonymousKey=760e8acd1473e9eb801aa4bcaf60d50927f9f026
 rule cannotDepositZeroAmount(env e) {
@@ -124,6 +130,7 @@ rule cannotDepositZeroAmount(env e) {
     assert amount != 0;
 }
 
+// @title It is impossible to withdraw zero amount
 // Proved
 // https://prover.certora.com/output/40577/869e48220a2d40369884dd6a0cbd1734/?anonymousKey=7cf6aced7660c59314f767f4f14de508e38a37ea
 rule cannotWithdrawZeroAmount(env e) {
@@ -137,6 +144,7 @@ rule cannotWithdrawZeroAmount(env e) {
     assert amount != 0;
 }
 
+// @title It is impossible to withdraw an inactive reserve
 // Proved
 // https://prover.certora.com/output/40577/a4eb1d4472ae43c2a1bfe202f070453a/?anonymousKey=05c0ddc494d371d6a28fc40ed4cc1902bba29eba
 // Note, that getFlags must not be NONDET.
@@ -152,6 +160,7 @@ rule cannotWithdrawFromInactiveReserve(env e) {
     assert reserveIsActive;
 }
 
+// @title It is impossible to borrow zero amount
 // Proved
 // https://prover.certora.com/output/40577/13a0a08cbc6f448888bcdb28716d856b/?anonymousKey=48621623ac7255815e8a6465d72d38f39d55f0f4
 rule cannotBorrowZeroAmount(env e) {
@@ -166,6 +175,7 @@ rule cannotBorrowZeroAmount(env e) {
     assert amount != 0;
 }
 
+// @title It is impossible to borrow on inactive reserve.
 // Proved
 // https://prover.certora.com/output/40577/2e93cd5ce80f4aa491b9d648e1a73583/?anonymousKey=64bbd85099c3ae4a387bd0a24ce565c23094ee4f
 // Note, that getFlags must not be NONDET.
@@ -182,7 +192,8 @@ rule cannotBorrowOnInactiveReserve(env e) {
     assert reserveIsActive;
 }
 
-// Proved hopefully here:
+// It is impossible to borrow on a reserve, that is disabled for borrowing.
+// Proved
 // https://prover.certora.com/output/40577/1b50faf4cbb3459c9563e4af75658525/?anonymousKey=e04b8838d1f6eceb3fb29504969ecf0817269679
 // Note, that getFlags must not be NONDET.
 rule cannotBorrowOnReserveDisabledForBorrowing(env e) {
@@ -198,6 +209,7 @@ rule cannotBorrowOnReserveDisabledForBorrowing(env e) {
     assert reserveIsEnabledForBorrow;
 }
 
+// @title It is impossible to borrow on frozen reserve.
 // Proved
 // https://prover.certora.com/output/40577/b25ecb5e5b804832b3aa75e3bd54079c/?anonymousKey=8029d9f6ac5edf386f4795c4de0e7928f0487722
 // Note, that getFlags must not be NONDET.

@@ -6,6 +6,10 @@ import {DataTypes} from '../../contracts/protocol/libraries/types/DataTypes.sol'
 import {ReserveLogic} from '../../contracts//protocol/libraries/logic/ReserveLogic.sol';
 import {IPoolAddressesProvider} from '../../contracts//interfaces/IPoolAddressesProvider.sol';
 
+import {IERC20} from '../../contracts/dependencies/openzeppelin/contracts/IERC20.sol';
+
+
+
 contract PoolHarness is Pool {
     
     using ReserveLogic for DataTypes.ReserveData;
@@ -17,5 +21,45 @@ contract PoolHarness is Pool {
         DataTypes.ReserveData storage reserve = _reserves[asset];
         DataTypes.ReserveCache memory reserveCache = reserve.cache();
         return reserveCache.currScaledVariableDebt;
+    }
+
+    function getTotalDebt(address asset) public view returns (uint256) {
+        uint256 totalVariable = IERC20(_reserves[asset].variableDebtTokenAddress).totalSupply();
+        uint256 totalStable = IERC20(_reserves[asset].stableDebtTokenAddress).totalSupply();
+        return totalVariable + totalStable;
+    }
+
+    function getTotalATokenSupply(address asset) public view returns (uint256) {
+        return IERC20(_reserves[asset].aTokenAddress).totalSupply();
+    }
+
+    function getReserveLiquidityIndex(address asset) public view returns (uint256) {
+        return _reserves[asset].liquidityIndex;
+    }
+
+    function getReserveStableBorrowRate(address asset) public view returns (uint256) {
+        return _reserves[asset].currentStableBorrowRate;
+    }
+
+    function getReserveVariableBorrowIndex(address asset) public view returns (uint256) {
+        return _reserves[asset].variableBorrowIndex;
+    }
+
+    function getReserveVariableBorrowRate(address asset) public view returns (uint256) {
+        return _reserves[asset].currentVariableBorrowRate;
+    }
+
+    function updateReserveIndexes(address asset) public returns (bool) {
+        ReserveLogic._updateIndexes(_reserves[asset], _reserves[asset].cache());
+        return true;
+    }
+
+    function updateReserveIndexesWithCache(address asset, DataTypes.ReserveCache memory cache) public returns (bool) {
+        ReserveLogic._updateIndexes(_reserves[asset], cache);
+        return true;
+    }
+
+    function cumulateToLiquidityIndex(address asset, uint256 totalLiquidity, uint256 amount) public returns (uint256) {
+        return ReserveLogic.cumulateToLiquidityIndex(_reserves[asset], totalLiquidity, amount);
     }
 }

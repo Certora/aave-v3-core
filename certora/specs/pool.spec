@@ -1,277 +1,291 @@
-import "pool-simple-properties.spec";
+/*
+    This is a Specification File for Smart Contract Verification with the Certora Prover.
+    This file is run with scripts/verifyPool.sh
+*/
+
+/*
+    Declaration of contracts used in the spec
+*/
+using ATokenHarness as _aToken;
+// using StableDebtTokenHarness as _stable
+// using VariableDebtToken as _variable
+// using SimpleERC20 as _asset
+// using SymbolicPriceOracle as priceOracle
+using AaveProtocolDataProvider as _dataProvider;
+using ReserveConfiguration as RC;
+using SimpleERC20 as _underlyingAsset;
+
+/*
+
+Methods Summerizations and Enviroment-Free (e.g relative to e.msg variables) Declarations 
+
+*/
 
 methods {
+    //Pool
+    /*    function getReserveList(uint256 index) external returns (address) envfree;
+    function getReserveDataIndex(address token) external returns (uint256) envfree;
+    function getReservesCount() external returns (uint256) envfree;*/
+    function _.handleAction(address, uint256, uint256) external => NONDET;
+    //function _dataProvider.getConfigurationData(address) external returns (uint256, uint256, uint256, uint256, uint256, bool, bool, bool, bool, bool) envfree;
+    /*
+    function getUserEMode(address) external returns uint256 envfree;
+    function getAssetEMode(address) external returns uint256 envfree;
+    function getAssetId(address) external returns uint16 envfree;
+    function reserveAddressById(uint256) external returns address envfree;
+    
+    function isFrozenReserve(address asset) external returns bool envfree;
+    function isPausedReserve(address asset) external returns bool envfree;
+    function isBorrowableReserve(address) external returns bool envfree;
+    function isStableRateBorrowableReserve(address) external returns bool envfree;
+    function getReserveATokenAddress(address) external returns address envfree;
+    function getReserveStableDebtTokenAddress(address) external returns address envfree;
+    function getReserveVariableDebtTokenAddress(address) external returns address envfree;
+    function getReserveLiquidityIndex(address) external returns uint256 envfree;
+    function getReserveCurrentLiquidityRate(address) external returns uint256 envfree;
+    function getReserveVariableBorrowIndex(address) external returns uint256 envfree;
+    function getReserveCurrentVariableBorrowRate(address) external returns uint256 envfree;
+    function getReserveCurrentStableBorrowRate(address) external returns uint256 envfree;
+    function getATokenTotalSupply(address) external returns uint256 envfree;
+    function getReserveSupplyCap(address) external returns uint256 envfree;*/
+    //function _.mockUserAccountData() returns (uint256, uint256, uint256, uint256, uint256, bool) => NONDET;
+    //function _.mockHealthFactor() returns (uint256, bool) => NONDET;
+    function _.getAssetPrice(address) external => NONDET;
+    function _.getPriceOracle() external => ALWAYS(2);
+    function _.getPriceOracleSentinel() external => ALWAYS(4);
+    function _.isBorrowAllowed() external => NONDET;
+    
+    // PoolHarness
+    // function getCurrScaledVariableDebt(address) external returns (uint256) envfree;
+
+    // math
+    // function _.rayMul(uint256 a, uint256 b) internal => NONDET;
+    // function _.rayDiv(uint256 a, uint256 b) internal => NONDET;
+    function _.percentMul(uint256 value, uint256 percentage) internal => NONDET;
+    function _._getUserDebtInBaseCurrency(address user, DataTypes.ReserveData storage reserve, uint256 assetPrice, uint256 assetUnit) internal => NONDET;
+    function _.rayMul(uint256 a, uint256 b) internal => rayMulSummariztion(a, b) expect uint256 ALL;
+    // function _.rayDiv(uint256 a, uint256 b) internal => rayDivSummariztion(a, b) expect uint256 ALL;
+    function _.rayDiv(uint256 a, uint256 b) internal => NONDET; //JB UC
+
+    // function _.calculateLinearInterest(uint256, uint40) internal => ALWAYS(1000000000000000000000000000); // this is not good dont use this
+    // TODO: remove this summary: function _.calculateCompoundedInterest(uint256 x, uint40 t0, uint256 t1) internal => calculateCompoundedInterestSummary(x, t0, t1) expect uint256 ALL;
+
+    // ERC20
+    function _.transfer(address, uint256) external => DISPATCHER(true);
+    function _.transferFrom(address, address, uint256) external => DISPATCHER(true);
+    function _.approve(address, uint256) external => DISPATCHER(true);
+    function _.mint(address, uint256) external => DISPATCHER(true);
+    function _.burn(uint256) external => DISPATCHER(true);
+    function _.balanceOf(address) external => DISPATCHER(true);
+    
+    // ATOKEN
+    function _.mint(address user, uint256 amount, uint256 index) external => DISPATCHER(true);
+    function _.burn(address user, address receiverOfUnderlying, uint256 amount, uint256 index) external => DISPATCHER(true);
+    function _.mintToTreasury(uint256 amount, uint256 index) external => DISPATCHER(true);
+    function _.transferOnLiquidation(address from, address to, uint256 value) external => DISPATCHER(true);
+    function _.transferUnderlyingTo(address user, uint256 amount) external => DISPATCHER(true);
+    function _.handleRepayment(address user, uint256 amount) external => DISPATCHER(true);
+    function _.permit(address owner, address spender, uint256 value, uint256 deadline, uint8 v, bytes32 r, bytes32 s) external => DISPATCHER(true);
+    function _.ATokenBalanceOf(address user) external => DISPATCHER(true);
+
     // //Unsat Core Based
     function _.getFlags(DataTypes.ReserveConfigurationMap memory self) internal => NONDET;
+    function _.getParams(DataTypes.ReserveConfigurationMap memory self) internal => NONDET;
     //function _.setUsingAsCollateral(DataTypes.UserConfigurationMap storage self,uint256 reserveIndex,bool usingAsCollateral) internal => NONDET;
     //function _.setBorrowing(DataTypes.UserConfigurationMap storage self,uint256 reserveIndex,bool borrowing) internal => NONDET;
-}
 
-// Violated for flashLoan, flashLoanSimple, 
-// https://prover.certora.com/output/40577/6a0ff9324815417c9c5d5ac16d9e6416/?anonymousKey=0dd820519581b25388b8b635b0c8b3821990b541
-// Timeout
-// https://prover.certora.com/output/40577/3cda9c0d56554e28b09871bf20f2d4bb/?anonymousKey=bc4a229509291b1eec2975142e50da45119539ae
-// Proved here:
-// https://prover.certora.com/output/40577/33eed8a8086c4556bc3812fca1624b94/?anonymousKey=307c2714548addf7a1d16c9715155003203e3fc5
-rule totalChangesOnlyWithInitDropSupplyMint(env e, method f) filtered{
-    f -> !f.isView &&
-    f.selector != sig:initReserve(address,address, address, address, address).selector &&
-    f.selector != sig:dropReserve(address).selector &&
-    f.selector != sig:mintToTreasury(address[]).selector &&
-    f.selector != sig:supplyWithPermit(address,uint256,address,uint16,uint256,uint8,bytes32,bytes32).selector &&
-    f.selector != sig:supply(address,uint256,address,uint16).selector &&
-    f.selector != sig:repayWithPermit(address,uint256,uint256,address,uint256,uint8,bytes32,bytes32).selector &&
-    f.selector != sig:swapBorrowRateMode(address,uint256).selector &&
-    f.selector != sig:flashLoan(address,address[],uint256[],uint256[],address,bytes,uint16).selector &&
-    f.selector != sig:repay(address,uint256,uint256,address).selector &&
-    f.selector != sig:deposit(address,uint256,address,uint16).selector &&
-    f.selector != sig:flashLoanSimple(address,address,uint256,bytes,uint16).selector &&
-    f.selector != sig:borrow(address,uint256,uint256,uint16,address).selector &&
-    f.selector != sig:mintUnbacked(address,uint256,address,uint16).selector
-} {
-    address user;
-    calldataarg args;
-    // mathint balance_before = _aToken.ATokenBalanceOf(e, user);
-    mathint superBalanceBefore = _aToken.superBalance(e, user);
-    mathint totalSupplyBefore = _aToken.totalSupply(e);
+    function _.calculateUserAccountData(mapping(address => DataTypes.ReserveData) storage reservesData,mapping(uint256 => address) storage reservesList,mapping(uint8 => DataTypes.EModeCategory) storage eModeCategories,DataTypes.CalculateUserAccountDataParams memory params) internal => NONDET;
+    function _._getUserBalanceInBaseCurrency(address user,DataTypes.ReserveData storage reserve,uint256 assetPrice,uint256 assetUnit) internal => NONDET;
+    function _.wadDiv(uint256 a, uint256 b) internal => NONDET;
+    function _.wadToRay(uint256 a) internal => NONDET;
+    function _._calculateDomainSeparator() internal => NONDET;
 
-    f(e, args);
 
-    mathint superBalanceAfter = _aToken.superBalance(e, user);
-    mathint totalSupplyAfter = _aToken.totalSupply(e);
-
-    assert totalSupplyBefore == totalSupplyAfter; 
-}
-
-// Run: https://prover.certora.com/output/40577/9b8ea632aa4147288a6a8b5309e78021/?anonymousKey=8c1dd7499eb3c52ed76045917b1b2dccb1031162
-rule transferATokenDoesntChangeTotal(env e, method f) filtered{
-    f -> !f.isView &&
-    f.selector != sig:initReserve(address,address, address, address, address).selector &&
-    f.selector != sig:dropReserve(address).selector
-} {
-    address user;
-    calldataarg args;
-    mathint superBalanceBefore = _aToken.superBalance(e, user);
-    // mathint balance_before = aTokenBalanceOf(e, user);
-    mathint superTotalSupplyBefore = _aToken.totalSupply(e);
-
-    f(e, args);
-
-    mathint superBalanceAfter = _aToken.superBalance(e, user);
-    // mathint balance_after = aTokenBalanceOf(e, user);
-    mathint superTotalSupplyAfter = _aToken.superTotalSupply(e);
-
-    assert superBalanceBefore != superBalanceAfter => superTotalSupplyBefore == superTotalSupplyAfter; 
-}
-
-// Fail: https://prover.certora.com/output/40577/25353c2624c547f6a572638a9e02ddf1/?anonymousKey=8410b75b3c1acaa83426c83f6a874a5f5e0ac094
-rule depositIncreasesCollateral(env e) {
-    address asset;
-    uint256 amount;
-    address onBehalfOf;
-    uint16 referralCode;
-    // mathint underlying_balance_before = _underlyingAsset.balanceOf(e, onBehalfOf);
-    mathint underlying_balance_before_sender = _underlyingAsset.balanceOf(e, e.msg.sender);
-    // mathint normalized_income_before = getReserveNormalizedIncome(e, asset);
+    //Debt Tokens
+    //    function _variable.scaledTotalSupply() external => DISPATCHER(true);
+    function _.scaledTotalSupply() external => DISPATCHER(true);
     
-    // mathint currentLiquidityRateBefore = getCurrentLiquidityRate(e, asset);
-    mathint liquidityIndexBefore = getLiquidityIndex(e, asset);
-
-    require asset == _aToken.UNDERLYING_ASSET_ADDRESS(e);
-
-    // Users IERC20(asset) balance decreases (transfers), while
-    // IAToken(reserveCache.aTokenAddress) balance increases
-
-    deposit(e, asset, amount, onBehalfOf, referralCode);
-
-    // mathint underlying_balance_after = _underlyingAsset.balanceOf(e, onBehalfOf);
-    mathint underlying_balance_after_sender = _underlyingAsset.balanceOf(e, e.msg.sender);
-    // mathint normalized_income_after = getReserveNormalizedIncome(e, asset);
-
-    // mathint currentLiquidityRateAfter = getCurrentLiquidityRate(e, asset);
-    mathint liquidityIndexAfter = getLiquidityIndex(e, asset);
+    // StableDebt
+    function _.mint(address user, address onBehalfOf, uint256 amount, uint256 rate) external => DISPATCHER(true);
+    function _.burn(address user, uint256 amount) external => DISPATCHER(true);
+    function _.getSupplyData() external => DISPATCHER(true);
     
-    // assert normalized_income_before == normalized_income_after => underlying_balance_before_sender > underlying_balance_after_sender;
-    assert liquidityIndexBefore == liquidityIndexAfter => underlying_balance_before_sender > underlying_balance_after_sender;
+    //variableDebt
+    function _.burn(address user, uint256 amount, uint256 index) external => DISPATCHER(true);
+    
+    // ReserveConfiguration
+    //function _.mockGetEModeCategory() returns uint256 => CONSTANT;
+    //function _.mockGetActive() returns bool => CONSTANT;
+    //function _.mockGetFrozen() returns bool => CONSTANT;
+    //function _.mockGetBorrowingEnabled() returns bool => CONSTANT;
+    //function _.mockGetStableRateBorrowingEnabled() returns bool => CONSTANT;
+    //function _.mockGetPaused() returns bool => CONSTANT;
+    //function _.mockGetReserveFactor() returns uint256 => CONSTANT;
+    //function _.mockGetBorrowCap() returns uint256 => CONSTANT;
+    //function _.mockGetBorrowableInIsolation() returns bool => CONSTANT;
+    //function _.mockGetLtv() returns uint256 => CONSTANT;
+    //function _.mockGetSupplyCap() returns uint256 => ALWAYS(100000000000000000000000000000000000000000000000000);
 }
 
-// Proved
-// https://prover.certora.com/output/40577/fad5aaf8dcd749448281077a94787820/?anonymousKey=0038e1e03f375e0e1a5b77a77f703ed059a86afd
-rule depositIncreasesUserATokenSuperBalance(env e) {
-    address asset;
-    uint256 amount;
-    address onBehalfOf;
-    uint16 referralCode;
+/* definitions and functions to be used within the spec file */
 
-    require to_mathint(amount) == 3*RAY(); //under approx
-    require asset != onBehalfOf;
-    require onBehalfOf != _aToken;
-    require e.msg.sender != _aToken;
-    require e.msg.sender != asset;
-    require asset == _aToken.UNDERLYING_ASSET_ADDRESS(e);
+definition RAY() returns uint256 = 10^27;
+definition IS_UINT256(uint256 x) returns bool = ((x >= 0) && (x <= max_uint256));
 
-    mathint superBalanceBefore = _aToken.superBalance(e, onBehalfOf);
-    // mathint currentLiquidityRateBefore = getCurrentLiquidityRate(e, asset);
-    // mathint liquidityIndexBefore = getLiquidityIndex(e, asset);
+// definition ACTIVE_MASK() returns uint256 = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFFFFFFFFFF;
+// definition FROZEN_MASK() returns uint256 = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFDFFFFFFFFFFFFFF;
 
-    // e.msg.sender pays amount of asset and aToken balance of 'onBehalfOf' increases by amount
-    deposit(e, asset, amount, onBehalfOf, referralCode);
+function first_term(uint256 x, uint256 y) returns uint256 { return x; }
+// ghost mapping(uint256 => mapping(uint256 => uint256)) calculateCompoundedInterestSummaryValues;
+// function calculateCompoundedInterestSummary(uint256 rate, uint40 t0, uint256 t1) returns uint256
+// {
+//     //uint256 deltaT = require_uint256(t1 - t0);
+//     uint256 deltaT = assert_uint256( (t1-t0) % 2^256 );
+//     if (deltaT == 0)
+// 	{
+//             return RAY();
+// 	}
+//     if (rate == RAY())
+// 	{
+//             return RAY();
+// 	}
+//     if (rate >= RAY())
+// 	{
+//             require calculateCompoundedInterestSummaryValues[rate][deltaT] >= rate;
+// 	}
+//     else{
+//         require calculateCompoundedInterestSummaryValues[rate][deltaT] < rate;
+//     }
+//     return calculateCompoundedInterestSummaryValues[rate][deltaT];
+// }
 
-    mathint superBalanceAfter = _aToken.superBalance(e, onBehalfOf);
-    // mathint currentLiquidityRateAfter = getCurrentLiquidityRate(e, asset);
-    // mathint liquidityIndexAfter = getLiquidityIndex(e, asset);
+ghost mapping(uint256 => mapping(uint256 => uint256)) rayMulSummariztionValues;
+ghost mapping(uint256 => mapping(uint256 => uint256)) rayDivSummariztionValues;
 
-    // assert currentLiquidityRateBefore == currentLiquidityRateAfter;
-    // assert liquidityIndexBefore == liquidityIndexAfter;
-
-    assert superBalanceAfter > superBalanceBefore;
+function rayMulSummariztion(uint256 x, uint256 y) returns uint256
+{
+	if (x == 0) || (y == 0)
+	{
+		return 0;
+	}
+	if (x == RAY())
+	{
+		return y;
+	}
+	if (y == RAY())
+	{
+		return x;
+	}
+	
+	if (y > x)
+	{
+		if (y > RAY())
+		{
+			require rayMulSummariztionValues[y][x] >= x;
+		}
+		if (x > RAY())
+		{
+			require rayMulSummariztionValues[y][x] >= y;
+		}
+		return rayMulSummariztionValues[y][x];
+	}
+	else{
+		if (x > RAY())
+		{
+			require rayMulSummariztionValues[x][y] >= y;
+		}
+		if (y > RAY())
+		{
+			require rayMulSummariztionValues[x][y] >= x;
+		}
+		return rayMulSummariztionValues[x][y];
+	}
 }
 
-// Fail: https://prover.certora.com/output/40577/288f87a364d54f05830b8a81d84bd77a/?anonymousKey=b149f5f79632a64822c0f1910cc81fa7250ea36b
-rule depositIncreasesProtocolBalance(env e) {
-    address asset;
-    uint256 amount;
-    address onBehalfOf;
-    uint16 referralCode;
-
-    mathint protocol_balance_before = _underlyingAsset.balanceOf(e, PH);
-
-    require asset == _aToken.UNDERLYING_ASSET_ADDRESS(e);
-
-    deposit(e, asset, amount, onBehalfOf, referralCode);
-
-    mathint protocol_balance_after = _underlyingAsset.balanceOf(e, PH);
-    assert protocol_balance_after > protocol_balance_before;
+function rayDivSummariztion(uint256 x, uint256 y) returns uint256
+{
+	if (x == 0)
+	{
+		return 0;
+	}
+	if (y == RAY())
+	{
+		return x;
+	}
+	if (y == x)
+	{
+		return RAY();
+	}
+	require y > RAY() => rayDivSummariztionValues[x][y] <= x;
+	require y < RAY() => x <= rayDivSummariztionValues[x][y];
+	return rayDivSummariztionValues[x][y];
 }
 
-// Withdraws an `amount` of underlying asset from the reserve, burning the equivalent aTokens owned
-// Proved:
-// https://prover.certora.com/output/40577/0a227dfaafe049878749cbb457dc1ce6/?anonymousKey=cec9f01cf719afaf9da325844327adcdfd326bab
-// https://prover.certora.com/jobStatus/40577/2876335c933045198787c064989bfb12?anonymousKey=24e7e680172e162529800f2f55f4d3cd822ee886
-rule withdrawDecreasesATokenSuperBalance(env e) {
-    address asset;
-    uint256 amount;
-    address to;
-    uint16 referralCode;
-    mathint superBalanceBefore = _aToken.superBalance(e, e.msg.sender);
+function isActiveReserve(env e, address asset) returns bool
+{
+    DataTypes.ReserveData data = getReserveData(e, asset);
+    DataTypes.ReserveConfigurationMap configuration = data.configuration;
+    bool isActive = RC.getActive(e, configuration);
 
-    require asset != to;
-    require to != _aToken;
-    require asset == _aToken.UNDERLYING_ASSET_ADDRESS(e);
-
-    withdraw(e, asset, amount, to);
-
-    mathint superBalanceAfter = _aToken.superBalance(e, e.msg.sender);
-
-    assert superBalanceAfter < superBalanceBefore;
+    return isActive;
 }
 
-// Timeout: https://prover.certora.com/output/40577/d55923cefc064fdd85629c0cfea39f23/?anonymousKey=956ec5e9fabc7e9d1cd33a3b04c9ecdcd1c4c756
-rule withdrawDecreasesLiquidityIndex(env e) {
-    address asset;
-    uint256 amount;
-    address to;
-    uint16 referralCode;
-    mathint liquidityIndexBefore = getLiquidityIndex(e, asset);
+// function getReserveCacheNextLiquidityIndex(env e, address asset) returns mathint
+// {
+//     DataTypes.ReserveData data = getReserveData(e, asset);
+//     DataTypes.ReserveCache cache = data.cache;
 
-    require asset != to;
-    require to != _aToken;
-    require asset == _aToken.UNDERLYING_ASSET_ADDRESS(e);
+//     return cache.nextLiquidityIndex;
+// }
 
-    withdraw(e, asset, amount, to);
+function isFrozenReserve(env e, address asset) returns bool
+{
+    DataTypes.ReserveData data = getReserveData(e, asset);
+    DataTypes.ReserveConfigurationMap configuration = data.configuration;
+    bool isFrozen = RC.getFrozen(e, configuration);
 
-    mathint liquidityIndexAfter = getLiquidityIndex(e, asset);
-
-    assert liquidityIndexAfter <= liquidityIndexBefore;
+    return !isFrozen;
 }
 
-// Fail: https://prover.certora.com/output/40577/df497927ef314cc0b113ece511b707b2/?anonymousKey=48c714e420cf80eafaaed0c8da8fcc4726e950cc
-rule withdrawDecreasesCurrentLiquidityRate(env e) {
-    address asset;
-    uint256 amount;
-    address to;
-    uint16 referralCode;
-    mathint currentLiquidityRateBefore = getCurrentLiquidityRate(e, asset);
-    mathint liquidityIndexBefore = getLiquidityIndex(e, asset);
-
-    require asset != to;
-    require to != _aToken;
-    require asset == _aToken.UNDERLYING_ASSET_ADDRESS(e);
-
-    withdraw(e, asset, amount, to);
-
-    mathint currentLiquidityRateAfter = getCurrentLiquidityRate(e, asset);
-    mathint liquidityIndexAfter = getLiquidityIndex(e, asset);
-
-    require liquidityIndexAfter <= liquidityIndexBefore;
-    assert currentLiquidityRateAfter <= currentLiquidityRateBefore;
+function aTokenBalanceOf(env e, address user) returns uint256
+{
+    // DataTypes.ReserveData data = getReserveData(e, asset);
+    // address aTokenAddress = data.aTokenAddress;
+    // address aToken = IAToken(aTokenAddress);
+    // return aToken.balanceOf(user);
+    //TODO: Fix this, we need the aToken to be aToken of the asset somehow.
+    return _aToken.ATokenBalanceOf(e, user);
 }
 
-// Proved:
-// https://prover.certora.com/output/40577/5102cf7a05444c85a097d26bbe171fc7/?anonymousKey=e81634ce1bc99cbb3064230f94ad90f3b79f621e
-rule withdrawIncreasesUnderlyingBalance(env e) {
-    address asset;
-    uint256 amount;
-    address to;
-    uint16 referralCode;
-    mathint underlying_balance_before = _underlyingAsset.balanceOf(e, to); // asset is given to 'to'
+// function isFrozenReserve2(env e, address asset) returns bool
+// {
+//     uint256 decimals;
+//     uint256 ltv;
+//     uint256 liquidationThreshold;
+//     uint256 liquidationBonus;
+//     uint256 reserveFactor;
+//     bool usageAsCollateralEnabled;
+//     bool borrowingEnabled;
+//     bool stableBorrowRateEnabled;
+//     bool isActive;
+//     bool isFrozen;
+//     decimals, ltv, liquidationThreshold, liquidationBonus, reserveFactor, usageAsCollateralEnabled, borrowingEnabled, stableBorrowRateEnabled, isActive, isFrozen = _dataProvider.getReserveConfigurationData(e, asset);
+//     return isFrozen;
+// }
 
-    require asset != to;
-    require to != _aToken;
-    require asset == _aToken.UNDERLYING_ASSET_ADDRESS(e);
+// The borrowing index should monotonically increasing
+// rule getReserveNormalizedVariableDebtCheck()
+// {
+//     env e1;
+//     calldataarg args;
+//     calldataarg args2;
+//     address asset; uint256 amount; address onBehalfOf; uint16 referralCode;
+//     require asset != _aToken;
+//     uint256 oldIndex = getReserveNormalizedVariableDebt(e1, args);
+//     uint256 totalDebtBefore = getCurrScaledVariableDebt(asset);
+//     supply(e1, asset, amount, onBehalfOf, referralCode);
+//     uint256 newIndex = getReserveNormalizedVariableDebt(e1, args);
+//     assert totalDebtBefore != 0 => newIndex >= oldIndex;
+// }
 
-    withdraw(e, asset, amount, to);
 
-    mathint underlying_balance_after = _underlyingAsset.balanceOf(e, to);
-
-    assert underlying_balance_after > underlying_balance_before;
-}
-
-// Fail: https://prover.certora.com/output/40577/8faf3ebc2bec45d6a6c54f72c0403348/?anonymousKey=1759c21cba7b118a5de4ca1d99634e67966726e6
-rule withdrawDecreasesProtocolUnderlyingBalance(env e) {
-    address asset;
-    uint256 amount;
-    address to;
-    uint16 referralCode;
-    mathint underlying_protocol_before = _underlyingAsset.balanceOf(e, PH); // PoolHarness loses this asset
-
-    require asset != to;
-    require to != _aToken;
-    require asset == _aToken.UNDERLYING_ASSET_ADDRESS(e);
-
-    withdraw(e, asset, amount, to);
-
-    mathint underlying_protocol_after = _underlyingAsset.balanceOf(e, PH);
-
-    assert underlying_protocol_after < underlying_protocol_before;
-}
-
-rule normalized_income_changes_with(env e, method f) filtered {
-    f -> !f.isView &&
-    f.selector != sig:initReserve(address,address, address, address, address).selector &&
-    f.selector != sig:dropReserve(address).selector &&
-    f.selector != sig:mintToTreasury(address[]).selector &&
-    // f.selector != sig:supplyWithPermit(address,uint256,address,uint16,uint256,uint8,bytes32,bytes32).selector &&
-    f.selector != sig:supply(address,uint256,address,uint16).selector &&
-    f.selector != sig:rebalanceStableBorrowRate(address,address).selector &&
-    f.selector != sig:swapBorrowRateMode(address,uint256).selector &&
-    f.selector != sig:backUnbacked(address,uint256,uint256).selector &&
-    f.selector != sig:flashLoan(address,address[],uint256[],uint256[],address,bytes,uint16).selector &&
-    f.selector != sig:repay(address,uint256,uint256,address).selector &&
-    f.selector != sig:withdraw(address,uint256,address).selector &&
-    f.selector != sig:rescueTokens(address,address,uint256).selector &&
-    f.selector != sig:mintUnbacked(address,uint256,address,uint16).selector &&
-    f.selector != sig:flashLoanSimple(address,address,uint256,bytes,uint16).selector &&
-    f.selector != sig:deposit(address,uint256,address,uint16).selector // &&
-    // f.selector != sig:.selector &&
-    // f.selector != sig:.selector &&
-} {
-    address asset;
-    mathint normalized_income_before = getReserveNormalizedIncome(e, asset);
-    calldataarg args;
-
-    f(e, args);
-
-    mathint normalized_income_after = getReserveNormalizedIncome(e, asset);
-    assert normalized_income_before == normalized_income_after;
-}
