@@ -10,6 +10,10 @@ import {IERC20} from '../../contracts/dependencies/openzeppelin/contracts/IERC20
 
 
 
+import {IERC20} from '../../contracts/dependencies/openzeppelin/contracts/IERC20.sol';
+
+
+
 contract PoolHarness is Pool {
     
     using ReserveLogic for DataTypes.ReserveData;

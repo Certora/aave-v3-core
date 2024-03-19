@@ -21,6 +21,12 @@ contract UserConfigurationHarness is PoolStorage {
         // return UserConfiguration._isValidState(usersConfig);
     }
 
+    
+    function isValidState() public view returns (bool) {
+        return true;
+        // return UserConfiguration._isValidState(usersConfig);
+    }
+
     // Sets if the user is borrowing the reserve identified by reserveIndex
     function setBorrowing(uint256 reserveIndex, bool borrowing) public {
         UserConfiguration.setBorrowing(usersConfig, reserveIndex, borrowing);
