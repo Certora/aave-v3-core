@@ -4,7 +4,7 @@ import "CVLMath.spec";
     This is a Base Specification File for Smart Contract Verification with the Certora Prover.
     This file is meant to be included
 */
-
+import "pool-math-summaries.spec";
 /*
     Declaration of contracts used in the spec
 */
@@ -14,7 +14,7 @@ using StableDebtTokenHarness as _stable;
 using VariableDebtTokenHarness as _variable;
 // using SimpleERC20 as _asset
 // using SymbolicPriceOracle as priceOracle
-using AaveProtocolDataProvider as _dataProvider;
+//using AaveProtocolDataProvider as _dataProvider;
 using ReserveConfiguration as RC;
 using SimpleERC20 as _underlyingAsset;
 
@@ -30,14 +30,15 @@ methods {
     function _.getAssetPrice(address) external => NONDET;
     function _.getPriceOracle() external => ALWAYS(2);
     function _.getPriceOracleSentinel() external => ALWAYS(4);
-    function _.isBorrowAllowed() external => NONDET;
+    //function _.isBorrowAllowed() external => NONDET;
     
     // PoolHarness
-    // function getCurrScaledVariableDebt(address) external returns (uint256) envfree;
-    function _.getReserveNormalizedVariableDebt(address) external => DISPATCHER(true);
+    function getCurrScaledVariableDebt(address) external returns (uint256) envfree;
+    function getReserveNormalizedVariableDebt(address) external returns (uint256) envfree;
+
 
     // function _.calculateLinearInterest(uint256, uint40) internal => ALWAYS(1000000000000000000000000000); // this is not good dont use this
-    function _.calculateCompoundedInterest(uint256 x, uint40 t0, uint256 t1) internal => calculateCompoundedInterestSummary(x, t0, t1) expect uint256 ALL;
+    //function _.calculateCompoundedInterest(uint256 x, uint40 t0, uint256 t1) internal => calculateCompoundedInterestSummary(x, t0, t1) expect uint256 ALL;
 
     // ERC20
     function _.transfer(address, uint256) external => DISPATCHER(true);
