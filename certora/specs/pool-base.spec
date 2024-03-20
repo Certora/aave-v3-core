@@ -166,7 +166,7 @@ function aTokenBalanceOf(env e, address user) returns uint256
 
 function rayMulPreciseSummarization(uint256 x, uint256 y) returns uint256
 {
-    if (x == 0) || (y == 0)
+    if (x == 0 || y == 0)
 	{
 		return 0;
 	}
