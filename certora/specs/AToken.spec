@@ -50,7 +50,7 @@ definition bounded_error_eq(uint x, uint y, uint scale) returns bool =
     &&
     to_mathint(x) + (bound() * scale) >= to_mathint(y);
 
-ghost sumAllBalance() returns mathint {
+persistent ghost sumAllBalance() returns mathint {
     init_state axiom sumAllBalance() == 0;
 }
 
@@ -59,7 +59,7 @@ ghost gRNI() returns uint256 {
     axiom to_mathint(gRNI()) == 7 * ray();
 }
 
-hook Sstore _userState[KEY address a].balance uint128 balance (uint128 old_balance) STORAGE {
+hook Sstore _userState[KEY address a].balance uint128 balance (uint128 old_balance) {
     havoc sumAllBalance assuming sumAllBalance@new() == sumAllBalance@old() + balance - old_balance;
 }
 

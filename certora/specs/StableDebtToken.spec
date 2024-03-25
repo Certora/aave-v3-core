@@ -49,7 +49,7 @@ function calculateCompoundedInterestSummary(uint256 rate, uint40 t0, uint256 t1)
 ghost mapping(uint256 => mapping(uint256 => uint256)) rayMulSummariztionValues;
 function rayMulSummariztion(uint256 x, uint256 y) returns uint256
 {
-    if (x == 0) || (y == 0)
+    if ((x == 0) || (y == 0))
                        {
                            return 0;
                        }
@@ -116,10 +116,10 @@ ghost symbolicCompundInterest(uint256, uint40) returns uint256 {
 ghost sumAllBalance() returns mathint {
     init_state axiom sumAllBalance() == 0;
 }
-hook Sstore _userState[KEY address a].balance uint128 balance (uint128 old_balance) STORAGE {
+hook Sstore _userState[KEY address a].balance uint128 balance (uint128 old_balance) {
     havoc sumAllBalance assuming sumAllBalance@new() == sumAllBalance@old() + balance - old_balance;
 }
-hook Sload uint128 balance _userState[KEY address a].balance  STORAGE {
+hook Sload uint128 balance _userState[KEY address a].balance  {
     require sumAllBalance() >= to_mathint(balance);
 }
 

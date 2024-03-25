@@ -40,7 +40,7 @@ definition disAllowedFunctions(method f) returns bool =
 ghost sumAllBalance() returns mathint {
     init_state axiom sumAllBalance() == 0;
 }
-hook Sstore _userState[KEY address a].balance uint128 balance (uint128 old_balance) STORAGE {
+hook Sstore _userState[KEY address a].balance uint128 balance (uint128 old_balance) {
     havoc sumAllBalance assuming sumAllBalance@new() == sumAllBalance@old() + balance - old_balance;
 }
 
