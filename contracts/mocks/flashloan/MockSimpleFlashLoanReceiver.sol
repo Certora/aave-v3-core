@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BUSL-1.1
-pragma solidity 0.8.10;
+pragma solidity ^0.8.0;
 
 import {SafeMath} from '../../dependencies/openzeppelin/contracts/SafeMath.sol';
 import {IERC20} from '../../dependencies/openzeppelin/contracts/IERC20.sol';
@@ -63,7 +63,7 @@ contract MockFlashLoanSimpleReceiver is FlashLoanSimpleReceiverBase {
     uint256 amountToReturn = (_amountToApprove != 0) ? _amountToApprove : amount.add(premium);
     //execution does not fail - mint tokens and return them to the _destination
 
-    token.mint(premium);
+    token.mint(address(this), premium);
 
     IERC20(asset).approve(address(POOL), amountToReturn);
 

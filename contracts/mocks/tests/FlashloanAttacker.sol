@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BUSL-1.1
-pragma solidity 0.8.10;
+pragma solidity ^0.8.0;
 
 import {SafeMath} from '../../dependencies/openzeppelin/contracts/SafeMath.sol';
 import {IERC20} from '../../dependencies/openzeppelin/contracts/IERC20.sol';
@@ -24,7 +24,7 @@ contract FlashloanAttacker is FlashLoanSimpleReceiverBase {
 
   function supplyAsset(address asset, uint256 amount) public {
     MintableERC20 token = MintableERC20(asset);
-    token.mint(amount);
+    token.mint(address(this), amount);
     token.approve(address(_pool), type(uint256).max);
     _pool.supply(asset, amount, address(this), 0);
   }
@@ -49,7 +49,7 @@ contract FlashloanAttacker is FlashLoanSimpleReceiverBase {
     // Also do a normal borrow here in the middle
     _innerBorrow(asset);
 
-    token.mint(premium);
+    token.mint(address(this), premium);
     IERC20(asset).approve(address(POOL), amountToReturn);
 
     return true;
