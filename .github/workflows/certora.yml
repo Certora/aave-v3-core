@@ -61,3 +61,13 @@ jobs:
           - StableTokenCLI.conf
           - UserConfigCLI.conf
           - VariableTokenCLI.conf
+          - TADEAS-pool-simple-properties.conf --rule cannotDepositInInactiveReserve --msg "cannotDepositInInactiveReserve"
+          - TADEAS-pool-simple-properties.conf --rule cannotDepositInFrozenReserve --msg "cannotDepositInFrozenReserve"
+          - TADEAS-pool-simple-properties.conf  --rule cannotDepositZeroAmount --msg "cannotDepositZeroAmount"
+           - TADEAS-pool-simple-properties.conf  --rule cannotWithdrawZeroAmount --msg "cannotWithdrawZeroAmount"
+           - TADEAS-pool-simple-properties.conf --rule cannotWithdrawFromInactiveReserve --msg "cannotWithdrawFromInactiveReserve"
+           - TADEAS-pool-simple-properties.conf  --rule cannotBorrowZeroAmount --msg "cannotBorrowZeroAmount"
+           - TADEAS-pool-simple-properties.conf  --rule cannotBorrowOnInactiveReserve --msg "cannotBorrowOnInactiveReserve"
+           - TADEAS-pool-simple-properties.conf  --rule cannotBorrowOnReserveDisabledForBorrowing --msg "cannotBorrowOnReserveDisabledForBorrowing"
+           - TADEAS-pool-simple-properties.conf  --rule cannotBorrowOnFrozenReserve --msg "cannotBorrowOnFrozenReserve"
+           - TADEAS-pool-no-summarizations.conf
