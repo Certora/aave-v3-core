@@ -7,7 +7,7 @@ diff -ruN .gitignore .gitignore
 diff -ruN protocol/tokenization/AToken.sol protocol/tokenization/AToken.sol
 --- protocol/tokenization/AToken.sol	2023-01-29 12:42:35
 +++ protocol/tokenization/AToken.sol	2023-01-29 12:49:56
-@@ -71,16 +71,16 @@
+@@ -70,16 +70,16 @@
  
      _domainSeparator = _calculateDomainSeparator();
  
@@ -34,15 +34,3 @@ diff -ruN protocol/tokenization/AToken.sol protocol/tokenization/AToken.sol
    }
  
    /// @inheritdoc IAToken
-diff -ruN protocol/tokenization/StableDebtToken.sol protocol/tokenization/StableDebtToken.sol
---- protocol/tokenization/StableDebtToken.sol	2023-01-11 13:38:21
-+++ protocol/tokenization/StableDebtToken.sol	2023-01-29 12:50:20
-@@ -336,7 +336,7 @@
-    * @param avgRate The average rate at which the total supply increases
-    * @return The debt balance of the user since the last burn/mint action
-    */
--  function _calcTotalSupply(uint256 avgRate) internal view returns (uint256) {
-+  function _calcTotalSupply(uint256 avgRate) internal virtual view returns (uint256) {
-     uint256 principalSupply = super.totalSupply();
- 
-     if (principalSupply == 0) {
