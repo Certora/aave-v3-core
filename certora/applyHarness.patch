@@ -1,13 +1,23 @@
 diff -ruN .gitignore .gitignore
---- .gitignore	1970-01-01 02:00:00
-+++ .gitignore	2023-01-25 13:43:43
+--- .gitignore	1970-01-01 02:00:00.000000000 +0200
++++ .gitignore	2024-03-26 12:06:06.824739877 +0200
 @@ -0,0 +1,2 @@
 +*
 +!.gitignore
 diff -ruN protocol/tokenization/AToken.sol protocol/tokenization/AToken.sol
---- protocol/tokenization/AToken.sol	2023-01-29 12:42:35
-+++ protocol/tokenization/AToken.sol	2023-01-29 12:49:56
-@@ -71,16 +71,16 @@
+--- protocol/tokenization/AToken.sol	2024-03-25 19:09:57.942951737 +0200
++++ protocol/tokenization/AToken.sol	2024-03-26 16:40:05.810557503 +0200
+@@ -37,6 +37,9 @@
+   function getRevision() internal pure virtual override returns (uint256) {
+     return ATOKEN_REVISION;
+   }
++  //function MOMO_KOKO() internal pure virtual returns (uint256) {
++  //  return ATOKEN_REVISION;
++  //}
+ 
+   /**
+    * @dev Constructor.
+@@ -70,16 +73,16 @@
  
      _domainSeparator = _calculateDomainSeparator();
  
@@ -34,15 +44,15 @@ diff -ruN protocol/tokenization/AToken.sol protocol/tokenization/AToken.sol
    }
  
    /// @inheritdoc IAToken
-diff -ruN protocol/tokenization/StableDebtToken.sol protocol/tokenization/StableDebtToken.sol
---- protocol/tokenization/StableDebtToken.sol	2023-01-11 13:38:21
-+++ protocol/tokenization/StableDebtToken.sol	2023-01-29 12:50:20
-@@ -336,7 +336,7 @@
-    * @param avgRate The average rate at which the total supply increases
-    * @return The debt balance of the user since the last burn/mint action
-    */
--  function _calcTotalSupply(uint256 avgRate) internal view returns (uint256) {
-+  function _calcTotalSupply(uint256 avgRate) internal virtual view returns (uint256) {
-     uint256 principalSupply = super.totalSupply();
+diff -ruN protocol/tokenization/base/ScaledBalanceTokenBase.sol protocol/tokenization/base/ScaledBalanceTokenBase.sol
+--- protocol/tokenization/base/ScaledBalanceTokenBase.sol	2024-03-25 19:09:57.942951737 +0200
++++ protocol/tokenization/base/ScaledBalanceTokenBase.sol	2024-03-26 16:43:02.451462373 +0200
+@@ -34,7 +34,7 @@
+   }
  
-     if (principalSupply == 0) {
+   /// @inheritdoc IScaledBalanceToken
+-  function scaledBalanceOf(address user) external view override returns (uint256) {
++  function scaledBalanceOf(address user) public view override returns (uint256) {
+     return super.balanceOf(user);
+   }
+ 

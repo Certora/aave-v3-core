@@ -31,7 +31,7 @@ jobs:
         with: { java-version: '11', java-package: jre }
 
       - name: Install certora cli
-        run: pip install certora-cli==3.6.8.post3
+        run: pip install certora-cli
 
       - name: Install solc
         run: |
@@ -46,7 +46,7 @@ jobs:
           make munged
           cd ..
           echo "key length" ${#CERTORAKEY}
-          sh certora/scripts/${{ matrix.rule }}
+          certoraRun certora/conf/${{ matrix.rule }} --wait_for_results
         env:
           CERTORAKEY: ${{ secrets.CERTORAKEY }}
 
@@ -55,9 +55,19 @@ jobs:
       max-parallel: 16
       matrix:
         rule:
-          - verifyAToken.sh
-          - verifyPool.sh getReserveNormalizedVariableDebtCheck
-          - verifyReserveConfiguration.sh
-          - verifyStableTokenCLI.sh
-          - verifyUserConfigCLI.sh
-          - verifyVariableTokenCLI.sh
+          - AToken.conf
+          - Pool.conf
+          - ReserveConfiguration.conf
+          - StableTokenCLI.conf
+          - UserConfigCLI.conf
+          - VariableTokenCLI.conf
+          - NEW-pool-simple-properties.conf --rule cannotDepositInInactiveReserve --msg "cannotDepositInInactiveReserve"
+          - NEW-pool-simple-properties.conf --rule cannotDepositInFrozenReserve --msg "cannotDepositInFrozenReserve"
+          - NEW-pool-simple-properties.conf  --rule cannotDepositZeroAmount --msg "cannotDepositZeroAmount"
+          - NEW-pool-simple-properties.conf  --rule cannotWithdrawZeroAmount --msg "cannotWithdrawZeroAmount"
+          - NEW-pool-simple-properties.conf --rule cannotWithdrawFromInactiveReserve --msg "cannotWithdrawFromInactiveReserve"
+          - NEW-pool-simple-properties.conf  --rule cannotBorrowZeroAmount --msg "cannotBorrowZeroAmount"
+          - NEW-pool-simple-properties.conf  --rule cannotBorrowOnInactiveReserve --msg "cannotBorrowOnInactiveReserve"
+          - NEW-pool-simple-properties.conf  --rule cannotBorrowOnReserveDisabledForBorrowing --msg "cannotBorrowOnReserveDisabledForBorrowing"
+          - NEW-pool-simple-properties.conf  --rule cannotBorrowOnFrozenReserve --msg "cannotBorrowOnFrozenReserve"
+          - NEW-pool-no-summarizations.conf

@@ -4,46 +4,67 @@
 
 */
 
-using SimpleERC20 as _underlyingAsset
+using SimpleERC20 as _underlyingAsset;
 
 methods { 
-    nonces(address) returns (uint256) envfree
-    allowance(address, address) returns (uint256) envfree
-	handleAction(address, uint256, uint256) => NONDET 
-	getReserveNormalizedIncome(address u) returns (uint256) => gRNI()
-	balanceOf(address) returns (uint256) envfree
-	additionalData(address) returns uint128 envfree
-	finalizeTransfer(address, address, address, uint256, uint256, uint256) => NONDET
-
-	scaledTotalSupply() returns (uint256)
-	scaledBalanceOf(address) returns (uint256)
-    scaledBalanceOfToBalanceOf(uint256)returns (uint256) envfree
+    function nonces(address) external returns (uint256) envfree;
+    function allowance(address, address) external returns (uint256) envfree;
+    function _.handleAction(address, uint256, uint256) external => NONDET;
+    function _.getReserveNormalizedIncome(address u) external => gRNI() expect uint256 ALL;
+    function balanceOf(address) external returns (uint256) envfree;
+    function additionalData(address) external returns uint128 envfree;
+    function _.finalizeTransfer(address, address, address, uint256, uint256, uint256) external => NONDET;
+    
+    function scaledTotalSupply() external returns (uint256);
+    function scaledBalanceOf(address) external returns (uint256);
+    function scaledBalanceOfToBalanceOf(uint256) external returns (uint256) envfree;
 }
 
+
+
+function PLUS256(uint256 x, uint256 y) returns uint256 {
+    return (assert_uint256( (x+y) % 2^256) ) ;
+}
+function MINUS256(uint256 x, uint256 y) returns uint256 {
+    return (assert_uint256( (x-y) % 2^256) );
+}
+
+/*
+function PLUS256(uint256 x, uint256 y) returns uint256 {
+    return require_uint256(x+y);
+}
+function MINUS256(uint256 x, uint256 y) returns uint256 {
+    return require_uint256(x-y);
+}
+*/
+
 definition ray() returns uint = 1000000000000000000000000000;
-definition half_ray() returns uint = ray() / 2;
-definition bound() returns uint = ((gRNI() / ray()) + 1 ) / 2;
+//definition half_ray() returns uint = ray() / 2;
+definition bound() returns mathint = ((gRNI() / ray()) + 1 ) / 2;
 
 /*
 Due to rayDiv and RayMul Rounding (+ 0.5) - blance could increase by (gRNI() / Ray() + 1) / 2.
 */
-definition bounded_error_eq(uint x, uint y, uint scale) returns bool = x <= y + (bound() * scale) && x + (bound() * scale) >= y;
+definition bounded_error_eq(uint x, uint y, uint scale) returns bool =
+    to_mathint(x) <= to_mathint(y) + (bound() * scale)
+    &&
+    to_mathint(x) + (bound() * scale) >= to_mathint(y);
 
-ghost sumAllBalance() returns uint256 {
+persistent ghost sumAllBalance() returns mathint {
     init_state axiom sumAllBalance() == 0;
 }
 
 // summerization for scaledBlanaceOf -> regularBalanceOf + 0.5 (canceling the rayMul)
 ghost gRNI() returns uint256 {
-	axiom gRNI() == 7 * ray();
+    axiom to_mathint(gRNI()) == 7 * ray();
 }
 
-hook Sstore _userState[KEY address a].balance uint128 balance (uint128 old_balance) STORAGE {
+hook Sstore _userState[KEY address a].balance uint128 balance (uint128 old_balance) {
     havoc sumAllBalance assuming sumAllBalance@new() == sumAllBalance@old() + balance - old_balance;
 }
 
 invariant totalSupplyEqualsSumAllBalance(env e)
-    totalSupply(e) == scaledBalanceOfToBalanceOf(sumAllBalance())
+    totalSupply(e) == scaledBalanceOfToBalanceOf(require_uint256(sumAllBalance()))
     filtered { f -> !f.isView }
     {
         preserved mint(address caller, address onBehalfOf, uint256 amount, uint256 index) with (env e2) {
@@ -61,7 +82,7 @@ rule permitIntegrity(address owner, address spender, uint256 value, uint256 dead
     uint256 nonceBefore = nonces(owner);
     permit(e, owner, spender, value, deadline, v, r, s);
     assert allowance(owner, spender) == value;
-    assert nonces(owner) == nonceBefore + 1;
+    assert to_mathint(nonces(owner)) == nonceBefore + 1;
 }
 
 // can't mint zero Tokens
@@ -115,7 +136,7 @@ rule integrityMint(address a, address b, uint256 x)
 
 	assert atokenBlanceAfter - atokenBlanceBefore == totalATokenSupplyAfter - totalATokenSupplyBefore;
 	assert totalATokenSupplyAfter > totalATokenSupplyBefore;
-	assert bounded_error_eq(underlyingBalanceAfter, underlyingBalanceBefore+x, 1);
+	assert bounded_error_eq(underlyingBalanceAfter, PLUS256(underlyingBalanceBefore,x), 1);
 }
 
 /*
@@ -133,41 +154,43 @@ rule additiveMint(address a, address b, address c, uint256 x, uint256 y)
 	mint(e,c,a,y,indexRay);
 	uint256 balanceScenario1 = balanceOf(a);
 	// mint(e,c, a, x+y ,indexRay) at initialStorage;
-	mint(e, c, b, x+y ,indexRay);
+	mint(e, c, b, PLUS256(x,y) ,indexRay);
 
 	uint256 balanceScenario2 = balanceOf(b);
 	assert bounded_error_eq(balanceScenario1, balanceScenario2, 3), "mint is not additive";
 }
 
-/* 
-	transfers amount from _userState[from].balance to _userState[to].balance
-	while balance of returns _userState[account].balance normalized by gNRI();
-	transfer is incentivizedERC20
+/*
+   transfers amount from _userState[from].balance to _userState[to].balance
+   while balance of returns _userState[account].balance normalized by gNRI();
+   transfer is incentivizedERC20
 */
 rule integrityTransfer(address from, address to, uint256 amount)
 {
-	env e;
-	require e.msg.sender == from;
-	address other; // for any address including from, to, currentContract the underlying asset balance should stay the same
+    env e;
+    require e.msg.sender == from;
+    address other; // for any address including from, to, currentContract the underlying asset balance should stay the same
+    
+    uint256 balanceBeforeFrom = balanceOf(from);
+    uint256 balanceBeforeTo = balanceOf(to);
+    uint256 underlyingBeforeOther = _underlyingAsset.balanceOf(e, other);
+    
+    require(amount <= balanceBeforeFrom); // Add this require inorder to move to CVL2
+    
+    transfer(e, to, amount);
 	
-	uint256 balanceBeforeFrom = balanceOf(from);
-	uint256 balanceBeforeTo = balanceOf(to);
-	uint256 underlyingBeforeOther =  _underlyingAsset.balanceOf(e, other);
-	
-	transfer(e, to, amount);
-	
-	uint256 balanceAfterFrom = balanceOf(from);
-	uint256 balanceAfterTo = balanceOf(to);
-	uint256 underlyingAfterOther =  _underlyingAsset.balanceOf(e, other);
-	
-	assert underlyingAfterOther == underlyingBeforeOther, "unexpected change in underlying asserts";
-	
-	if (from != to) {
-		assert bounded_error_eq(balanceAfterFrom, balanceBeforeFrom - amount, 1) &&
-	 		bounded_error_eq(balanceAfterTo, balanceBeforeTo + amount, 1), "unexpected balance of from/to, when from!=to";
-	} else {
-		assert balanceAfterFrom == balanceAfterTo , "unexpected balance of from/to, when from==to";
-	}
+    uint256 balanceAfterFrom = balanceOf(from);
+    uint256 balanceAfterTo = balanceOf(to);
+    uint256 underlyingAfterOther =  _underlyingAsset.balanceOf(e, other);
+    
+    assert underlyingAfterOther == underlyingBeforeOther, "unexpected change in underlying asserts";
+    
+    if (from != to) {
+        assert bounded_error_eq(balanceAfterFrom, MINUS256(balanceBeforeFrom,amount), 1) &&
+            bounded_error_eq(balanceAfterTo, PLUS256(balanceBeforeTo,amount), 1), "unexpected balance of from/to, when from!=to";
+    } else {
+        assert balanceAfterFrom == balanceAfterTo , "unexpected balance of from/to, when from==to";
+    }
 }
 
 
@@ -191,7 +214,7 @@ rule additiveTransfer(address from1, address from2, address to1, address to2, ui
 	uint256 balanceFromScenario1 = balanceOf(from1);
 	uint256 balanceToScenario1 = balanceOf(to1);
 
-	transfer(e2, to2, x+y);
+	transfer(e2, to2, PLUS256(x,y));
 	
 	uint256 balanceFromScenario2 = balanceOf(from2);
 	uint256 balanceToScenario2 = balanceOf(to2);
@@ -206,40 +229,44 @@ Burn scaled amount of Atoken from 'user' and transfers amount of the underlying 
 */
 rule integrityBurn(address user, address to, uint256 amount)
 {
-	env e;
-	uint256 indexRay = gRNI();
+    env e;
+    uint256 indexRay = gRNI();
+    
+    require user != currentContract;
+    uint256 balanceBeforeUser = balanceOf(user);
+    uint256 balanceBeforeTo = balanceOf(to);
+    uint256 underlyingBeforeTo =  _underlyingAsset.balanceOf(e, to);
+    uint256 underlyingBeforeUser =  _underlyingAsset.balanceOf(e, user);
+    uint256 underlyingBeforeSystem =  _underlyingAsset.balanceOf(e, currentContract);
+    uint256 totalSupplyBefore = totalSupply(e); 
 
-	require user != currentContract;
-	uint256 balanceBeforeUser = balanceOf(user);
-	uint256 balanceBeforeTo = balanceOf(to);
-	uint256 underlyingBeforeTo =  _underlyingAsset.balanceOf(e, to);
-	uint256 underlyingBeforeUser =  _underlyingAsset.balanceOf(e, user);
-	uint256 underlyingBeforeSystem =  _underlyingAsset.balanceOf(e, currentContract);
-	uint256 totalSupplyBefore = totalSupply(e); 
-
-	burn(e, user, to, amount, indexRay);
-	
-	uint256 balanceAfterUser = balanceOf(user);
-	uint256 balanceAfterTo = balanceOf(to);
-	uint256 underlyingAfterTo =  _underlyingAsset.balanceOf(e, to);
-	uint256 underlyingAfterUser =  _underlyingAsset.balanceOf(e, user);
-	uint256 underlyingAfterSystem =  _underlyingAsset.balanceOf(e, currentContract);
-	uint256 totalSupplyAfter = totalSupply(e);
-
-	if (user != to) {
-		assert balanceAfterTo == balanceBeforeTo && // balanceOf To should not change
-		bounded_error_eq(underlyingBeforeUser, underlyingAfterUser, 1), "integrity break on user!=to";
-	}
-
-	if (to != currentContract) {
-		assert bounded_error_eq(underlyingAfterSystem, underlyingBeforeSystem - amount, 1) && // system transfer underlying_asset
-		bounded_error_eq(underlyingAfterTo,  underlyingBeforeTo + amount, 1) , "integrity break on to!=currentContract";
-	} else {
-		assert underlyingAfterSystem == underlyingBeforeSystem, "integrity break on to==currentContract";
-	} 
-
-    assert bounded_error_eq(totalSupplyAfter, totalSupplyBefore - amount, 1), "total supply integrity"; // total supply reduced
-    assert bounded_error_eq(balanceAfterUser, balanceBeforeUser - amount, 1), "integrity break";  // user burns ATokens to recieve underlying
+    require(amount <= underlyingBeforeSystem); // Add this require inorder to move to CVL2
+    require(amount <= balanceBeforeUser); // Add this require inorder to move to CVL2
+    require(amount <= totalSupplyBefore); // Add this require inorder to move to CVL2
+    
+    burn(e, user, to, amount, indexRay);
+    
+    uint256 balanceAfterUser = balanceOf(user);
+    uint256 balanceAfterTo = balanceOf(to);
+    uint256 underlyingAfterTo =  _underlyingAsset.balanceOf(e, to);
+    uint256 underlyingAfterUser =  _underlyingAsset.balanceOf(e, user);
+    uint256 underlyingAfterSystem =  _underlyingAsset.balanceOf(e, currentContract);
+    uint256 totalSupplyAfter = totalSupply(e);
+    
+    if (user != to) {
+        assert balanceAfterTo == balanceBeforeTo && // balanceOf To should not change
+            bounded_error_eq(underlyingBeforeUser, underlyingAfterUser, 1), "integrity break on user!=to";
+    }
+    
+    if (to != currentContract) {
+        assert bounded_error_eq(underlyingAfterSystem, MINUS256(underlyingBeforeSystem,amount), 1) && // system transfer underlying_asset
+            bounded_error_eq(underlyingAfterTo,  PLUS256(underlyingBeforeTo,amount), 1) , "integrity break on to!=currentContract";
+    } else {
+        assert underlyingAfterSystem == underlyingBeforeSystem, "integrity break on to==currentContract";
+    }
+    
+    assert bounded_error_eq(totalSupplyAfter, MINUS256(totalSupplyBefore,amount), 1), "total supply integrity"; // total supply reduced
+    assert bounded_error_eq(balanceAfterUser, MINUS256(balanceBeforeUser,amount), 1), "integrity break";  // user burns ATokens to recieve underlying
 }
 
 /*
@@ -255,11 +282,11 @@ rule additiveBurn(address user1, address user2, address to1, address to2, uint25
 			 balanceOf(user1) == balanceOf(user2) && balanceOf(to1) == balanceOf(to2));
 	require user1 != currentContract && user2 != currentContract;
 
-	sinvoke burn(e, user1, to1, x, indexRay);
-	sinvoke burn(e, user1, to1, y, indexRay);
+	burn(e, user1, to1, x, indexRay);
+	burn(e, user1, to1, y, indexRay);
 	uint256 balanceUserScenario1 = balanceOf(user1);
 	
-	sinvoke burn(e, user2, to2, x+y, indexRay);
+	burn(e, user2, to2, PLUS256(x,y), indexRay);
 	uint256 balanceUserScenario2 = balanceOf(user2);
 	
 	assert 	bounded_error_eq(balanceUserScenario1, balanceUserScenario2, 3), "burn is not additive";
@@ -319,7 +346,7 @@ Check that the changes to total supply are coherent with the changes to balance
 // 	uint256 totalSupplyBefore = totalSupply(e);
 	 
 // 	calldataarg arg;
-// 	sinvoke f(e, arg); 
+// 	f(e, arg); 
 
 // 	uint256 balanceAAfter = balanceOf(e,a);
 // 	uint256 balanceBAfter = balanceOf(e,b);
@@ -328,9 +355,9 @@ Check that the changes to total supply are coherent with the changes to balance
 
 // 	assert (balanceAAfter != balanceABefore && balanceBAfter != balanceBBefore) =>
 // 	    ( (balanceAAfter - balanceABefore) + (balanceBAfter - balanceBBefore)  == totalSupplyAfter - totalSupplyBefore);
-// 	require f.selector != transferFrom(address,address,uint256).selector &&
-// 	        f.selector != transfer(address,uint256).selector &&
-// 	        f.selector != transferOnLiquidation(address,address,uint256).selector;
+// 	require f.selector != sig:transferFrom(address,address,uint256).selector &&
+// 	        f.selector != sig:transfer(address,uint256).selector &&
+// 	        f.selector != sig:transferOnLiquidation(address,address,uint256).selector;
 // 	assert (balanceAAfter != balanceABefore &&  balanceBAfter == balanceBBefore ) =>
 // 	    ( (balanceAAfter - balanceABefore)   == totalSupplyAfter - totalSupplyBefore);
 		

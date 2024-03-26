@@ -1,44 +1,51 @@
+
+
 methods {
-	// summarization for elimination the raymul operation in balance of and totalSupply.
-	getReserveNormalizedVariableDebt(address asset) returns (uint256) => gRNVB()
-	setAdditionalData(address user, uint128 data) envfree
-    handleAction(address, uint256, uint256) => NONDET
-    scaledBalanceOfToBalanceOf(uint256) returns (uint256) envfree
-    balanceOf(address) returns (uint256) envfree
+    // summarization for elimination the raymul operation in balance of and totalSupply.
+    function _.getReserveNormalizedVariableDebt(address asset) external => gRNVB() expect uint256 ALL;
+    //    function setAdditionalData(address user, uint128 data) external envfree;
+    function _.handleAction(address, uint256, uint256) external => NONDET;
+    function scaledBalanceOfToBalanceOf(uint256) external returns (uint256) envfree;
+    function balanceOf(address) external returns (uint256) envfree;
+}
+
+function PLUS256(uint256 x, uint256 y) returns uint256 {
+    return (assert_uint256( (x+y) % 2^256) );
 }
 
 definition ray() returns uint = 1000000000000000000000000000;
-definition bound() returns uint = ((gRNVB() / ray()) + 1 ) / 2;
+definition bound() returns mathint = ((gRNVB() / ray()) + 1 ) / 2;
 // summerization for scaledBlanaceOf -> regularBalanceOf + 0.5 (canceling the rayMul)
 ghost gRNVB() returns uint256 {
-	axiom gRNVB() == 7 * ray();
+    axiom to_mathint(gRNVB()) == 7 * ray();
 }
+
 /*
 Due to rayDiv and RayMul Rounding (+ 0.5) - blance could increase by (gRNI() / Ray() + 1) / 2.
 */
-definition bounded_error_eq(uint x, uint y, uint scale) returns bool = x <= y + (bound() * scale) && x + (bound() * scale) >= y;
+definition bounded_error_eq(mathint x, mathint y, mathint scale) returns bool =
+    x <= y + (bound() * scale) && x + (bound() * scale) >= y;
 
 
 
 definition disAllowedFunctions(method f) returns bool = 
-            f.selector == transfer(address, uint256).selector ||
-            f.selector == allowance(address, address).selector ||
-            f.selector == approve(address, uint256).selector ||
-            f.selector == transferFrom(address, address, uint256).selector ||
-            f.selector == increaseAllowance(address, uint256).selector ||
-            f.selector == decreaseAllowance(address, uint256).selector;
+            f.selector == sig:transfer(address, uint256).selector ||
+            f.selector == sig:allowance(address, address).selector ||
+            f.selector == sig:approve(address, uint256).selector ||
+            f.selector == sig:transferFrom(address, address, uint256).selector ||
+            f.selector == sig:increaseAllowance(address, uint256).selector ||
+            f.selector == sig:decreaseAllowance(address, uint256).selector;
 
 
-ghost sumAllBalance() returns uint256 {
+ghost sumAllBalance() returns mathint {
     init_state axiom sumAllBalance() == 0;
 }
-
-hook Sstore _userState[KEY address a].balance uint128 balance (uint128 old_balance) STORAGE {
-  havoc sumAllBalance assuming sumAllBalance@new() == sumAllBalance@old() + balance - old_balance;
+hook Sstore _userState[KEY address a].balance uint128 balance (uint128 old_balance) {
+    havoc sumAllBalance assuming sumAllBalance@new() == sumAllBalance@old() + balance - old_balance;
 }
 
 invariant totalSupplyEqualsSumAllBalance(env e)
-    totalSupply(e) == scaledBalanceOfToBalanceOf(sumAllBalance())
+    totalSupply(e) == scaledBalanceOfToBalanceOf(require_uint256(sumAllBalance()))
     filtered { f -> !f.isView && !disAllowedFunctions(f) }
     {
         preserved mint(address user, address onBehalfOf, uint256 amount, uint256 index) with (env e2) {
@@ -61,8 +68,8 @@ rule whoChangeTotalSupply(method f)
     uint256 newTotalSupply = totalSupply(e);
     assert oldTotalSupply != newTotalSupply => 
            (e.msg.sender == POOL(e) && 
-           (f.selector == burn(address, uint256, uint256).selector || 
-            f.selector == mint(address, address, uint256, uint256).selector));
+           (f.selector == sig:burn(address, uint256, uint256).selector || 
+            f.selector == sig:mint(address, address, uint256, uint256).selector));
 }
 
 /*
@@ -95,7 +102,7 @@ rule nonceChangePermits(method f)
     calldataarg args;
     f(e, args);
     uint256 newNonce = nonces(e, user);
-    assert oldNonce != newNonce => f.selector == delegationWithSig(address, address, uint256, uint256, uint8, bytes32, bytes32).selector;
+    assert oldNonce != newNonce => f.selector == sig:delegationWithSig(address, address, uint256, uint256, uint8, bytes32, bytes32).selector;
 }
 
 // minting and then buring Variable Debt Token should have no effect on the users balance
@@ -112,7 +119,9 @@ rule integrityDelegationWithSig(address delegator, address delegatee, uint256 va
     env e;
     uint256 oldNonce = nonces(e, delegator);
     delegationWithSig(e, delegator, delegatee, value, deadline, v, r, s);
-    assert nonces(e, delegator) == oldNonce + 1 && borrowAllowance(e, delegator, delegatee) == value;
+    assert to_mathint(nonces(e, delegator)) == oldNonce + 1
+        &&
+        borrowAllowance(e, delegator, delegatee) == value;
 }
 
 /**
@@ -148,7 +157,7 @@ rule additiveBurn(address user1, address user2, uint256 x, uint256 y) {
 	burn(e, user1, y, index);
 	uint256 balanceScenario1 = balanceOf(user1);
 
-	burn(e, user2, x+y, index);
+	burn(e, user2, PLUS256(x,y), index);
 	uint256 balanceScenario2 = balanceOf(user2);
 
     assert bounded_error_eq(balanceScenario1, balanceScenario2, 3), "burn is not additive";
@@ -168,7 +177,7 @@ rule additiveMint(address user1, address user2, address user3, uint256 x, uint25
 	mint(e, user3, user1, y, index);
 	uint256 balanceScenario1 = balanceOf(user1);
 
-	mint(e, user3, user2, x+y, index);
+	mint(e, user3, user2, PLUS256(x,y), index);
 	uint256 balanceScenario2 = balanceOf(user2);
 
     assert bounded_error_eq(balanceScenario1, balanceScenario2, 3), "burn is not additive";
@@ -202,7 +211,7 @@ rule integrityMint(address a, uint256 x) {
 rule burnZeroDoesntChangeBalance(address u, uint256 index) {
 	env e;
 	uint256 balanceBefore = balanceOf(u);
-	invoke burn(e, u, 0, index);
+	burn@withrevert(e, u, 0, index);
 	uint256 balanceAfter = balanceOf(u);
 	assert balanceBefore == balanceAfter;
 }

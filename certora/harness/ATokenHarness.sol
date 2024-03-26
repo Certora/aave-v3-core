@@ -4,6 +4,7 @@ pragma solidity 0.8.10;
 import {Pool} from '../munged/protocol/pool/Pool.sol';
 import {AToken} from '../munged/protocol/tokenization/AToken.sol';
 import {WadRayMath} from '../munged/protocol/libraries/math/WadRayMath.sol';
+import {ScaledBalanceTokenBase} from '../munged/protocol/tokenization/base/ScaledBalanceTokenBase.sol';
 
 /**
  * @title Certora harness for Aave ERC20 AToken
@@ -27,5 +28,13 @@ using WadRayMath for uint256;
   
   function scaledBalanceOfToBalanceOf(uint256 bal) public view returns (uint256) {
     return bal.rayMul(POOL.getReserveNormalizedIncome(_underlyingAsset));
+  }
+  
+  function ATokenBalanceOf(address user) public view returns (uint256) {
+    return super.balanceOf(user);
+  }
+
+  function superBalance(address user) public view returns (uint256) {
+      return scaledBalanceOf(user);
   }
 }
