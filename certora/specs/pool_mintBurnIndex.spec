@@ -8,8 +8,8 @@ import "pool-math-summaries.spec";
 */
 using ATokenHarness as _aToken;
 using PoolHarness as PH;
-using StableDebtTokenHarness as _stable;
-using VariableDebtTokenHarness as _variable;
+// using StableDebtTokenHarness as _stable
+// using VariableDebtToken as _variable
 // using SimpleERC20 as _asset
 // using SymbolicPriceOracle as priceOracle
 //using AaveProtocolDataProvider as _dataProvider;
@@ -62,7 +62,7 @@ methods {
 
 
     // function _.calculateLinearInterest(uint256, uint40) internal => ALWAYS(1000000000000000000000000000); // this is not good dont use this
-    //function _.calculateCompoundedInterest(uint256 x, uint40 t0, uint256 t1) internal => calculateCompoundedInterestSummary(x, t0, t1) expect uint256 ALL;
+    function _.calculateCompoundedInterest(uint256 x, uint40 t0, uint256 t1) internal => calculateCompoundedInterestSummary(x, t0, t1) expect uint256 ALL;
 
     // ERC20
     function _.transfer(address, uint256) external => DISPATCHER(true);
@@ -73,8 +73,8 @@ methods {
     function _.balanceOf(address) external => DISPATCHER(true);
     
     // ATOKEN
-    function _.mint(address user, uint256 amount, uint256 index) external => DISPATCHER(true);
-    function _.burn(address user, address receiverOfUnderlying, uint256 amount, uint256 index) external => DISPATCHER(true);
+    function _.mint(address user, uint256 amount, uint256 index) external => mintMock(user, amount, index) expect void;
+    function _.burn(address user, address receiverOfUnderlying, uint256 amount, uint256 index) external => burnMock(user, amount, index) expect void;
     function _.mintToTreasury(uint256 amount, uint256 index) external => DISPATCHER(true);
     function _.transferOnLiquidation(address from, address to, uint256 value) external => DISPATCHER(true);
     function _.transferUnderlyingTo(address user, uint256 amount) external => DISPATCHER(true);
@@ -94,12 +94,12 @@ methods {
     function _.scaledTotalSupply() external => DISPATCHER(true);
     
     // StableDebt
-    function _.mint(address user, address onBehalfOf, uint256 amount, uint256 rate) external => DISPATCHER(true);
+    function _.mint(address user, address onBehalfOf, uint256 amount, uint256 rate) external => mintMock(user, amount, rate) expect void;
     function _.burn(address user, uint256 amount) external => DISPATCHER(true);
     function _.getSupplyData() external => DISPATCHER(true);
     
     //variableDebt
-    function _.burn(address user, uint256 amount, uint256 index) external => DISPATCHER(true);
+    function _.burn(address user, uint256 amount, uint256 index) external => burnMock(user, amount, index) expect void;
     
     // ReserveConfiguration
     //function _.mockGetEModeCategory() returns uint256 => CONSTANT;
@@ -141,6 +141,33 @@ function calculateCompoundedInterestSummary(uint256 rate, uint40 t0, uint256 t1)
     return calculateCompoundedInterestSummaryValues[rate][deltaT];
 }
 
+function isActiveReserve(env e, address asset) returns bool
+{
+    DataTypes.ReserveData data = getReserveData(e, asset);
+    DataTypes.ReserveConfigurationMap configuration = data.configuration;
+    bool isActive = RC.getActive(e, configuration);
+
+    return isActive;
+}
+
+function isFrozenReserve(env e, address asset) returns bool
+{
+    DataTypes.ReserveData data = getReserveData(e, asset);
+    DataTypes.ReserveConfigurationMap configuration = data.configuration;
+    bool isFrozen = RC.getFrozen(e, configuration);
+
+    return isFrozen;
+}
+
+function isEnabledForBorrow(env e, address asset) returns bool
+{
+    DataTypes.ReserveData data = getReserveData(e, asset);
+    DataTypes.ReserveConfigurationMap configuration = data.configuration;
+    bool isBorrowEnabled = RC.getBorrowingEnabled(e, configuration);
+
+    return isBorrowEnabled;
+}
+
 function getCurrentLiquidityRate(env e, address asset) returns mathint
 {
     DataTypes.ReserveData data = getReserveData(e, asset);
@@ -151,6 +178,16 @@ function getLiquidityIndex(env e, address asset) returns mathint
 {
     DataTypes.ReserveData data = getReserveData(e, asset);
     return data.liquidityIndex;
+}
+
+function burnMock(address user, uint256 amount, uint256 index)
+{
+    assert (index >= RAY(), "burning with index < RAY");
+}
+
+function mintMock(address user, uint256 amount, uint256 index)
+{
+    assert (index >= RAY(), "minting with index < RAY");
 }
 
 
@@ -167,6 +204,7 @@ function aTokenBalanceOf(env e, address user) returns uint256
 {
     return _aToken.ATokenBalanceOf(e, user);
 }
+
 
 
 // The borrowing index should monotonically increasing

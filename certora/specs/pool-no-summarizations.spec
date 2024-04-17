@@ -1,17 +1,33 @@
 import "pool-base.spec";
+//import "pool_mintBurnIndex.spec";
 
 methods {
-    // //Unsat Core Based
-    function _.getFlags(DataTypes.ReserveConfigurationMap memory self) internal => NONDET;
-    function _.setUsingAsCollateral(DataTypes.UserConfigurationMap storage self,uint256 reserveIndex,bool usingAsCollateral) internal => NONDET;
-    function _.setBorrowing(DataTypes.UserConfigurationMap storage self,uint256 reserveIndex,bool borrowing) internal => NONDET;
-
-
     // function _.calculateInterestRates(DataTypes.CalculateInterestRatesParams storage params) external => NONDET;
     // function _.calculateInterestRates(DataTypes.CalculateInterestRatesParams params) external => calculateInterestRatesMock(params) expect uint256, uint256, uint256 ALL;
+    function _.getACLManager() external => DISPATCHER(true);
+    function _.hasRole(bytes32 b ,address a) external => DISPATCHER(true);
+    function _.isBridge(address a) external => DISPATCHER(true);
 
-    function _.rayMul(uint256 a, uint256 b) internal => rayMulPreciseSummarization(a, b) expect uint256 ALL;
-    function _.rayDiv(uint256 a, uint256 b) internal => rayDivPreciseSummarization(a, b) expect uint256 ALL;
+    function _.getReservesList() external => DISPATCHER(true);
+    function _.getReserveData(address a) external => DISPATCHER(true);
+
+    function _.symbol() external => DISPATCHER(true);
+    function _.isFlashBorrower(address a) external => DISPATCHER(true);
+
+    function _.executeOperation(address[] a, uint256[]b, uint256[]c, address d, bytes e) external => DISPATCHER(true);
+    function _.totalSupply() external => DISPATCHER(true);
+
+    function _.getAverageStableRate() external => DISPATCHER(true);
+    function _.isPoolAdmin(address a) external => DISPATCHER(true);
+    function _.getConfiguration(address a) external => DISPATCHER(true);
+
+    //IPriceOracleSentinel
+    function _.isBorrowAllowed() external => DISPATCHER(true);
+    function _.isLiquidationAllowed() external => DISPATCHER(true);
+    function _.setSequencerOracle(address newSequencerOracle) external => DISPATCHER(true);
+    function _.setGracePeriod(uint256 newGracePeriod) external => DISPATCHER(true);
+    function _.getGracePeriod() external => DISPATCHER(true);
+
 }
 
 
@@ -21,6 +37,96 @@ function calculateInterestRatesMock(DataTypes.CalculateInterestRatesParams param
     uint256 stableBorrowRate = 1;
     uint256 variableBorrowRate = 1;
 	return (liquidityRate, stableBorrowRate, variableBorrowRate);
+}
+
+rule liquidityIndexGteRay(method f) filtered 
+    { f -> f.contract == currentContract 
+           //&& f.selector != sig:dropReserve(address).selector
+           //&& f.selector == sig:withdraw(address,uint256,address).selector
+           //&& f.selector == sig:repay(address,uint256,uint256,address).selector
+           //&& f.selector == sig:repayWithPermit(address,uint256,uint256,address,uint256,uint8,bytes32,bytes32).selector
+           //&& f.selector == sig:backUnbacked(address,uint256,uint256).selector
+           //&& f.selector == sig:supply(address,uint256,address,uint16).selector
+           //&& f.selector == sig:mintUnbacked(address,uint256,address,uint16).selector
+           //&& f.selector == sig:swapBorrowRateMode(address,uint256).selector
+           //&& f.selector == sig:deposit(address,uint256,address,uint16).selector
+           //&& f.selector == sig:flashLoanSimple(address,address,uint256,bytes,uint16).selector
+           //&& f.selector == sig:liquidationCall(address,address,address,uint256,bool).selector
+           //&& f.selector == sig:repayWithATokens(address,uint256,uint256).selector
+           //&& f.selector == sig:supplyWithPermit(address,uint256,address,uint16,uint256,uint8,bytes32,bytes32).selector
+           && f.selector == sig:rebalanceStableBorrowRate(address,address).selector
+           }
+{
+    address asset;
+    env e;
+	calldataarg arg;
+    uint256 indexBefore = getReserveLiquidityIndex(e, asset);
+    //require indexBefore >= RAY();
+	f(e, arg); 
+    uint256 indexAfter = getReserveLiquidityIndex(e, asset);
+    //assert indexAfter >= RAY();
+    assert indexAfter >= indexBefore;
+}
+
+rule stableBorrowRateGteRay(method f) filtered 
+    { f -> f.contract == currentContract && 
+           f.selector != sig:dropReserve(address).selector }
+{
+    address asset;
+    env e;
+	calldataarg arg;
+    uint256 indexBefore = getReserveStableBorrowRate(e, asset);
+    require indexBefore >= RAY();
+	f(e, arg); 
+    uint256 indexAfter = getReserveStableBorrowRate(e, asset);
+    assert indexAfter >= RAY();
+}
+
+rule variableBorrowIndexGteRay(method f) filtered 
+    { f -> f.contract == currentContract  
+           && f.selector != sig:dropReserve(address).selector 
+           && f.selector == sig:supply(address,uint256,address,uint16).selector
+    }
+{
+    address asset;
+    env e;
+	calldataarg arg;
+    uint256 indexBefore = getReserveVariableBorrowIndex(e, asset);
+    require indexBefore >= RAY();
+	f(e, arg); 
+    uint256 indexAfter = getReserveVariableBorrowIndex(e, asset);
+    assert indexAfter >= indexBefore; //RAY();
+}
+
+rule indexesNonDecresing()
+{
+    address asset;
+    env e;
+    
+    uint256 reserveLiquidityIndexBefore = getReserveLiquidityIndex(e, asset);
+    uint256 variableBorrowIndexBefore = getReserveVariableBorrowIndex(e, asset);
+    //uint256 stableBorrowIndexBefore = getReserveVariableBorrowIndex(e, asset);
+    require reserveLiquidityIndexBefore >= RAY();   //from ReserveLogic.init
+    //require getReserveVariableBorrowRate(e, asset) >= RAY();
+    DataTypes.ReserveCache cache;
+    require cache.currLiquidityIndex == reserveLiquidityIndexBefore;
+    require cache.currVariableBorrowIndex == variableBorrowIndexBefore;
+
+	//updateReserveIndexes(e, asset);
+    updateReserveIndexesWithCache(e, asset, cache);
+
+    uint256 variableBorrowIndexAfter = getReserveVariableBorrowIndex(e, asset);
+    uint256 reserveLiquidityIndexAfter = getReserveLiquidityIndex(e, asset);
+    assert variableBorrowIndexAfter >= variableBorrowIndexBefore;
+    assert reserveLiquidityIndexAfter >= reserveLiquidityIndexBefore;
+}
+
+rule dummy(method f)
+{
+    env e;
+	calldataarg arg;
+	f(e, arg); 
+    assert true;
 }
 
 // rule depositUpdatesUserATokenBalance(env e) {

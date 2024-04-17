@@ -1,0 +1,1 @@
+certoraRun.py ./certora/conf/PoolMinimal.conf --server production --prover_version master
