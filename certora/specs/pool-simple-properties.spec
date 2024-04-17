@@ -6,75 +6,12 @@ methods {
     // function _.rayDiv(uint256 a, uint256 b) internal => NONDET;
     // function _.percentMul(uint256 value, uint256 percentage) internal => NONDET;
     function _._getUserDebtInBaseCurrency(address user, DataTypes.ReserveData storage reserve, uint256 assetPrice, uint256 assetUnit) internal => NONDET;
-    // function _.rayMul(uint256 a, uint256 b) internal => rayMulSummariztion(a, b) expect uint256 ALL;
-    // function _.rayDiv(uint256 a, uint256 b) internal => rayDivSummariztion(a, b) expect uint256 ALL;
-
-    function _.rayMul(uint256 a, uint256 b) internal => mulDivDownAbstractPlus(a, b, 10^27) expect uint256 ALL;
-    function _.rayDiv(uint256 a, uint256 b) internal => mulDivDownAbstractPlus(a, 10^27, b) expect uint256 ALL;
+    //function _.rayMul(uint256 a, uint256 b) internal => rayMulSummarization(a, b) expect uint256 ALL;
+    //function _.rayDiv(uint256 a, uint256 b) internal => rayDivSummarization(a, b) expect uint256 ALL;
     // function _.rayDiv(uint256 a, uint256 b) internal => NONDET; //JB UC
 }
 
-ghost mapping(uint256 => mapping(uint256 => uint256)) rayMulSummariztionValues;
-ghost mapping(uint256 => mapping(uint256 => uint256)) rayDivSummariztionValues;
 
-function rayMulSummariztion(uint256 x, uint256 y) returns uint256
-{
-	if (x == 0) || (y == 0)
-	{
-		return 0;
-	}
-	if (x == RAY())
-	{
-		return y;
-	}
-	if (y == RAY())
-	{
-		return x;
-	}
-	
-	if (y > x)
-	{
-		if (y > RAY())
-		{
-			require rayMulSummariztionValues[y][x] >= x;
-		}
-		if (x > RAY())
-		{
-			require rayMulSummariztionValues[y][x] >= y;
-		}
-		return rayMulSummariztionValues[y][x];
-	}
-	else{
-		if (x > RAY())
-		{
-			require rayMulSummariztionValues[x][y] >= y;
-		}
-		if (y > RAY())
-		{
-			require rayMulSummariztionValues[x][y] >= x;
-		}
-		return rayMulSummariztionValues[x][y];
-	}
-}
-
-function rayDivSummariztion(uint256 x, uint256 y) returns uint256
-{
-	if (x == 0)
-	{
-		return 0;
-	}
-	if (y == RAY())
-	{
-		return x;
-	}
-	if (y == x)
-	{
-		return RAY();
-	}
-	require y > RAY() => rayDivSummariztionValues[x][y] <= x;
-	require y < RAY() => x <= rayDivSummariztionValues[x][y];
-	return rayDivSummariztionValues[x][y];
-}
 
 // Passing for PoolHarness:
 // https://prover.certora.com/output/40577/e75bfa369a10490ca0cc71992984dc54/?anonymousKey=c12450d39df13d66fd92b82819c9dcc7f66d2012
