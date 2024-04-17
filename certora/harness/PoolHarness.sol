@@ -4,16 +4,15 @@ pragma solidity 0.8.10;
 import {Pool} from '../munged/protocol/pool/Pool.sol';
 import {DataTypes} from '../munged/protocol/libraries/types/DataTypes.sol';
 import {ReserveLogic} from '../munged/protocol/libraries/logic/ReserveLogic.sol';
-import {IPoolAddressesProvider} from '../munged//interfaces/IPoolAddressesProvider.sol';
-
+import {IPoolAddressesProvider} from '../munged/interfaces/IPoolAddressesProvider.sol';
+import {ReserveConfiguration} from '../munged/protocol/libraries/configuration/ReserveConfiguration.sol';
 import {IERC20} from '../munged/dependencies/openzeppelin/contracts/IERC20.sol';
-
-
 
 contract PoolHarness is Pool {
     
     using ReserveLogic for DataTypes.ReserveData;
     using ReserveLogic for DataTypes.ReserveCache;
+    using ReserveConfiguration for DataTypes.ReserveConfigurationMap;
 
     constructor(IPoolAddressesProvider provider) public Pool(provider){}
 
@@ -61,4 +60,23 @@ contract PoolHarness is Pool {
         ReserveLogic._updateIndexes(_reserves[asset], cache);
         return true;
     } 
+
+    function isActiveReserve(address asset) public returns (bool)
+    {
+        DataTypes.ReserveData storage reserve = _reserves[asset];
+        return ReserveConfiguration.getActive(reserve.configuration);
+    }
+
+    function isFrozenReserve(address asset) public returns (bool)
+    {
+        DataTypes.ReserveData storage reserve = _reserves[asset];
+        return reserve.configuration.getFrozen();
+    }
+
+    function isEnabledForBorrow(address asset) public returns (bool)
+    {
+        DataTypes.ReserveData storage reserve = _reserves[asset];
+        return reserve.configuration.getBorrowingEnabled();
+    }
+
 }

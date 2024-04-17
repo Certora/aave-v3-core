@@ -141,33 +141,6 @@ function calculateCompoundedInterestSummary(uint256 rate, uint40 t0, uint256 t1)
     return calculateCompoundedInterestSummaryValues[rate][deltaT];
 }
 
-function isActiveReserve(env e, address asset) returns bool
-{
-    DataTypes.ReserveData data = getReserveData(e, asset);
-    DataTypes.ReserveConfigurationMap configuration = data.configuration;
-    bool isActive = RC.getActive(e, configuration);
-
-    return isActive;
-}
-
-function isFrozenReserve(env e, address asset) returns bool
-{
-    DataTypes.ReserveData data = getReserveData(e, asset);
-    DataTypes.ReserveConfigurationMap configuration = data.configuration;
-    bool isFrozen = RC.getFrozen(e, configuration);
-
-    return isFrozen;
-}
-
-function isEnabledForBorrow(env e, address asset) returns bool
-{
-    DataTypes.ReserveData data = getReserveData(e, asset);
-    DataTypes.ReserveConfigurationMap configuration = data.configuration;
-    bool isBorrowEnabled = RC.getBorrowingEnabled(e, configuration);
-
-    return isBorrowEnabled;
-}
-
 function getCurrentLiquidityRate(env e, address asset) returns mathint
 {
     DataTypes.ReserveData data = getReserveData(e, asset);

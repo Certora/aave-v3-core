@@ -21,7 +21,7 @@ definition IS_UINT256(uint256 x) returns bool = ((x >= 0) && (x <= max_uint256))
 
 function rayMulPreciseSummarization(uint256 x, uint256 y) returns uint256
 {
-    if (x == 0) || (y == 0)
+    if ((x == 0) || (y == 0))
 	{
 		return 0;
 	}
@@ -59,7 +59,7 @@ function rayDivPreciseSummarization(uint256 x, uint256 y) returns uint256
 
 function wadMulPreciseSummarization(uint256 x, uint256 y) returns uint256
 {
-    if (x == 0) || (y == 0)
+    if ((x == 0) || (y == 0))
 	{
 		return 0;
 	}
