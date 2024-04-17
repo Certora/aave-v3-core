@@ -8,8 +8,8 @@ import "pool-math-summaries.spec";
 */
 using ATokenHarness as _aToken;
 using PoolHarness as PH;
-using StableDebtTokenHarness as _stable;
-using VariableDebtTokenHarness as _variable;
+//using StableDebtTokenHarness as _stable;
+//using VariableDebtTokenHarness as _variable;
 // using SimpleERC20 as _asset
 // using SymbolicPriceOracle as priceOracle
 //using AaveProtocolDataProvider as _dataProvider;
