@@ -2,6 +2,7 @@
     This is a Base Specification File for Smart Contract Verification with the Certora Prover.
     This file is meant to be included
 */
+import "CVLMath.spec";
 
 methods {
     function _.wadDiv(uint256 a, uint256 b) internal => wadDivPreciseSummarization(a, b) expect uint256 ALL;
@@ -14,7 +15,7 @@ methods {
 
 /* definitions and functions to be used within the spec file */
 
-definition RAY() returns uint256 = 10^27;
+//definition RAY() returns uint256 = 10^27;
 definition WAD() returns uint256 = 10^18;
 definition WadRay_ratio() returns uint256 = 10^9;
 definition IS_UINT256(uint256 x) returns bool = ((x >= 0) && (x <= max_uint256));

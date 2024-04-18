@@ -10,13 +10,7 @@ A wrapper contract for calling functions from the library UserConfiguration.
 */
 contract UserConfigurationHarness is PoolStorage {
     DataTypes.UserConfigurationMap public usersConfig;
-    
-    function isValidState() public view returns (bool) {
-        return true;
-        // return UserConfiguration._isValidState(usersConfig);
-    }
-
-    
+        
     function isValidState() public view returns (bool) {
         return true;
         // return UserConfiguration._isValidState(usersConfig);
