@@ -1,4 +1,5 @@
 import "pool-base.spec";
+import "CVLMath.spec";
 
 methods {
     // math
@@ -9,6 +10,8 @@ methods {
     //function _.rayMul(uint256 a, uint256 b) internal => rayMulSummarization(a, b) expect uint256 ALL;
     //function _.rayDiv(uint256 a, uint256 b) internal => rayDivSummarization(a, b) expect uint256 ALL;
     // function _.rayDiv(uint256 a, uint256 b) internal => NONDET; //JB UC
+    //function _.rayMul(uint256 a, uint256 b) internal => mulDivDownAbstractPlus(a, b, 10^27) expect uint256 ALL;
+    //function _.rayDiv(uint256 a, uint256 b) internal => mulDivDownAbstractPlus(a, 10^27, b) expect uint256 ALL;
 }
 
 

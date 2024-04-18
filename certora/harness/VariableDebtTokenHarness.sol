@@ -14,4 +14,9 @@ using WadRayMath for uint256;
     function scaledBalanceOfToBalanceOf(uint256 bal) public view returns (uint256) {
         return bal.rayMul(POOL.getReserveNormalizedVariableDebt(_underlyingAsset));
     }
+
+    function debtTotalSupply() public view returns (uint256) {
+        return super.totalSupply();
+    }
+
 }

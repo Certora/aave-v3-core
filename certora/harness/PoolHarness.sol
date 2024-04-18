@@ -22,6 +22,21 @@ contract PoolHarness is Pool {
         return reserveCache.currScaledVariableDebt;
     }
 
+    function isStableRateEnabled(address asset) public view returns (bool) {
+        DataTypes.ReserveData storage reserve = _reserves[asset];
+        DataTypes.ReserveCache memory reserveCache = reserve.cache();
+
+        return reserveCache.reserveConfiguration.getStableRateBorrowingEnabled();
+    }
+
+    function getStableRateConstant() public view returns (uint256) {
+        return uint256(DataTypes.InterestRateMode.STABLE);
+    }
+
+    function getVariableRateConstant() public view returns (uint256) {
+        return uint256(DataTypes.InterestRateMode.VARIABLE);
+    }
+
     function getTotalDebt(address asset) public view returns (uint256) {
         uint256 totalVariable = IERC20(_reserves[asset].variableDebtTokenAddress).totalSupply();
         uint256 totalStable = IERC20(_reserves[asset].stableDebtTokenAddress).totalSupply();
@@ -32,12 +47,24 @@ contract PoolHarness is Pool {
         return IERC20(_reserves[asset].aTokenAddress).totalSupply();
     }
 
-    function getReserveLiquidityIndex(address asset) public view returns (uint256) {
-        return _reserves[asset].liquidityIndex;
-    } 
+    function getAvailableLiquidity(address asset) public view returns (uint256) {
+        return IERC20(asset).balanceOf(_reserves[asset].aTokenAddress);
+    }
+
+    function getStableRate(address asset) public view returns (uint256) {
+        return _reserves[asset].currentStableBorrowRate;
+    }
 
     function getReserveStableBorrowRate(address asset) public view returns (uint256) {
         return _reserves[asset].currentStableBorrowRate;
+    } 
+
+    function ballanceOfInAsset(address asset, address user) public view returns (uint256) {
+        return IERC20(_reserves[asset].aTokenAddress).balanceOf(user);
+    }
+
+    function getReserveLiquidityIndex(address asset) public view returns (uint256) {
+        return _reserves[asset].liquidityIndex;
     } 
 
     function getReserveVariableBorrowIndex(address asset) public view returns (uint256) {
