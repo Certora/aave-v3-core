@@ -9,7 +9,9 @@ methods {
     function _.wadMul(uint256 a, uint256 b) internal => wadMulPreciseSummarization(a, b) expect uint256 ALL;
     function _.wadToRay(uint256 a) internal => wadToRayPreciseSummarization(a) expect uint256 ALL;
     function _.rayToWad(uint256 a) internal => rayToWadPreciseSummarization(a) expect uint256 ALL;
-    function _.rayMul(uint256 a, uint256 b) internal => rayMulPreciseSummarization(a, b) expect uint256 ALL;
+    
+	// use methods from CVLMath for non-precise summarizations, e.g. mulDivDownAbstractPlus(a, b, 10^27)
+	function _.rayMul(uint256 a, uint256 b) internal => rayMulPreciseSummarization(a, b) expect uint256 ALL;
     function _.rayDiv(uint256 a, uint256 b) internal => rayDivPreciseSummarization(a, b) expect uint256 ALL;
     }
 
