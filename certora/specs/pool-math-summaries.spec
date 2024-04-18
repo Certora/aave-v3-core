@@ -17,7 +17,6 @@ methods {
 
 /* definitions and functions to be used within the spec file */
 
-//definition RAY() returns uint256 = 10^27;
 definition WAD() returns uint256 = 10^18;
 definition WadRay_ratio() returns uint256 = 10^9;
 definition IS_UINT256(uint256 x) returns bool = ((x >= 0) && (x <= max_uint256));

@@ -1,20 +1,9 @@
 import "pool-base.spec";
-import "CVLMath.spec";
 
 methods {
-    // math
-    // function _.rayMul(uint256 a, uint256 b) internal => NONDET;
-    // function _.rayDiv(uint256 a, uint256 b) internal => NONDET;
-    // function _.percentMul(uint256 value, uint256 percentage) internal => NONDET;
     function _._getUserDebtInBaseCurrency(address user, DataTypes.ReserveData storage reserve, uint256 assetPrice, uint256 assetUnit) internal => NONDET;
-    //function _.rayMul(uint256 a, uint256 b) internal => rayMulSummarization(a, b) expect uint256 ALL;
-    //function _.rayDiv(uint256 a, uint256 b) internal => rayDivSummarization(a, b) expect uint256 ALL;
-    // function _.rayDiv(uint256 a, uint256 b) internal => NONDET; //JB UC
-    //function _.rayMul(uint256 a, uint256 b) internal => mulDivDownAbstractPlus(a, b, 10^27) expect uint256 ALL;
-    //function _.rayDiv(uint256 a, uint256 b) internal => mulDivDownAbstractPlus(a, 10^27, b) expect uint256 ALL;
+    
 }
-
-
 
 // Passing for PoolHarness:
 // https://prover.certora.com/output/40577/e75bfa369a10490ca0cc71992984dc54/?anonymousKey=c12450d39df13d66fd92b82819c9dcc7f66d2012

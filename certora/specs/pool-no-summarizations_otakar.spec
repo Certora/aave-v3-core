@@ -4,9 +4,7 @@ import "pool-base.spec";
 methods {
     // function _.calculateInterestRates(DataTypes.CalculateInterestRatesParams storage params) external => NONDET;
     // function _.calculateInterestRates(DataTypes.CalculateInterestRatesParams params) external => calculateInterestRatesMock(params) expect uint256, uint256, uint256 ALL;
-    function _.getACLManager() external => DISPATCHER(true);
     function _.hasRole(bytes32 b ,address a) external => DISPATCHER(true);
-    function _.isBridge(address a) external => DISPATCHER(true);
 
     function _.getReservesList() external => DISPATCHER(true);
     function _.getReserveData(address a) external => DISPATCHER(true);
@@ -15,7 +13,6 @@ methods {
     function _.isFlashBorrower(address a) external => DISPATCHER(true);
 
     function _.executeOperation(address[] a, uint256[]b, uint256[]c, address d, bytes e) external => DISPATCHER(true);
-    function _.totalSupply() external => DISPATCHER(true);
 
     function _.getAverageStableRate() external => DISPATCHER(true);
     function _.isPoolAdmin(address a) external => DISPATCHER(true);
