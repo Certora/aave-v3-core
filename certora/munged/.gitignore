@@ -1,2 +1,15 @@
 *
 !.gitignore
+!protocol/
+!protocol/libraries/
+!protocol/libraries/types/
+!protocol/libraries/types/DataTypes_orig.sol
+!protocol/libraries/types/DataTypes_noBV.sol
+
+!protocol/libraries/configuration/
+!protocol/libraries/configuration/ReserveConfiguration_orig.sol
+!protocol/libraries/configuration/ReserveConfiguration_noBV.sol
+
+!protocol/libraries/configuration/UserConfiguration_orig.sol
+!protocol/libraries/configuration/UserConfiguration_noBV.sol
+!protocol/libraries/configuration/UserConfiguration_noBV_3reserves.sol

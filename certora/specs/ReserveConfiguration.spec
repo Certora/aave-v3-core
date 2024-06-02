@@ -1,59 +1,59 @@
 methods {
-    setLtv(uint256) envfree
-    getLtv() returns (uint256) envfree
-    setLiquidationThreshold(uint256) envfree
-    getLiquidationThreshold() returns (uint256) envfree
-    setLiquidationBonus(uint256) envfree
-    getLiquidationBonus() returns (uint256) envfree
-    setDecimals(uint256) envfree
-    getDecimals() returns (uint256) envfree
-    setActive(bool) envfree
-    getActive() returns (bool) envfree
-    setFrozen(bool) envfree
-    getFrozen() returns (bool) envfree
-    setPaused(bool) envfree
-    getPaused() returns (bool) envfree
-    setBorrowableInIsolation(bool) envfree
-    getBorrowableInIsolation() returns (bool) envfree
-    setSiloedBorrowing(bool) envfree
-    getSiloedBorrowing() envfree
-    setBorrowingEnabled(bool) envfree
-    getBorrowingEnabled() returns (bool) envfree
-    setStableRateBorrowingEnabled(bool) envfree
-    getStableRateBorrowingEnabled() returns (bool) envfree
-    setReserveFactor(uint256) envfree
-    getReserveFactor() returns (uint256) envfree
-    setBorrowCap(uint256) envfree
-    getBorrowCap() returns (uint256) envfree
-    setSupplyCap(uint256) envfree
-    getSupplyCap() returns (uint256) envfree
-    setDebtCeiling(uint256) envfree
-    getDebtCeiling() returns (uint256) envfree
-    setLiquidationProtocolFee(uint256) envfree
-    getLiquidationProtocolFee() returns (uint256) envfree
-    setUnbackedMintCap(uint256) envfree
-    getUnbackedMintCap() returns (uint256) envfree
-    setEModeCategory(uint256) envfree
-    getEModeCategory() returns (uint256) envfree
-    setFlashLoanEnabled(bool) envfree
-    getFlashLoanEnabled() returns (bool) envfree
-    getFlags() returns (bool, bool, bool, bool, bool) envfree
-    getParams() returns (uint256, uint256, uint256, uint256, uint256, uint256) envfree
-    getCaps() returns (uint256, uint256) envfree
+    function setLtv(uint256) external envfree;
+    function getLtv() external returns (uint256) envfree;
+    function setLiquidationThreshold(uint256) external envfree;
+    function getLiquidationThreshold() external returns (uint256) envfree;
+    function setLiquidationBonus(uint256) external envfree;
+    function getLiquidationBonus() external returns (uint256) envfree;
+    function setDecimals(uint256) external envfree;
+    function getDecimals() external returns (uint256) envfree;
+    function setActive(bool) external envfree;
+    function getActive() external returns (bool) envfree;
+    function setFrozen(bool) external envfree;
+    function getFrozen() external returns (bool) envfree;
+    function setPaused(bool) external envfree;
+    function getPaused() external returns (bool) envfree;
+    function setBorrowableInIsolation(bool) external envfree;
+    function getBorrowableInIsolation() external returns (bool) envfree;
+    function setSiloedBorrowing(bool) external envfree;
+    function getSiloedBorrowing() external returns (bool) envfree;
+    function setBorrowingEnabled(bool) external envfree;
+    function getBorrowingEnabled() external returns (bool) envfree;
+    function setStableRateBorrowingEnabled(bool) external envfree;
+    function getStableRateBorrowingEnabled() external returns (bool) envfree;
+    function setReserveFactor(uint256) external envfree;
+    function getReserveFactor() external returns (uint256) envfree;
+    function setBorrowCap(uint256) external envfree;
+    function getBorrowCap() external returns (uint256) envfree;
+    function setSupplyCap(uint256) external envfree;
+    function getSupplyCap() external returns (uint256) envfree;
+    function setDebtCeiling(uint256) external envfree;
+    function getDebtCeiling() external returns (uint256) envfree;
+    function setLiquidationProtocolFee(uint256) external envfree;
+    function getLiquidationProtocolFee() external returns (uint256) envfree;
+    function setUnbackedMintCap(uint256) external envfree;
+    function getUnbackedMintCap() external returns (uint256) envfree;
+    function setEModeCategory(uint256) external envfree;
+    function getEModeCategory() external returns (uint256) envfree;
+    function setFlashLoanEnabled(bool) external envfree;
+    function getFlashLoanEnabled() external returns (bool) envfree;
+    //    function getFlags() external returns (bool, bool, bool, bool, bool) envfree;
+    //function getParams() external returns (uint256, uint256, uint256, uint256, uint256, uint256) envfree;
+    //function getCaps() external returns (uint256, uint256) envfree;
 
-    init_state() envfree
-    getData() returns uint256 envfree
-    xorWithReserve(uint256) returns uint256 envfree 
-    initMaps() envfree
+    //function init_state() external envfree;
+    //function getData() external returns uint256 envfree;
+    //function xorWithReserve(uint256) external returns uint256 envfree;
+    //function initMaps() external envfree;
     
-    getIntSetterLowerBound(uint256) returns uint256 envfree
-    getIntSetterUpperBound(uint256) returns uint256 envfree
-    executeIntSetterById(uint256, uint256) envfree
-    executeIntGetterById(uint256) returns uint256 envfree
+    //function getIntSetterLowerBound(uint256) external returns uint256 envfree;
+    //function getIntSetterUpperBound(uint256) external returns uint256 envfree;
+    function executeIntSetterById(uint256, uint256) external envfree;
+    function executeIntGetterById(uint256) external returns uint256 envfree;
 
-    getBoolSetterCompare(uint256) returns uint256 envfree
-    executeBoolSetterById(uint256, bool) envfree
-    executeBoolGetterById(uint256) returns bool envfree
+    //function getBoolSetterCompare(uint256) external returns uint256 envfree;
+    function executeBoolSetterById(uint256, bool) external envfree;
+    function executeBoolGetterById(uint256) external returns bool envfree;
 }
 
 

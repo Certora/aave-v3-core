@@ -1,54 +1,59 @@
-methods {
-    calculateCompoundedInterest(uint256 r, uint40 t0, uint256 t1) returns (uint256) => calculateCompoundedInterestSummary(r, t0, t1)
-	additionalData(address) returns uint128 envfree
-	getAverageStableRate() returns uint256 envfree
-	handleAction(address, uint256, uint256) => NONDET
-    // scaledBalanceOfToBalanceOf(uint256) returns (uint256) envfree
 
-	rayMul(uint256 x, uint256 y) returns (uint256) => rayMulSummariztion(x, y)
-	rayDiv(uint256 x, uint256 y) returns (uint256) => rayDivSummariztion(x, y)
+methods {
+    function _.calculateCompoundedInterest(uint256 r, uint40 t0, uint256 t1) internal => calculateCompoundedInterestSummary(r, t0, t1) expect uint256 ALL;
+    function additionalData(address) external returns uint128 envfree;
+    function getAverageStableRate() external returns uint256 envfree;
+    function _.handleAction(address, uint256, uint256) external => NONDET;
+    
+    function _.rayMul(uint256 x, uint256 y) internal => rayMulSummarization(x, y) expect uint256 ALL;
+    function _.rayDiv(uint256 x, uint256 y) internal => rayDivSummarization(x, y) expect uint256 ALL;
+}
+
+function PLUS256(uint256 x, uint256 y) returns uint256 {
+    return (assert_uint256( (x+y) % 2^256) );
 }
 
 definition RAY() returns uint = 1000000000000000000000000000;
 
 definition disAllowedFunctions(method f) returns bool = 
-            f.selector == transfer(address, uint256).selector ||
-            f.selector == allowance(address, address).selector ||
-            f.selector == approve(address, uint256).selector ||
-            f.selector == transferFrom(address, address, uint256).selector ||
-            f.selector == increaseAllowance(address, uint256).selector ||
-            f.selector == decreaseAllowance(address, uint256).selector;
+            f.selector == sig:transfer(address, uint256).selector ||
+            f.selector == sig:allowance(address, address).selector ||
+            f.selector == sig:approve(address, uint256).selector ||
+            f.selector == sig:transferFrom(address, address, uint256).selector ||
+            f.selector == sig:increaseAllowance(address, uint256).selector ||
+            f.selector == sig:decreaseAllowance(address, uint256).selector;
 
 ghost mapping(uint256 => mapping(uint256 => uint256)) calculateCompoundedInterestSummaryValues;
 function calculateCompoundedInterestSummary(uint256 rate, uint40 t0, uint256 t1) returns uint256
 {
-	uint256 deltaT = t1 - t0;
-	if (deltaT == 0)
+    //uint256 deltaT = t1 - t0;
+    uint256 deltaT = assert_uint256( (t1-t0) % 2^256 );
+    if (deltaT == 0)
 	{
-		return RAY();
+            return RAY();
 	}
-	if (rate == RAY())
+    if (rate == RAY())
 	{
-		return RAY();
+            return RAY();
 	}
-	if (rate >= RAY())
+    if (rate >= RAY())
 	{
-		require calculateCompoundedInterestSummaryValues[rate][deltaT] >= rate;
+            require calculateCompoundedInterestSummaryValues[rate][deltaT] >= rate;
 	}
-	else{
-		require calculateCompoundedInterestSummaryValues[rate][deltaT] < rate;
-	}
-	return calculateCompoundedInterestSummaryValues[rate][deltaT];
+    else{
+        require calculateCompoundedInterestSummaryValues[rate][deltaT] < rate;
+    }
+    return calculateCompoundedInterestSummaryValues[rate][deltaT];
 }
 
-ghost mapping(uint256 => mapping(uint256 => uint256)) rayMulSummariztionValues;
-function rayMulSummariztion(uint256 x, uint256 y) returns uint256
+ghost mapping(uint256 => mapping(uint256 => uint256)) rayMulSummarizationValues;
+function rayMulSummarization(uint256 x, uint256 y) returns uint256
 {
-	if (x == 0) || (y == 0)
-	{
-		return 0;
-	}
-	if (x == RAY())
+    if (x == 0) || (y == 0)
+                       {
+                           return 0;
+                       }
+    if (x == RAY())
 	{
 		return y;
 	}
@@ -61,29 +66,29 @@ function rayMulSummariztion(uint256 x, uint256 y) returns uint256
 	{
 		if (y > RAY())
 		{
-			require rayMulSummariztionValues[y][x] >= x;
+			require rayMulSummarizationValues[y][x] >= x;
 		}
 		if (x > RAY())
 		{
-			require rayMulSummariztionValues[y][x] >= y;
+			require rayMulSummarizationValues[y][x] >= y;
 		}
-		return rayMulSummariztionValues[y][x];
+		return rayMulSummarizationValues[y][x];
 	}
 	else{
 		if (x > RAY())
 		{
-			require rayMulSummariztionValues[x][y] >= y;
+			require rayMulSummarizationValues[x][y] >= y;
 		}
 		if (y > RAY())
 		{
-			require rayMulSummariztionValues[x][y] >= x;
+			require rayMulSummarizationValues[x][y] >= x;
 		}
-		return rayMulSummariztionValues[x][y];
+		return rayMulSummarizationValues[x][y];
 	}
 }
 
-ghost mapping(uint256 => mapping(uint256 => uint256)) rayDivSummariztionValues;
-function rayDivSummariztion(uint256 x, uint256 y) returns uint256
+ghost mapping(uint256 => mapping(uint256 => uint256)) rayDivSummarizationValues;
+function rayDivSummarization(uint256 x, uint256 y) returns uint256
 {
 	if (x == 0)
 	{
@@ -97,9 +102,9 @@ function rayDivSummariztion(uint256 x, uint256 y) returns uint256
 	{
 		return RAY();
 	}
-	require y > RAY() => rayDivSummariztionValues[x][y] <= x;
-	// require y < RAY() => rayDivSummariztionValues[x][y] =< x;
-	return rayDivSummariztionValues[x][y];
+	require y > RAY() => rayDivSummarizationValues[x][y] <= x;
+	// require y < RAY() => rayDivSummarizationValues[x][y] =< x;
+	return rayDivSummarizationValues[x][y];
 }
 
 
@@ -107,24 +112,16 @@ ghost symbolicCompundInterest(uint256, uint40) returns uint256 {
     axiom forall uint256 x. forall uint40 t. symbolicCompundInterest(x, t) >= 1;
 }
 
-// ghost symbolic_compund_interest(uint256, uint40, uint256) returns uint256 {
-//     axiom forall uint256 x. forall uint40 t1. forall uint256 t2. symbolic_compund_interest(x, t1, t2) >= 10;
-// }
 
-ghost sumAllBalance() returns uint256 {
+ghost sumAllBalance() returns mathint {
     init_state axiom sumAllBalance() == 0;
 }
-
 hook Sstore _userState[KEY address a].balance uint128 balance (uint128 old_balance) STORAGE {
-  havoc sumAllBalance assuming sumAllBalance@new() == sumAllBalance@old() + balance - old_balance;
+    havoc sumAllBalance assuming sumAllBalance@new() == sumAllBalance@old() + balance - old_balance;
 }
 hook Sload uint128 balance _userState[KEY address a].balance  STORAGE {
-  require sumAllBalance() >= balance;
+    require sumAllBalance() >= to_mathint(balance);
 }
-
-// invariant totalSupplyEqualsSumAllBalance(env e)
-//     totalSupply(e) <= scaledBalanceOfToBalanceOf(sumAllBalance())
-//     filtered { f -> !f.isView && !disAllowedFunctions(f) }
 
 
 invariant principalLessThanBalance(env e, address user)
@@ -136,14 +133,14 @@ Burning user u amount of x tokens, decreases his balanceOf the user by x.
 (balance is decreased by x and not scaled x because of the summarization to one ray)
 */
 rule integrityBurn(address a, uint256 x) {
-	env e;
-	require getIncentivesController(e) == 0;
-	uint256 index;
-	uint256 balancebefore = balanceOf(e, a);
-	burn(e,a,x);
-	
-	uint256 balanceAfter = balanceOf(e, a);
-	assert balanceAfter == balancebefore - x;
+    env e;
+    require getIncentivesController(e) == 0;
+    uint256 index;
+    uint256 balancebefore = balanceOf(e, a);
+    burn(e,a,x);
+    
+    uint256 balanceAfter = balanceOf(e, a);
+    assert to_mathint(balanceAfter) == balancebefore - x;
 }
 
 /**
@@ -151,33 +148,34 @@ Mint to user u amount of x tokens, increases his balanceOf the user by x.
 (balance is increased by x and not scaled x because of the summarization to one ray)
 */
 rule integrityMint(address a, uint256 x) {
-	env e;
-	address delegatedUser;
-	require getIncentivesController(e) == 0;
-	uint256 index;
-	uint256 balancebefore = balanceOf(e,a);
-	mint(e, delegatedUser, a, x, index);
-	
-	uint256 balanceAfter = balanceOf(e,a);
-	assert balanceAfter == balancebefore+x;
+    env e;
+    address delegatedUser;
+    require getIncentivesController(e) == 0;
+    uint256 index;
+    uint256 balancebefore = balanceOf(e,a);
+    mint(e, delegatedUser, a, x, index);
+    
+    uint256 balanceAfter = balanceOf(e,a);
+    assert to_mathint(balanceAfter) == balancebefore+x;
 }
 
 // lastUpdated timestamp must be in the past.
 rule integrityTimeStamp(address user, method f) 
     filtered { f ->  !f.isView && !disAllowedFunctions(f) }
 {
-	env e;
-	require getUserLastUpdated(e, user) <= e.block.timestamp;
-	calldataarg arg;
+    env e;
+    require assert_uint256(getUserLastUpdated(e, user)) <= e.block.timestamp;
+    calldataarg arg;
     f(e,arg);
-	assert getUserLastUpdated(e, user) <= e.block.timestamp;
+    assert assert_uint256(getUserLastUpdated(e, user)) <= e.block.timestamp;
 }
 
 rule integrityDelegationWithSig(address delegator, address delegatee, uint256 value, uint256 deadline, uint8 v, bytes32 r, bytes32 s) {
     env e;
     uint256 oldNonce = nonces(e, delegator);
     delegationWithSig(e, delegator, delegatee, value, deadline, v, r, s);
-    assert nonces(e, delegator) == oldNonce + 1 && borrowAllowance(e, delegator, delegatee) == value;
+    assert to_mathint(nonces(e, delegator)) == oldNonce + 1 &&
+        borrowAllowance(e, delegator, delegatee) == value;
 }
 
 /*
@@ -185,16 +183,16 @@ Burn is additive, can performed either all at once or gradually
 burn(from,to,x,index); burn(from,to,y,index) ~ burn(from,to,x+y,index) at the same initial state
 */
 rule additiveBurn(address a, uint256 x,  uint256 y) {
-	env e;
-	storage initialStorage = lastStorage;
-	burn(e, a, x);
-	burn(e, a, y);
-	uint256 balanceScenario1 = balanceOf(e, a);
-	uint256 t = x + y;
-	burn(e, a, t) at initialStorage;
-
-	uint256 balanceScenario2 = balanceOf(e, a);
-	assert balanceScenario1 == balanceScenario2, "burn is not additive";
+    env e;
+    storage initialStorage = lastStorage;
+    burn(e, a, x);
+    burn(e, a, y);
+    uint256 balanceScenario1 = balanceOf(e, a);
+    uint256 t = PLUS256(x,y);
+    burn(e, a, t) at initialStorage;
+    
+    uint256 balanceScenario2 = balanceOf(e, a);
+    assert balanceScenario1 == balanceScenario2, "burn is not additive";
 }
 
 // minting and then buring Variable Debt Token should have no effect on the users balance
@@ -218,8 +216,8 @@ rule whoChangeTotalSupply(method f)
     uint256 newTotalSupply = totalSupply(e);
     assert oldTotalSupply != newTotalSupply => 
            (e.msg.sender == POOL(e) && 
-           (f.selector == burn(address, uint256).selector || 
-            f.selector == mint(address, address, uint256, uint256).selector));
+           (f.selector == sig:burn(address, uint256).selector || 
+            f.selector == sig:mint(address, address, uint256, uint256).selector));
 }
 
 // only delegationWithSig operation can change the nonce.
@@ -232,7 +230,7 @@ rule nonceChangePermits(method f)
     calldataarg args;
     f(e, args);
     uint256 newNonce = nonces(e, user);
-    assert oldNonce != newNonce => f.selector == delegationWithSig(address, address, uint256, uint256, uint8, bytes32, bytes32).selector;
+    assert oldNonce != newNonce => f.selector == sig:delegationWithSig(address, address, uint256, uint256, uint8, bytes32, bytes32).selector;
 }
 
 /*
@@ -250,7 +248,7 @@ rule additiveMint(address a, uint256 x, uint256 y) {
 	mint(e, delegatedUser, a, y, index);
 	uint256 balanceScenario1 = balanceOf(e, a);
 	
-	uint256 t = x + y;
+	uint256 t = PLUS256(x,y);
 	mint(e, delegatedUser, a, t ,index) at initialStorage;
 	
 	uint256 balanceScenario2 = balanceOf(e, a);
@@ -356,7 +354,7 @@ rule canBurnAtZero() {
     uint256 diff;
 	previousPrincipalBalance, newPrincipalBalance, diff =  _calculateBalanceIncrease(e,user);
 	uint256 amount; 
-	invoke burn(e,user,amount);
+	burn@withrevert(e,user,amount);
 	assert amount>0 => lastReverted;
 }
 */
